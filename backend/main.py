@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from auth import router as auth_router
-from dashboard import router as dashboard_router
-from transaction import router as transaction_router
+from features.auth import router as auth_router
+from features.dashboard import router as dashboard_router
+from features.transaction import router as transaction_router
 
 app = FastAPI()
 

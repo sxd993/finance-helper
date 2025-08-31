@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from pydantic import BaseModel, Field
 from database import connect_to_db
-from auth import get_current_user
+from features.auth import get_current_user
 import mysql.connector
 from typing import List
 import logging

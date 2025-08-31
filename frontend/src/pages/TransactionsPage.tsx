@@ -1,7 +1,7 @@
 import { TransactionList } from '../features/transactions/components/TransactionsList';
 import { useTransactions } from '../features/transactions/hooks/useTransactions';
 
-export const Transactions = () => {
+export const TransactionsPage = () => {
     const { transactions, isLoading, error } = useTransactions();
     
     if (isLoading) return <div>Загрузка...</div>;

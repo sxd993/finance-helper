@@ -2,7 +2,7 @@ export interface User {
     id: number;
     login: string;
     name: string;
-    income: number;
+    balance: number;
 }
 
 export interface Transaction {

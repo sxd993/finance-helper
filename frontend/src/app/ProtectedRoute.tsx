@@ -1,0 +1,33 @@
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../features/auth/hooks/useAuth';
+import { Navigation } from '../ui/Navigation';
+import type { ReactNode } from 'react';
+
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Загрузка...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return (
+    <div className="min-h-screen">
+      <main className="pb-20">
+        {children}
+      </main>
+      <Navigation />
+    </div>
+  );
+};
