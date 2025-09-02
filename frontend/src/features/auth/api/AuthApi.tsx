@@ -1,5 +1,5 @@
 import { client } from "../../../shared/api/client";
-import type { User } from "../../../types";
+import type { User } from "../../../types/types";
 
 interface LoginData {
     login: string;

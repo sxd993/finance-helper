@@ -1,5 +1,5 @@
 import {client} from '../../../shared/api/client'
-import type { Transaction } from '../../../types';
+import type { Transaction } from '../../../types/types';
 
 interface TransactionsResponse {
     transactions: Transaction[]

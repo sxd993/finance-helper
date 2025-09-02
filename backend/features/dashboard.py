@@ -13,94 +13,76 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-class CategorySummary(BaseModel):
-    id: int
-    name: str
-    total: float
-
-
-class Transaction(BaseModel):
-    id: int
-    amount: float
-    category: str
-    date: str
-
-
-class ExpensesFullResponse(BaseModel):
+class BalanceResponse(BaseModel):
+    income: float
     expenses: float
-    categories: List[CategorySummary]
+    balance: float
 
 
-@router.get("/get-expenses", response_model=ExpensesFullResponse)
-def get_expenses(current_user: dict = Depends(get_current_user)):
+@router.get("/get-balance", response_model=BalanceResponse)
+def get_balance(current_user: dict = Depends(get_current_user)):
     try:
         with connect_to_db() as conn:
             with conn.cursor(dictionary=True) as cursor:
-                # Получаем user_id
+                # Получаем user_id и income из таблицы users
                 cursor.execute(
-                    "SELECT id FROM users WHERE login = %s", (current_user["login"],)
+                    "SELECT id, income FROM users WHERE login = %s",
+                    (current_user["login"],),
                 )
                 user_row = cursor.fetchone()
                 if not user_row:
                     raise HTTPException(
                         status_code=404, detail="Пользователь не найден"
                     )
-                user_id = user_row["id"]
-                logger.info(f"User ID: {user_id}")
 
-                # Сумма всех расходов (только type = 'expense')
+                user_id = user_row["id"]
+                user_income = float(user_row["income"] or 0)
+                logger.info(f"User ID: {user_id}, Income: {user_income}")
+
+                # Сумма всех доходов (type = 'income')
                 cursor.execute(
-                    "SELECT COALESCE(SUM(amount), 0) AS total FROM transactions WHERE user_id = %s AND type = 'expense'",
+                    "SELECT COALESCE(SUM(amount), 0) AS total_income FROM transactions WHERE user_id = %s AND type = 'income'",
                     (user_id,),
                 )
-                total_expenses = float(cursor.fetchone()["total"])
+                total_income = float(cursor.fetchone()["total_income"])
+                logger.info(f"Total income from transactions: {total_income}")
+
+                # Сумма всех расходов (type = 'expense')
+                cursor.execute(
+                    "SELECT COALESCE(SUM(amount), 0) AS total_expenses FROM transactions WHERE user_id = %s AND type = 'expense'",
+                    (user_id,),
+                )
+                total_expenses = float(cursor.fetchone()["total_expenses"])
                 logger.info(f"Total expenses: {total_expenses}")
 
-                # Сумма по категориям: для категории 8 (Доход) только type = 'income', для остальных только type = 'expense'
-                cursor.execute(
-                    """
-                    SELECT c.id AS id, c.name AS name,
-                        COALESCE(SUM(
-                            CASE 
-                                WHEN c.id = 8 AND t.type = 'income' THEN t.amount
-                                WHEN c.id != 8 AND t.type = 'expense' THEN t.amount
-                                ELSE 0
-                            END
-                        ), 0) AS total
-                    FROM categories c
-                    LEFT JOIN transactions t ON t.category_id = c.id AND t.user_id = %s
-                    GROUP BY c.id, c.name
-                    """,
-                    (user_id,),
-                )
-                categories = [
-                    CategorySummary(
-                        id=row["id"], name=row["name"], total=float(row["total"])
-                    )
-                    for row in cursor.fetchall()
-                ]
-                logger.info(f"Categories fetched: {categories}")
+                # Рассчитываем баланс
+                balance = (user_income + total_income) - total_expenses
+                logger.info(f"Calculated balance: {balance}")
 
                 return {
+                    "income": user_income,
                     "expenses": total_expenses,
-                    "categories": categories,
+                    "balance": balance,
                 }
+
     except mysql.connector.Error as e:
-        logger.error(f"Database error in get_expenses: {str(e)}")
+        logger.error(f"Database error in get_balance: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Ошибка базы данных: {str(e)}")
     except Exception as e:
-        logger.error(f"Server error in get_expenses: {str(e)}")
+        logger.error(f"Server error in get_balance: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Ошибка сервера: {str(e)}")
 
 
-@router.get("/get-transactions", response_model=Transaction)
-def get_transactions(current_user: dict = Depends(get_current_user)):
+
+@router.get("/get-expenses-by-categories")
+def get_expenses_by_categories(current_user: dict = Depends(get_current_user)):
     try:
         with connect_to_db() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 # Получаем user_id
                 cursor.execute(
-                    "SELECT id FROM users WHERE login = %s", (current_user["login"],)
+                    "SELECT id FROM users WHERE login = %s", 
+                    (current_user["login"],)
                 )
                 user_row = cursor.fetchone()
                 if not user_row:
@@ -108,38 +90,36 @@ def get_transactions(current_user: dict = Depends(get_current_user)):
                         status_code=404, detail="Пользователь не найден"
                     )
                 user_id = user_row["id"]
-
-                # Запрос всех транзакций пользователя
-                cursor.execute(
-                    """
-                    SELECT t.id, t.amount, c.name AS category, t.date, t.description, t.type
-                    FROM transactions t
-                    JOIN categories c ON t.category_id = c.id
-                    WHERE t.user_id = %s
-                    ORDER BY t.id DESC
-                    """,
-                    (user_id,),
-                )
-                transaction = [
-                    {
-                        "id": row["id"],
-                        "amount": float(row["amount"]),
-                        "category": row["category"],
-                        "date": (
-                            row["date"].isoformat()
-                            if hasattr(row["date"], "isoformat")
-                            else str(row["date"])
-                        ),
-                        "description": row["description"],
-                        "type": row["type"],
-                    }
-                    for row in cursor.fetchall()
-                ]
-
-                return {"transactions": transaction}
+                
+                # Получаем траты по категориям (только type = 'expense')
+                cursor.execute("""
+                    SELECT 
+                        c.id as category_id,
+                        c.name as category_name,
+                        COALESCE(SUM(t.amount), 0) as total_amount,
+                        COUNT(t.id) as transaction_count,
+                        MAX(t.date) as last_transaction_date
+                    FROM categories c
+                    LEFT JOIN transactions t ON t.category_id = c.id 
+                        AND t.user_id = %s 
+                        AND t.type = 'expense'
+                    GROUP BY c.id, c.name
+                    ORDER BY total_amount DESC
+                """, (user_id,))
+                
+                categories_expenses = cursor.fetchall()
+                
+                # Преобразуем Decimal в float и дату в строку для JSON сериализации
+                for category in categories_expenses:
+                    category['total_amount'] = float(category['total_amount'])
+                    if category['last_transaction_date']:
+                        category['last_transaction_date'] = category['last_transaction_date'].isoformat()
+                
+                return categories_expenses
+                
     except mysql.connector.Error as e:
-        print(f"DB ERROR: {e}")
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        logger.error(f"Database error in get_expenses_by_categories: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ошибка базы данных: {str(e)}")
     except Exception as e:
-        print(f"GENERAL ERROR: {e}")
-        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+        logger.error(f"Server error in get_expenses_by_categories: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ошибка сервера: {str(e)}")

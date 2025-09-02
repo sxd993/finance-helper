@@ -1,5 +1,5 @@
 import { formatDate } from '../../../shared/utils/formatDate';
-import type { Transaction } from '../../../types';
+import type { Transaction } from '../../../types/types';
 import { useMemo } from 'react';
 
 interface Props {
