@@ -1,5 +1,4 @@
 backend/.env
-backend/__pycache__
 backend/venv
-backend/features/__pycache__
+__pycache__/
 frontend/node_modules

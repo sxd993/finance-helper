@@ -31,10 +31,6 @@ export const AuthPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-center mb-8">
-          <span className="text-orange-500">Finance</span> Helper
-        </h1>
-
         {isLogin ? (
           <Login
             onSubmit={handleLogin}

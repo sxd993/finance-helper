@@ -22,7 +22,9 @@ export const Login = ({ onSubmit, isLoading, error, onSwitchToRegister }: LoginP
 
   return (
     <div className="flex flex-col justify-center items-center gap-10">
-
+        <h1 className="text-2xl font-bold text-center mb-8">
+          <span className="text-orange-500">Finance</span> Helper
+        </h1>
       <form
         className="bg-white px-6 py-8 flex flex-col items-center gap-4 w-full max-w-sm rounded-lg"
         onSubmit={handleSubmit(onSubmit)}

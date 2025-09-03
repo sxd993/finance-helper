@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from features.auth import router as auth_router
+from features.auth.main import router as auth_router
 from features.dashboard import router as dashboard_router
 from features.transaction import router as transaction_router
 
@@ -8,7 +8,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://x876bkq0-5173.euw.devtunnels.ms"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
