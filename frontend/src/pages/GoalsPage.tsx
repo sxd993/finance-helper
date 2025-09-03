@@ -1,3 +1,6 @@
+import { PageTitle } from "../ui/PageTitle";
+import { GoalIcon } from "../features/goals/ui/GoalIcon";
+
 const formatMoney = (amount: number): string => {
   return new Intl.NumberFormat('ru-RU').format(amount);
 };
@@ -43,21 +46,7 @@ export const GoalsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <div className="flex flex-col items-center pt-6 gap-6 w-full pb-8">
-        <div className="flex flex-row items-center justify-between w-[90%] max-w-md">
-          <div className="flex items-center gap-3">
-            <div className="bg-orange-100 p-2 rounded-full">
-              <svg className="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-800">Цели</h1>
-          </div>
-          <button className="bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-full transition-colors shadow-lg hover:shadow-xl">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>
-          </button>
-        </div>
+    <PageTitle title="Цели" icon ={<GoalIcon/>} isButton={true}/>
         
         <div className="w-[90%] max-w-md flex flex-col gap-4">
           {goals.map((goal) => {
