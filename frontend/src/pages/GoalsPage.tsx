@@ -45,7 +45,7 @@ export const GoalsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="flex flex-col items-center pt-6 gap-6 w-full pb-8">
+      <div className="flex flex-col items-center gap-6 w-full pb-8">
     <PageTitle title="Цели" icon ={<GoalIcon/>} isButton={true}/>
         
         <div className="w-[90%] max-w-md flex flex-col gap-4">

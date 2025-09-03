@@ -1,15 +1,22 @@
 import { useAuth } from '../features/auth/hooks/useAuth';
-import { ProfileSection } from '../features/home/components/ProfileSection';
-import { ConvertSection } from '../features/home/ui/ConvertSection';
+import { ConvertSection } from '../features/home/components/ConvertSection';
+import { BalanceSection } from '../features/home/components/BalanceSection';
+import { PageTitle } from '../ui/PageTitle';
+import { HomeIcon } from '../ui/icons/HomeIcon';
 
 
 export const HomePage = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <ProfileSection user={user} monthly_income={user?.monthly_income}/>
-      <ConvertSection/>
+    <div className="min-h-screen bg-gray-50">
+      <div>
+        <PageTitle title='Главная' icon={<HomeIcon />} />
+      </div>
+      <div className="flex flex-col gap-6 pt-4 px-5">
+        <BalanceSection />
+        <ConvertSection />
+      </div>
     </div>
-  )
-}
+  );
+};
