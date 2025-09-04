@@ -1,68 +1,85 @@
 import { useState, useEffect } from 'react';
 import { ConvertList } from '../ui/ConvertList';
-import { GoalsCard } from '../ui/GoalsCard';
-
-interface Convert {
-    id: number;
-    name: string;
-    current: number;
-    target: number;
-    daysLeft: number;
-    isComplete: boolean;
-    category: string;
-}
-
-interface GoalsData {
-    name: string;
-    one_transfer: number;
-    total_goals_sum: number;
-    total_saved: number;
-    nextTransfer: string;
-}
+import type { Convert } from '../types';
 
 export const ConvertSection = () => {
     const [converts, setConverts] = useState<Convert[]>([]);
-    const [goalsData, setGoalsData] = useState<GoalsData | null>(null);
 
     useEffect(() => {
-        // Мок данные - в реальности API вызов
         setConverts([
-            { 
-                id: 1, 
-                name: "Еда", 
-                current: 6800, 
-                target: 10000, 
-                daysLeft: 3, 
-                isComplete: false, 
-                category: "food" 
+            {
+                id: 1,
+                user_id: 1,
+                account_id: 1,
+                name: "Еда",
+                current: 6800,
+                target: 10000,
+                daysLeft: 3,
+                isComplete: false,
+                category: "food",
+                one_transfer: 2250,
+                nextTransfer: "понедельник",
+                period_start: "2024-08-25",
+                period_end: "2024-09-01",
+                is_active: true,
+                created_at: "2024-08-25T00:00:00Z",
+                updated_at: "2024-08-30T12:00:00Z"
             },
-            { 
-                id: 2, 
-                name: "Транспорт", 
-                current: 2000, 
-                target: 2000, 
-                isComplete: true, 
-                daysLeft: 3, 
-                category: "transport" 
+            {
+                id: 2,
+                user_id: 1,
+                account_id: 1,
+                name: "Транспорт",
+                current: 2000,
+                target: 2000,
+                isComplete: true,
+                daysLeft: 3,
+                category: "transport",
+                one_transfer: 500,
+                nextTransfer: "вторник",
+                period_start: "2024-08-25",
+                period_end: "2024-09-01",
+                is_active: true,
+                created_at: "2024-08-25T00:00:00Z",
+                updated_at: "2024-08-29T10:30:00Z"
             },
-            { 
-                id: 3, 
-                name: "Развлечения", 
-                current: 4200, 
-                target: 5000, 
-                daysLeft: 3, 
-                isComplete: false, 
-                category: "entertainment" 
+            {
+                id: 3,
+                user_id: 1,
+                account_id: 1,
+                name: "Развлечения",
+                current: 4200,
+                target: 5000,
+                daysLeft: 3,
+                isComplete: false,
+                category: "entertainment",
+                one_transfer: 1000,
+                nextTransfer: "среда",
+                period_start: "2024-08-25",
+                period_end: "2024-09-01",
+                is_active: true,
+                created_at: "2024-08-25T00:00:00Z",
+                updated_at: "2024-08-28T15:45:00Z"
+            },
+            {
+                id: 4,
+                user_id: 1,
+                account_id: 2,
+                name: "iPhone 16 Pro Max",
+                current: 57000,
+                target: 120000,
+                daysLeftToComplete: 25,
+                isComplete: false,
+                category: "shopping",
+                one_transfer: 2500,
+                nextTransfer: "среда",
+                period_start: "2024-08-25",
+                period_end: "2024-09-25",
+                is_active: true,
+                created_at: "2024-08-25T00:00:00Z",
+                updated_at: "2024-08-28T15:45:00Z"
             }
         ]);
-
-        setGoalsData({
-            name: "Накопления на цели",
-            one_transfer: 2250,
-            total_goals_sum: 200000,
-            total_saved: 127400,
-            nextTransfer: "понедельник"
-        });
     }, []);
 
     const handleConvertClick = (convertId: number) => {
@@ -78,14 +95,10 @@ export const ConvertSection = () => {
                 <p className="text-sm text-gray-500">25 августа - 1 сентября</p>
             </div>
 
-            <ConvertList 
+            <ConvertList
                 converts={converts}
                 onConvertClick={handleConvertClick}
             />
-
-            {goalsData && (
-                <GoalsCard goalsData={goalsData} />
-            )}
         </section>
     );
 };

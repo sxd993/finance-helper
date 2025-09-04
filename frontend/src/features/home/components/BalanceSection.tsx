@@ -26,10 +26,6 @@ export const BalanceSection = () => {
         fetchBalance();
     }, []);
 
-    const trend = balanceData.income > balanceData.expenses ? 'up' : 'down';
-    const trendPercentage = balanceData.income > 0 
-        ? Math.round(((balanceData.income - balanceData.expenses) / balanceData.income) * 100)
-        : 0;
 
     return (
         <section className="flex justify-center w-full">
@@ -37,8 +33,6 @@ export const BalanceSection = () => {
                 total={balanceData.total}
                 income={balanceData.income}
                 expenses={balanceData.expenses}
-                trend={trend}
-                trendPercentage={trendPercentage}
                 isLoading={balanceData.isLoading}
             />
         </section>
