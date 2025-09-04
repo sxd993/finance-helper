@@ -4,14 +4,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Страницы
-import { TransactionsPage } from "./pages/TransactionsPage";
 import { AuthPage } from "./pages/AuthPage";
 import { HomePage } from "./pages/HomePage";
-import { GoalsPage } from "./pages/GoalsPage";
+import { EnvelopesPage } from "./pages/EnvelopesPage";
+import { ExpensesPage } from "./pages/ExpensesPage";
 
 // Компоненты маршрутизации
 import { ProtectedRoute } from "./app/ProtectedRoute";
 import { PublicRoute } from "./app/PublicRoute";
+import { SettingsPage } from "./pages/SettingsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,18 +49,26 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/transactions",
+    path: "/envelopes",
     element: (
       <ProtectedRoute>
-        <TransactionsPage />
+        <EnvelopesPage />
       </ProtectedRoute>
     ),
   },
   {
-    path: "/goals",
+    path: "/expenses",
     element: (
       <ProtectedRoute>
-        <GoalsPage />
+        <ExpensesPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/settings",
+    element: (
+      <ProtectedRoute>
+        <SettingsPage />
       </ProtectedRoute>
     ),
   },

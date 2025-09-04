@@ -1,50 +1,53 @@
-import { Wallet } from 'lucide-react';
-import type { BalanceCardProps } from '../types'; 
+import { WalletIcon } from '../../../shared/ui/icons/IconComponents';
 
+interface BalanceCardProps {
+  balance: number;
+  income: number;
+  expenses: number;
+  weeklyBudget?: number;
+  availableForGoals?: number;
+}
 
-export const BalanceCard = ({
-    total,
-    income,
-    expenses,
-    isLoading
-}: BalanceCardProps) => {
-
-    if (isLoading) {
-        return (
-            <div className="w-full max-w-md mx-auto bg-white rounded-2xl p-5 border border-gray-200">
-                <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-7 bg-gray-200 rounded w-1/2"></div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="flex justify-between w-full max-w-md mx-auto bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-            <div className="flex flex-col justify-around">
-                <div className="flex items-center gap-2">
-                    <Wallet className="w-5 h-5 text-orange-600" />
-                    <span className="text-sm font-medium text-gray-700">Баланс</span>
-                </div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                    {`${total.toLocaleString("ru-RU")} ₽`}
-                </h2>
-            </div>
-            <div className="flex flex-row justify-around gap-1">
-                <div className="rounded-xl border border-gray-200 p-3">
-                    <span className="block text-xs text-gray-500">Доходы</span>
-                    <p className="text-sm font-medium text-orange-600">
-                        {income.toLocaleString("ru-RU")} ₽
-                    </p>
-                </div>
-                <div className="rounded-xl border border-gray-200 p-3">
-                    <span className="block text-xs text-gray-500">Расходы</span>
-                    <p className="text-sm font-medium text-gray-600">
-                        {expenses.toLocaleString("ru-RU")} ₽
-                    </p>
-                </div>
-            </div>
+export function BalanceCard({ balance, income, expenses, weeklyBudget, availableForGoals }: BalanceCardProps) {
+  return (
+    <div className="mx-4 mb-6">
+      <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+        <div className="flex items-center space-x-2 mb-4">
+          <WalletIcon className="w-6 h-6 text-white" />
+          <span className="text-orange-100">Общий баланс</span>
         </div>
-    );
-};
+
+        <div className="mb-6">
+          <span className="text-3xl">{balance.toLocaleString('ru-RU')} ₽</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+            <div className="text-sm text-orange-100 mb-1">Доходы</div>
+            <div className="text-lg">+{income.toLocaleString('ru-RU')} ₽</div>
+          </div>
+
+          <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+            <div className="text-sm text-orange-100 mb-1">Расходы</div>
+            <div className="text-lg">-{expenses.toLocaleString('ru-RU')} ₽</div>
+          </div>
+
+          {weeklyBudget && (
+            <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+              <div className="text-sm text-orange-100 mb-1">Недельный бюджет</div>
+              <div className="text-lg">{weeklyBudget.toLocaleString('ru-RU')} ₽</div>
+            </div>
+          )}
+
+          {availableForGoals !== undefined && (
+            <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+              <div className="text-sm text-orange-100 mb-1">На цели</div>
+              <div className="text-lg">+{availableForGoals.toLocaleString('ru-RU')} ₽</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+

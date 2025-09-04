@@ -13,7 +13,7 @@ export const AuthPage = () => {
   const handleLogin = async (data: { login: string; password: string }) => {
     try {
       await loginMutation.mutateAsync(data);
-      navigate('/transactions');
+      navigate('/home');
     } catch (error) {
       console.error('Ошибка входа:', error);
     }
@@ -22,7 +22,7 @@ export const AuthPage = () => {
   const handleRegister = async (data: { login: string; name: string; password: string }) => {
     try {
       await registerMutation.mutateAsync(data);
-      navigate('/transactions');
+      navigate('/home');
     } catch (error) {
       console.error('Ошибка регистрации:', error);
     }
