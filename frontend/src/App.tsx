@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // Страницы
 import { AuthPage } from "./pages/AuthPage";
 import { HomePage } from "./pages/HomePage";
-import { EnvelopesPage } from "./pages/EnvelopesPage";
+import { ConvertsPage } from "./pages/ConvertsPage";
 import { ExpensesPage } from "./pages/ExpensesPage";
 
 // Компоненты маршрутизации
@@ -49,10 +49,10 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/envelopes",
+    path: "/converts",
     element: (
       <ProtectedRoute>
-        <EnvelopesPage />
+        <ConvertsPage />
       </ProtectedRoute>
     ),
   },
@@ -73,6 +73,7 @@ const router = createBrowserRouter([
     ),
   },
 ]);
+
 
 function App() {
   return (

@@ -23,8 +23,8 @@ const navigationItems: NavigationItem[] = [
         icon: WalletIcon,
     },
     {
-        id: 'envelopes',
-        path: '/envelopes',
+        id: 'converts',
+        path: '/converts',
         label: 'Конверты',
         icon: EnvelopeIcon,
     },

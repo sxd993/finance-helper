@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Header } from '../shared/ui/Header';
 import { FoodIcon, CarIcon, GameIcon, WalletIcon } from '../shared/ui/icons/IconComponents';
 
 export const ExpensesPage = () => {
@@ -90,7 +89,7 @@ export const ExpensesPage = () => {
 
     return (
         <div className="pb-16">
-            <Header title="Траты" showUserName={true} />
+
 
             <div className="mx-4 mt-6">
                 {/* Фильтры */}

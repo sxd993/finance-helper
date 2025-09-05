@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { Logo } from '../../../shared/ui/Logo';
 
 interface LoginFormData {
   login: string;
@@ -22,9 +23,7 @@ export const Login = ({ onSubmit, isLoading, error, onSwitchToRegister }: LoginP
 
   return (
     <div className="flex flex-col justify-center items-center gap-10">
-        <h1 className="text-2xl font-bold text-center mb-8">
-          <span className="text-orange-500">Finance</span> Helper
-        </h1>
+      <Logo />
       <form
         className="bg-white px-6 py-8 flex flex-col items-center gap-4 w-full max-w-sm rounded-lg"
         onSubmit={handleSubmit(onSubmit)}
@@ -58,11 +57,10 @@ export const Login = ({ onSubmit, isLoading, error, onSwitchToRegister }: LoginP
                 message: 'Логин может содержать только буквы, цифры и подчеркивания',
               },
             })}
-            className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${
-              errors.login
+            className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.login
                 ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
                 : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-            }`}
+              }`}
             disabled={isLoading}
           />
           <div className="h-4">
@@ -86,11 +84,10 @@ export const Login = ({ onSubmit, isLoading, error, onSwitchToRegister }: LoginP
                 message: 'Пароль должен быть не менее 6 символов',
               },
             })}
-            className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${
-              errors.password
+            className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.password
                 ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
                 : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-            }`}
+              }`}
             disabled={isLoading}
           />
           <div className="h-4">

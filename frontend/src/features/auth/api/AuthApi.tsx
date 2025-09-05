@@ -1,5 +1,5 @@
 import { client } from "../../../shared/api/client";
-import type { User } from "../../../types/types";
+import type { User } from "../../../shared/types/types";
 
 interface LoginData {
     login: string;
@@ -25,7 +25,7 @@ export const AuthApi = {
     },
     // Проверка авторизации
     checkAuth: async (): Promise<User> => {
-        const response = await client.get < User > ('/auth/check');
+        const response = await client.get<User>('/auth/check');
         return response.data;
     },
     logout: async (): Promise<void> => {

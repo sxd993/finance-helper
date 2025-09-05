@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Header } from '../shared/ui/Header';
 
 export function SettingsPage() {
   const [monthlyIncome, setMonthlyIncome] = useState(260000);
@@ -13,8 +12,6 @@ export function SettingsPage() {
 
   return (
     <div className="pb-16">
-      <Header title="Настройки" showUserName={true} />
-      
       <div className="mx-4 mt-6">
         {/* Профиль */}
         <div className="bg-gray-50 rounded-2xl p-4 mb-6">

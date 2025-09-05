@@ -1,46 +1,14 @@
-import type { ReactNode } from 'react';
-import { useAuth } from '../../features/auth/hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Settings } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Logo } from "./Logo";
 
-interface HeaderProps {
-  title: string;
-  icon?: ReactNode;
-  subtitle?: string;
-  showUserName?: boolean;
-  userName?: string;
-  onSettingsClick?: () => void;
-}
-
-export function Header({
-  title,
-  icon,
-  showUserName = false,
-  onSettingsClick
-}: HeaderProps) {
-  const { user } = useAuth();
+export const Header = () => {
   return (
-    <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          {icon && <div className="text-white">{icon}</div>}
-          <div>
-            <h1 className="text-white">{title}</h1>
-            {showUserName && (
-              <p className="text-orange-100 text-sm">Привет, {user?.name}! 👋</p>
-            )}
-
-          </div>
-        </div>
-        <Link
-          to={'/settings'}
-          className="p-2 text-white hover:text-orange-100 transition-colors"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </Link>
-      </div>
-    </div>
-  );
+    <header className="flex justify-between p-3 items-center">
+      <Logo />
+      <Link to={'/settings'}>
+        <Settings width={30} height={30} />
+      </Link>
+    </header>
+  )
 }

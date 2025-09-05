@@ -1,6 +1,7 @@
 // src/components/Register.tsx
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Logo } from '../../../shared/ui/Logo';
 
 interface RegisterFormData {
   login: string;
@@ -21,7 +22,7 @@ type FormStep = 'credentials' | 'income';
 
 export const Register = ({ onSubmit, isLoading, error, onSwitchToLogin }: RegisterProps) => {
   const [currentStep, setCurrentStep] = useState<FormStep>('credentials');
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<RegisterFormData>({
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterFormData>({
     defaultValues: {
       login: '',
       email: '',
@@ -41,15 +42,10 @@ export const Register = ({ onSubmit, isLoading, error, onSwitchToLogin }: Regist
     setCurrentStep('credentials');
   };
 
-  const handleIncomeSelect = (income: number) => {
-    setValue('monthly_income', income);
-  };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen gap-10 py-8">
-        <h1 className="text-2xl font-bold text-center mb-8">
-          <span className="text-orange-500">Finance</span> Helper
-        </h1>
+      <Logo />
       {currentStep === 'credentials' ? (
         <form
           className="bg-white px-6 py-8 flex flex-col gap-4 w-full max-w-sm rounded-lg shadow-lg"
@@ -87,11 +83,10 @@ export const Register = ({ onSubmit, isLoading, error, onSwitchToLogin }: Regist
                   message: 'Логин может содержать только буквы, цифры и подчеркивания',
                 },
               })}
-              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${
-                errors.login
+              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.login
                   ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
                   : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-              }`}
+                }`}
               disabled={isLoading}
             />
             <div className="h-4">
@@ -119,11 +114,10 @@ export const Register = ({ onSubmit, isLoading, error, onSwitchToLogin }: Regist
                   message: 'Имя не должно превышать 50 символов',
                 }
               })}
-              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${
-                errors.name
+              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.name
                   ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
                   : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-              }`}
+                }`}
               disabled={isLoading}
             />
             <div className="h-4">
@@ -147,11 +141,10 @@ export const Register = ({ onSubmit, isLoading, error, onSwitchToLogin }: Regist
                   message: 'Введите корректный email',
                 }
               })}
-              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${
-                errors.email
+              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.email
                   ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
                   : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-              }`}
+                }`}
               disabled={isLoading}
             />
             <div className="h-4">
@@ -179,11 +172,10 @@ export const Register = ({ onSubmit, isLoading, error, onSwitchToLogin }: Regist
                   message: 'Пароль должен содержать буквы и цифры',
                 }
               })}
-              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${
-                errors.password
+              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.password
                   ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
                   : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-              }`}
+                }`}
               disabled={isLoading}
             />
             <div className="h-4">
