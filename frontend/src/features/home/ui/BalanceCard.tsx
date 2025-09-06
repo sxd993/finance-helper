@@ -1,39 +1,44 @@
-import { Wallet } from 'lucide-react';
+import type { ConvertsInfo } from "../../../shared/types/types";
+import { CircularProgress } from "../../../shared/ui/CircularProgress";
 
 interface BalanceCardProps {
-  balance: number;
-  income: number;
-  expenses: number;
-  weeklyBudget?: number;
-  availableForGoals?: number;
+  info?: ConvertsInfo;
 }
 
-export function BalanceCard({ balance, income, expenses }: BalanceCardProps) {
+export const BalanceCard = ({ info }: BalanceCardProps) => {
   return (
-    <div className="mx-4 mb-6">
-      <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
-        <div className="flex items-center space-x-2 mb-4">
-          <Wallet />
-          <span className="text-orange-100">Общий баланс</span>
+    <section className="bg-white shadow-sm rounded-2xl p-5">
+      {/* Заголовок */}
+      <div className="text-center mb-4">
+        <h1 className="text-xl font-semibold text-gray-900">
+          Недельный бюджет
+        </h1>
+      </div>
+
+      <div className="flex items-center justify-between">
+        {/* Текстовая часть */}
+        <div>
+          <p className="text-sm text-gray-500">Остаток на неделю</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {info?.current_budget?.toLocaleString("ru-RU") ?? 0} ₽
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            из {info?.weekly_budget?.toLocaleString("ru-RU") ?? 0} ₽
+          </p>
         </div>
 
-        <div className="mb-6">
-          <span className="text-3xl">{balance.toLocaleString('ru-RU')} ₽</span>
-        </div>
+        {/* Круговой прогресс */}
+        <div>
+          <CircularProgress
+            value={info?.current_budget}
+            max={info?.weekly_budget}
+            percentage={info?.percentage}
+            size={80}
+            strokeWidth={8}
+          />
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-            <div className="text-sm text-orange-100 mb-1">Доходы</div>
-            <div className="text-lg">+{income.toLocaleString('ru-RU')} ₽</div>
-          </div>
-
-          <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-            <div className="text-sm text-orange-100 mb-1">Расходы</div>
-            <div className="text-lg">-{expenses.toLocaleString('ru-RU')} ₽</div>
-          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
-}
-
+};

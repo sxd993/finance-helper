@@ -1,7 +1,7 @@
 export interface User {
     id: number;
     login: string;
-    name: string;
+    name: string ;
     monthly_income: number;
     email: string;
     currency: string;
@@ -9,34 +9,10 @@ export interface User {
     percent_desire: number
     percent_saving: number
 }
-
-export interface Transaction {
-    id: number;
-    amount: number;
-    description: string;
-    date: string;
-    type: 'income' | 'expense';
-    category: string;
-    category_id: number;
-}
-
-export interface Category {
-    id: number;
-    name: string;
-    total?: number;
-}
-
-export interface Goal {
-    id: number;
-    title: string;
-    amount: number;
-    currentAmount: number;
-}
-
 export interface Convert {
     id: number;
     convert_type: 'necessary' | 'desire' | 'saving' | 'investment';
-    name: string;
+    convert_name: string;
     current_amount: number;
     limit_amount?: number; // Для конвертов necessary и desire 
     target_amount?: number; // Для конвертов saving 
@@ -45,4 +21,19 @@ export interface Convert {
     period_start?: string; // Для конвертов necessary и desire 
     period_end?: string; // Для конвертов necessary и desire 
     is_complete?: boolean; // Для конвертов saving
+}
+
+export interface ConvertsInfo {
+    weekly_budget: number;
+    current_budget: number;
+    percentage?: number;
+}
+
+export interface Transaction {
+    id: number;
+    transactions_category: 'necessary' | 'desire' | 'saving' | 'investment';
+    transactions_subcategory: string;
+    transactions_name: string;
+    transactions_amount: number;
+    transactions_date: string;
 }

@@ -1,11 +1,11 @@
-import type { Convert } from '../shared/types/types';
+import type { Convert, ConvertsInfo } from '../shared/types/types';
 
 export const mockConverts: Convert[] = [
   {
     id: 1,
     convert_type: 'necessary',
-    name: 'Продукты',
-    current_amount: 5000,
+    convert_name: 'Продукты',
+    current_amount: 2500,
     limit_amount: 15000,
     period_start: '2024-09-02',
     period_end: '2024-09-09',
@@ -13,8 +13,8 @@ export const mockConverts: Convert[] = [
   {
     id: 2,
     convert_type: 'desire',
-    name: 'Развлечения',
-    current_amount: 3000,
+    convert_name: 'Развлечения',
+    current_amount: 1000,
     limit_amount: 8000,
     period_start: '2025-09-01',
     period_end: '2025-09-30',
@@ -23,7 +23,7 @@ export const mockConverts: Convert[] = [
   {
     id: 3,
     convert_type: 'saving',
-    name: 'Отпуск в Турции',
+    convert_name: 'Отпуск в Турции',
     current_amount: 25000,
     target_amount: 100000,
     one_transfer: 5000,
@@ -33,8 +33,13 @@ export const mockConverts: Convert[] = [
   {
     id: 4,
     convert_type: 'investment',
-    name: 'Акции IT',
+    convert_name: 'Акции IT',
     current_amount: 50000,
     is_complete: false,
   },
 ];
+
+export const mockConvertsInfo: ConvertsInfo = {
+  weekly_budget: 25000,
+  current_budget: 25000,
+}

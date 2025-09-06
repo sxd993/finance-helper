@@ -4,10 +4,10 @@ import type { User } from '../types/types';
 
 
 export const useMockUser = () => {
-    const { data: user, isLoading, error } = useQuery<User>({
+    const { data: user, isLoading: isUserLoading, error } = useQuery<User>({
         queryKey: ['user'],
         queryFn: getUser,
         staleTime: 30 * 60 * 1000, // 30 минут
     })
-    return { user, isLoading, error };
+    return { user, isUserLoading, error };
 }
