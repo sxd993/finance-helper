@@ -1,21 +1,14 @@
 import type { Convert, ConvertsInfo } from '../types/types';
-import { mockConverts } from '../../mock/converts';
-import { mockConvertsInfo } from '../../mock/converts';
-
-// Простая задержка для имитации сети
-const delay = () => new Promise(resolve => setTimeout(resolve, 500));
-
-// Хранилище для изменений
-let converts = [...mockConverts];
+import { client } from './client';
 
 // Получить все конверты
 export const getConverts = async (): Promise<Convert[]> => {
-    await delay();
-    return converts;
+    const response = await client.get('/converts/converts');
+    return response.data;
 };
 
-// Получить все конверты
+// Получить информацию о недельном бюджете
 export const getConvertsInfo = async (): Promise<ConvertsInfo> => {
-    await delay();
-    return mockConvertsInfo;
+    const response = await client.get('/converts/converts-info');
+    return response.data;
 };

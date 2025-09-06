@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from features.auth.main import router as auth_router
-from features.dashboard import router as dashboard_router
-from features.transaction import router as transaction_router
+from features.converts import router as converts_router
 
 app = FastAPI()
 
@@ -15,8 +14,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="/api/auth")
-app.include_router(dashboard_router, prefix="/api/dashboard")
-app.include_router(transaction_router, prefix="/api/transaction")
+app.include_router(converts_router, prefix="/api/converts")
 
 if __name__ == "__main__":
     import uvicorn

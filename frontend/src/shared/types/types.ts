@@ -9,6 +9,7 @@ export interface User {
     percent_desire: number
     percent_saving: number
 }
+
 export interface Convert {
     id: number;
     convert_type: 'necessary' | 'desire' | 'saving' | 'investment';
