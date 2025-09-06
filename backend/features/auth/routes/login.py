@@ -14,7 +14,7 @@ def login(data: LoginData, response: Response):
     try:
         conn = connect_to_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT login, name, email, monthly_income, password FROM users WHERE login = %s", (data.login,))
+        cursor.execute("SELECT login, name, email, monthly_income, password_hash FROM users WHERE login = %s", (data.login,))
         user = cursor.fetchone()
         
         if not user or not verify_password(data.password, user[4]):  # password на 4-й позиции

@@ -28,7 +28,7 @@ export const NeedAttentionConverts = ({ converts }: NeedAttentionConvertsProps) 
                         return (
                             <li
                                 key={c.id}
-                                className="flex items-end justify-between items-center p-4 bg-white rounded-xl shadow-sm"
+                                className="flex items-end justify-between p-4 bg-white rounded-xl shadow-sm"
                             >
                                 {/* Левая часть */}
                                 <div className="flex flex-col gap-2">
