@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getConverts, getConvertsInfo } from '../api/ConvertsApi';
 import type { Convert, ConvertsInfo } from '../types/types';
 
-export const useMockConverts = () => {
+export const useConverts = () => {
     const { data, isLoading, error } = useQuery<Convert[]>({
         queryKey: ['converts'],
         queryFn: getConverts,
@@ -17,7 +17,7 @@ export const useMockConverts = () => {
 
 };
 
-export const useMockConvertsInfo = () => {
+export const useConvertsInfo = () => {
     const { data, isLoading: isConvertsInfoLoading, error } = useQuery<ConvertsInfo>({
         queryKey: ['converts-info'],
         queryFn: getConvertsInfo,

@@ -2,16 +2,16 @@ import { BalanceCard } from "../features/home/ui/BalanceCard";
 import { HomeHeader } from "../features/home/ui/HomeHeader";
 import { LastFiveTransactions } from "../features/home/ui/LastFiveTransactions";
 import { NeedAttentionConverts } from "../features/home/ui/NeedAttentionConverts";
-import { useMockConverts, useMockConvertsInfo } from "../shared/hooks/useMockConverts";
-import { useMockLastTransactions } from "../shared/hooks/useMockLastTransactions";
+import { useConverts, useConvertsInfo } from "../shared/hooks/useConverts";
+import { useLastTransactions } from "../shared/hooks/useLastTransactions";
 import { useMockUser } from "../shared/hooks/useMockUser";
 
 
 export const HomePage = () => {
   const { user, isUserLoading } = useMockUser();
-  const { converts } = useMockConverts();
-  const { converts_info, isConvertsInfoLoading } = useMockConvertsInfo();
-  const { last_transactions, isLastTransactionsLoading } = useMockLastTransactions();
+  const { converts } = useConverts();
+  const { converts_info, isConvertsInfoLoading } = useConvertsInfo();
+  const { last_transactions, isLastTransactionsLoading } = useLastTransactions();
 
 
   if (isUserLoading) {

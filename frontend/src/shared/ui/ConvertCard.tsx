@@ -20,7 +20,7 @@ const ConvertColors = {
 
 // Компонент карточки конверта
 export const ConvertCard: React.FC<{ convert: Convert }> = ({ convert }) => {
-    const { convert_type, name, current_amount, limit_amount, target_amount, is_complete } = convert;
+    const { convert_type, convert_name, current_amount, limit_amount, target_amount, is_complete } = convert;
     const colorClass = ConvertColors[convert_type] || ConvertColors.default;
     const icon = ConvertIcons[convert_type] || ConvertIcons.default;
 
@@ -63,7 +63,7 @@ export const ConvertCard: React.FC<{ convert: Convert }> = ({ convert }) => {
                     {icon}
                 </div>
                 <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{name}</h4>
+                    <h4 className="font-medium text-gray-900">{convert_name}</h4>
                     <p className="text-sm text-gray-500">{getSubtitle()}</p>
                 </div>
                 <div className="text-right">
