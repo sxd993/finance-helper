@@ -42,4 +42,6 @@ export const mockConverts: Convert[] = [
 export const mockConvertsInfo: ConvertsInfo = {
   weekly_budget: 25000,
   current_budget: 25000,
+  period_start: '1 сентября',
+  period_end: '8 сентября'
 }

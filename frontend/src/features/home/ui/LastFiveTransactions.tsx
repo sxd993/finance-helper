@@ -19,7 +19,7 @@ export const LastFiveTransactions = ({ last_transactions }: LastFiveTransactions
 
 
     return (
-        <section className="  p-5 rounded-2xl">
+        <section className="rounded-2xl">
             {/* Заголовок */}
             <div className="text-center mb-4 flex justify-between">
                 <h1 className="text-xl font-semibold text-gray-900">

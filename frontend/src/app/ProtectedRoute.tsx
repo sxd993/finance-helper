@@ -23,11 +23,11 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   return (
-    <div className="min-h-screen max-w-[95%] m-auto">
+    <>
       <main className="pb-20">
         {children}
       </main>
       <Navigation />
-    </div>
+    </>
   );
 };

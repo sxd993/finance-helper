@@ -14,10 +14,13 @@ export const NeedAttentionConverts = ({ converts }: NeedAttentionConvertsProps) 
     }) ?? []
 
     return (
-        <section className="p-4 rounded-2xl  shadow-sm">
-            <h2 className="text-lg text-center font-semibold mb-5">
-                Конверты, требующие внимания
-            </h2>
+        <section className="rounded-2xl  shadow-sm">
+            <div className="text-center mb-6">
+                <h1 className="text-xl font-bold text-orange-500 mb-2">
+                    Конверты, требующие внимания
+                </h1>
+                <div className="w-12 h-0.5 bg-orange-500 mx-auto rounded-full"></div>
+            </div>
             {filteredConverts.length > 0 ? (
                 <ul className="space-y-4">
                     {filteredConverts.map((c) => {

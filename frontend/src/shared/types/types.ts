@@ -27,6 +27,8 @@ export interface ConvertsInfo {
     weekly_budget: number;
     current_budget: number;
     percentage?: number;
+    period_start: string;
+    period_end: string
 }
 
 export interface Transaction {
