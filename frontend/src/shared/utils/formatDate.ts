@@ -1,7 +1,7 @@
 import { formatDistanceToNow, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
-export const formatTransactionDate = (dateString: string) => {
+export const formatDate = (dateString: string) => {
   const date = new Date(dateString);
 
   if (isNaN(date.getTime())) return dateString;
