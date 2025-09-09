@@ -1,7 +1,7 @@
 import { CalendarIcon, UserIcon } from "lucide-react";
-import type { User } from "../../../shared/types/types";
+import type { User } from "../shared/types/types";
 
-interface HomeHeaderProps {
+interface HeaderProps {
   user?: User;
 }
 
@@ -18,9 +18,9 @@ const monthNames = [
 const currentDay = dayNames[now.getDay()];
 const currentDate = `${now.getDate()} ${monthNames[now.getMonth()]}`;
 
-export const HomeHeader = ({ user }: HomeHeaderProps) => {
+export const Header = ({ user }: HeaderProps) => {
   return (
-    <header className="flex justify-baseline items-center">
+    <header className="flex justify-baseline items-center p-4">
       {/* Левая часть */}
       <div className="flex items-center gap-4">
         {/* Аватарка */}

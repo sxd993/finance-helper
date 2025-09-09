@@ -10,7 +10,7 @@ export const BalanceCard = ({ info }: BalanceCardProps) => {
     <section className="bg-white shadow-md rounded-3xl p-6 transition-all hover:shadow-lg border border-gray-100">
       {/* Заголовок */}
       <div className="text-center mb-6">
-        <h1 className="text-xl font-bold text-orange-500 mb-2">
+        <h1 className="text-xl font-bold  mb-2">
           Недельный бюджет
         </h1>
         <div className="w-12 h-0.5 bg-orange-500 mx-auto rounded-full"></div>

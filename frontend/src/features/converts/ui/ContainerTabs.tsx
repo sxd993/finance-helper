@@ -50,7 +50,7 @@ export const ContainerTabs = ({ converts, active, onChange }: ContainerTabsProps
                                 {({ selected }) => (
                                     <div
                                         className={`
-                      flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-xl
+                      flex flex-row items-center justify-center gap-1 px-4 py-3 rounded-xl
                       text-sm font-semibold transition-all duration-200
                       cursor-pointer select-none
                       ${selected
@@ -61,14 +61,6 @@ export const ContainerTabs = ({ converts, active, onChange }: ContainerTabsProps
                                     >
                                         <span className="text-2xl">{config.icon}</span>
                                         <span>{config.label}</span>
-                                        {count > 0 && (
-                                            <span className={`
-                        text-xs px-2 py-0.5 rounded-full
-                        ${selected ? "bg-white/30 text-white" : "bg-gray-200 text-gray-600"}
-                      `}>
-                                                {count}
-                                            </span>
-                                        )}
                                     </div>
                                 )}
                             </Tab>

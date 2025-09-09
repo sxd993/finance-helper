@@ -1,4 +1,4 @@
-import { ConvertContainer } from "../features/converts/components/ConvertContainer";
+import { ConvertList } from "../features/converts/components/ConvertList";
 import { useConverts } from "../shared/hooks/useConverts"
 
 export const ConvertsPage = () => {
@@ -9,7 +9,7 @@ export const ConvertsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-[100%]">
       <div className="flex flex-col gap-6 pt-4">
-        <ConvertContainer converts={converts} />
+        <ConvertList converts={converts} />
       </div>
     </div>
 

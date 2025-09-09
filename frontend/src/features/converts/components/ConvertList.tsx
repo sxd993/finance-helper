@@ -3,11 +3,11 @@ import { ConvertCard } from "../ui/ConvertCard";
 import { ContainerTabs } from "../ui/ContainerTabs";
 import type { Convert } from "../../../shared/types/types";
 
-interface ConvertContainerProps {
+interface ConvertListProps {
     converts: Convert[];
 }
 
-export const ConvertContainer = ({ converts }: ConvertContainerProps) => {
+export const ConvertList = ({ converts }: ConvertListProps) => {
     const [active, setActive] = useState<string | null>(converts[0]?.convert_type ?? null);
 
     const filteredConverts = useMemo(() => {
@@ -16,14 +16,13 @@ export const ConvertContainer = ({ converts }: ConvertContainerProps) => {
     }, [converts, active]);
 
     return (
-        <>
+        <div className="flex flex-col gap-8">
             <ContainerTabs converts={converts} active={active} onChange={setActive} />
-
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredConverts.map((c) => (
                     <ConvertCard key={c.id} convert={c} />
                 ))}
             </div>
-        </>
+        </div>
     );
 };
