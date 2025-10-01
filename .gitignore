@@ -1,4 +1,17 @@
 backend/.env
-backend/venv
+backend/package-lock.json
+node_modules
+npm-debug.log
+.DS_Store
+
+# Env files
+.env.local
+env/
+
+# Coverage and logs
+coverage
+logs
+*.log
+
 __pycache__/
 frontend/node_modules
