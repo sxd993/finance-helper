@@ -1,7 +1,8 @@
-import type { Transaction } from "../../../shared/types/types";
-import { Link } from "react-router-dom";
-import { formatDate } from '../../../shared/utils/formatDate';
-import { useMemo } from "react";
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+
+import type { Transaction } from '@shared/types/types';
+import { formatDate } from '@shared/utils/formatDate';
 
 interface LastFiveTransactionsProps {
     last_transactions?: Transaction[];

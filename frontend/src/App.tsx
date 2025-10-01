@@ -1,18 +1,13 @@
-// src/App.tsx
-import "./App.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import './App.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// Страницы
-import { AuthPage } from "./pages/AuthPage";
-import { HomePage } from "./pages/HomePage";
-import { ConvertsPage } from "./pages/ConvertsPage";
-import { ExpensesPage } from "./pages/ExpensesPage";
-
-// Компоненты маршрутизации
-import { ProtectedRoute } from "./app/ProtectedRoute";
-import { PublicRoute } from "./app/PublicRoute";
-import { SettingsPage } from "./pages/SettingsPage";
+import { ProtectedRoute, PublicRoute } from '@app/providers/router';
+import { AuthPage } from '@pages/auth/AuthPage';
+import { ConvertsPage } from '@pages/converts/ConvertsPage';
+import { ExpensesPage } from '@pages/expenses/ExpensesPage';
+import { HomePage } from '@pages/home/HomePage';
+import { SettingsPage } from '@pages/settings/SettingsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +20,7 @@ const queryClient = new QueryClient({
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: (
       <PublicRoute>
         <AuthPage />
@@ -33,7 +28,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/auth",
+    path: '/auth',
     element: (
       <PublicRoute>
         <AuthPage />
@@ -41,7 +36,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/home",
+    path: '/home',
     element: (
       <ProtectedRoute>
         <HomePage />
@@ -49,7 +44,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/converts",
+    path: '/converts',
     element: (
       <ProtectedRoute>
         <ConvertsPage />
@@ -57,7 +52,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/expenses",
+    path: '/expenses',
     element: (
       <ProtectedRoute>
         <ExpensesPage />
@@ -65,7 +60,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/settings",
+    path: '/settings',
     element: (
       <ProtectedRoute>
         <SettingsPage />
@@ -73,7 +68,6 @@ const router = createBrowserRouter([
     ),
   },
 ]);
-
 
 function App() {
   return (

@@ -1,5 +1,5 @@
-import type { ConvertsInfo } from "../../../shared/types/types";
-import { CircularProgress } from "../../../shared/ui/CircularProgress";
+import type { ConvertsInfo } from '@shared/types/types';
+import { CircularProgress } from '@shared/ui/CircularProgress';
 
 interface BalanceCardProps {
   info?: ConvertsInfo;

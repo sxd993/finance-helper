@@ -1,5 +1,5 @@
-import type { Convert } from "../../../shared/types/types"
-import { CircularProgress } from "../../../shared/ui/CircularProgress"
+import type { Convert } from '@shared/types/types';
+import { CircularProgress } from '@shared/ui/CircularProgress';
 
 interface NeedAttentionConvertsProps {
     converts?: Convert[]
