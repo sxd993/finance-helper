@@ -1,4 +1,4 @@
-import { BalanceCard, LastFiveTransactions, NeedAttentionConverts } from '@features/home';
+import { BalanceCard, LastFiveTransactions, NeedAttentionConverts } from '@widgets/dashboard/index';
 import { useConverts, useConvertsInfo } from '@entities/convert/model/hooks';
 import { useLastTransactions } from '@entities/transaction/model/hooks';
 
