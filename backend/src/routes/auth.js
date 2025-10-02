@@ -1,5 +1,5 @@
 const express = require('express');
-const { query } = require('../config/database');
+const { User, sequelize } = require('../db');
 const {
   findUserByLogin,
   toPublicUser,
@@ -7,15 +7,9 @@ const {
   hashPassword,
   verifyPassword,
   setAuthCookie,
+  requireAuth,
 } = require('../utils/auth');
-const { requireAuth } = require('../middleware/auth');
-
-const DEFAULT_DISTRIBUTION = {
-  necessary: 50,
-  desire: 30,
-  saving: 10,
-  investment: 10,
-};
+const { DEFAULT_DISTRIBUTION } = require('../utils/constants');
 
 const router = express.Router();
 
@@ -27,22 +21,22 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const userRow = await findUserByLogin(login);
-    if (!userRow) {
+    const user = await findUserByLogin(login);
+    if (!user) {
       return res.status(401).json({ message: 'Wrong login or password' });
     }
 
-    const isValid = await verifyPassword(password, userRow.password_hash);
+    const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
       return res.status(401).json({ message: 'Wrong login or password' });
     }
 
-    const token = createToken(userRow.login);
+    const token = createToken(user.login);
     setAuthCookie(res, token);
 
     return res.json({
       token,
-      user: toPublicUser(userRow),
+      user: toPublicUser(user),
     });
   } catch (error) {
     console.error('Login failed', error);
@@ -63,43 +57,34 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
+  const transaction = await sequelize.transaction();
+
   try {
-    const existingUser = await findUserByLogin(login);
+    const existingUser = await findUserByLogin(login, { transaction });
     if (existingUser) {
+      await transaction.rollback();
       return res.status(400).json({ message: 'Login already exists' });
     }
 
     const passwordHash = await hashPassword(password);
     const normalizedIncome = Number(monthlyIncome) || 0;
 
-    await query(
-      `INSERT INTO users (
-         login,
-         name,
-         email,
-         monthly_income,
-         password_hash,
-         distribution_mode,
-         percent_necessary,
-         percent_desire,
-         percent_saving,
-         percent_investment,
-         leftover_pool,
-         last_reset_at
-       ) VALUES (?, ?, ?, ?, ?, 'baseline', ?, ?, ?, ?, 0, ?)` ,
-      [
-        login,
-        name,
-        email,
-        normalizedIncome,
-        passwordHash,
-        DEFAULT_DISTRIBUTION.necessary,
-        DEFAULT_DISTRIBUTION.desire,
-        DEFAULT_DISTRIBUTION.saving,
-        DEFAULT_DISTRIBUTION.investment,
-        new Date(),
-      ]
-    );
+    await User.create({
+      login,
+      name,
+      email,
+      monthlyIncome: normalizedIncome,
+      passwordHash,
+      distributionMode: 'baseline',
+      percentNecessary: DEFAULT_DISTRIBUTION.necessary,
+      percentDesire: DEFAULT_DISTRIBUTION.desire,
+      percentSaving: DEFAULT_DISTRIBUTION.saving,
+      percentInvestment: DEFAULT_DISTRIBUTION.investment,
+      leftoverPool: 0,
+      lastResetAt: new Date(),
+    }, { transaction });
+
+    await transaction.commit();
 
     const token = createToken(login);
     setAuthCookie(res, token);
@@ -111,6 +96,7 @@ router.post('/register', async (req, res) => {
       user: toPublicUser(freshUser || { login, name, email, monthly_income: normalizedIncome }),
     });
   } catch (error) {
+    await transaction.rollback();
     console.error('Registration failed', error);
     return res.status(500).json({ message: error.message || 'Database error' });
   }

@@ -1,51 +1,42 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { query } = require('../config/database');
+const { User } = require('../db');
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key-here-change-in-production';
 const ACCESS_TOKEN_EXPIRE_HOURS = Number(process.env.ACCESS_TOKEN_EXPIRE_HOURS) || 1;
 
 const normalizeNumber = (value) => (typeof value === 'number' ? value : Number(value || 0));
 
-async function findUserByLogin(login) {
-  const rows = await query(
-    `SELECT
-       id,
-       login,
-       name,
-       email,
-       monthly_income,
-       password_hash,
-       distribution_mode,
-       percent_necessary,
-       percent_desire,
-       percent_saving,
-       percent_investment,
-       leftover_pool,
-       last_reset_at
-     FROM users
-     WHERE login = ?`,
-    [login]
-  );
+async function findUserByLogin(login, options = {}) {
+  if (!login) {
+    return null;
+  }
 
-  return rows[0];
+  return User.findOne({
+    where: { login },
+    ...options,
+  });
 }
 
-function toPublicUser(userRow) {
-  if (!userRow) return null;
+function toPublicUser(user) {
+  if (!user) {
+    return null;
+  }
+
+  const data = typeof user.toJSON === 'function' ? user.toJSON() : user;
 
   return {
-    login: userRow.login,
-    name: userRow.name,
-    email: userRow.email,
-    monthly_income: normalizeNumber(userRow.monthly_income),
-    distribution_mode: userRow.distribution_mode || 'baseline',
-    percent_necessary: normalizeNumber(userRow.percent_necessary),
-    percent_desire: normalizeNumber(userRow.percent_desire),
-    percent_saving: normalizeNumber(userRow.percent_saving),
-    percent_investment: normalizeNumber(userRow.percent_investment),
-    leftover_pool: normalizeNumber(userRow.leftover_pool),
-    last_reset_at: userRow.last_reset_at,
+    login: data.login,
+    name: data.name,
+    email: data.email,
+    monthly_income: normalizeNumber(data.monthlyIncome ?? data.monthly_income),
+    distribution_mode: data.distributionMode || data.distribution_mode || 'baseline',
+    percent_necessary: normalizeNumber(data.percentNecessary ?? data.percent_necessary),
+    percent_desire: normalizeNumber(data.percentDesire ?? data.percent_desire),
+    percent_saving: normalizeNumber(data.percentSaving ?? data.percent_saving),
+    percent_investment: normalizeNumber(data.percentInvestment ?? data.percent_investment),
+    leftover_pool: normalizeNumber(data.leftoverPool ?? data.leftover_pool),
+    last_reset_at: data.lastResetAt ?? data.last_reset_at ?? null,
   };
 }
 
@@ -53,7 +44,7 @@ function createToken(login) {
   return jwt.sign(
     { sub: login },
     SECRET_KEY,
-    { expiresIn: `${ACCESS_TOKEN_EXPIRE_HOURS}h` }
+    { expiresIn: `${ACCESS_TOKEN_EXPIRE_HOURS}h` },
   );
 }
 
@@ -67,7 +58,9 @@ async function hashPassword(password) {
 }
 
 async function verifyPassword(plainPassword, passwordHash) {
-  if (!passwordHash) return false;
+  if (!passwordHash) {
+    return false;
+  }
   return bcrypt.compare(plainPassword, passwordHash);
 }
 
@@ -81,6 +74,46 @@ function setAuthCookie(res, token) {
   });
 }
 
+async function requireAuth(req, res, next) {
+  try {
+    const authHeader = req.headers.authorization || '';
+    let token = null;
+
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice('Bearer '.length).trim();
+    }
+
+    if (!token && req.cookies) {
+      token = req.cookies.token;
+    }
+
+    if (!token) {
+      return res.status(401).json({ message: 'Could not validate credentials' });
+    }
+
+    const payload = verifyToken(token);
+    if (!payload?.sub) {
+      return res.status(401).json({ message: 'Could not validate credentials' });
+    }
+
+    const user = await findUserByLogin(payload.sub);
+    if (!user) {
+      return res.status(401).json({ message: 'Could not validate credentials' });
+    }
+
+    req.user = toPublicUser(user);
+    req.userId = user.id;
+
+    return next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+
+    return res.status(401).json({ message: 'Could not validate credentials' });
+  }
+}
+
 module.exports = {
   findUserByLogin,
   toPublicUser,
@@ -89,4 +122,5 @@ module.exports = {
   hashPassword,
   verifyPassword,
   setAuthCookie,
+  requireAuth,
 };

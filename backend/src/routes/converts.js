@@ -1,105 +1,53 @@
 const express = require('express');
-const { query, withTransaction } = require('../config/database');
-const { requireAuth } = require('../middleware/auth');
+const { sequelize, User, ConvertType, Convert } = require('../db');
+const { requireAuth } = require('../utils/auth');
+const { DEFAULT_DISTRIBUTION } = require('../utils/constants');
 const { getCurrentMonthPeriod } = require('../utils/periods');
-
-const DEFAULT_DISTRIBUTION = {
-  necessary: 50,
-  desire: 30,
-  saving: 10,
-  investment: 10,
-};
-
-const MONTHS_RU = [
-  'января',
-  'февраля',
-  'марта',
-  'апреля',
-  'мая',
-  'июня',
-  'июля',
-  'августа',
-  'сентября',
-  'октября',
-  'ноября',
-  'декабря',
-];
-
-const toNumber = (value) => (typeof value === 'number' ? value : Number(value || 0));
-const normalizeRows = (result) => (Array.isArray(result) && Array.isArray(result[0]) ? result[0] : result);
-
-const formatRuDate = (date) => {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  if (Number.isNaN(d.getTime())) return null;
-  const monthName = MONTHS_RU[d.getMonth()] || MONTHS_RU[0];
-  return `${d.getDate()} ${monthName}`;
-};
-
-async function loadEnvelopeTypes(connectionOrQuery) {
-  const executor = connectionOrQuery.query
-    ? connectionOrQuery.query.bind(connectionOrQuery)
-    : connectionOrQuery;
-
-  const result = await executor('SELECT id, code, title, has_limit, accumulates FROM envelope_types');
-  const rows = normalizeRows(result).map((row) => ({
-    ...row,
-    has_limit: row.has_limit === 1 || row.has_limit === true,
-    accumulates: row.accumulates === 1 || row.accumulates === true,
-  }));
-
-  return {
-    rows,
-    byCode: new Map(rows.map((row) => [row.code, row])),
-  };
-}
-
-async function fetchUser(connectionOrQuery, userId, { forUpdate = false } = {}) {
-  const lock = forUpdate ? 'FOR UPDATE' : '';
-  const executor = connectionOrQuery.query
-    ? connectionOrQuery.query.bind(connectionOrQuery)
-    : connectionOrQuery;
-
-  const result = await executor(
-    `SELECT id, monthly_income, leftover_pool, percent_necessary, percent_desire, percent_saving, percent_investment, distribution_mode, last_reset_at
-     FROM users WHERE id = ? ${lock}`,
-    [userId]
-  );
-  const rows = normalizeRows(result);
-  return rows[0];
-}
+const { formatRuDate } = require('../utils/dates');
+const { toNumber } = require('../utils/numbers');
 
 const router = express.Router();
 
 router.get('/converts/types', requireAuth, async (req, res) => {
   try {
-    const { rows } = await loadEnvelopeTypes(query);
-    res.json(rows.map((row) => ({
-      id: row.id,
-      code: row.code,
-      title: row.title,
-      has_limit: row.has_limit,
-      accumulates: row.accumulates,
+    const types = await ConvertType.findAll({
+      attributes: ['id', 'code', 'title', 'hasLimit', 'accumulates'],
+      order: [['id', 'ASC']],
+    });
+
+    res.json(types.map((type) => ({
+      id: type.id,
+      code: type.code,
+      title: type.title,
+      has_limit: Boolean(type.hasLimit),
+      accumulates: Boolean(type.accumulates),
     })));
   } catch (error) {
-    console.error('Failed to fetch envelope types', error);
+    console.error('Failed to fetch convert types', error);
     res.status(500).json({ message: 'Ошибка сервера при получении типов конвертов' });
   }
 });
 
 router.post('/converts', requireAuth, async (req, res) => {
-  const { type_code: typeCode, name, monthly_limit: monthlyLimitInput, target_amount: targetAmountInput } = req.body || {};
+  const {
+    type_code: typeCode,
+    name,
+    monthly_limit: monthlyLimitInput,
+    target_amount: targetAmountInput,
+  } = req.body || {};
 
   if (!typeCode || !name) {
     return res.status(400).json({ message: 'Требуются тип конверта и название' });
   }
 
   try {
-    const result = await withTransaction(async (connection) => {
-      const { byCode } = await loadEnvelopeTypes(connection);
-      const typeRow = byCode.get(typeCode);
-
-      if (!typeRow) {
+    const result = await sequelize.transaction(async (transaction) => {
+      const type = await ConvertType.findOne({
+        where: { code: typeCode },
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!type) {
         const err = new Error('Неизвестный тип конверта');
         err.status = 400;
         throw err;
@@ -110,37 +58,34 @@ router.post('/converts', requireAuth, async (req, res) => {
         ? Math.max(0, toNumber(targetAmountInput))
         : null;
 
-      const initialAmount = typeRow.accumulates ? 0 : monthlyLimit;
+      const initialAmount = type.accumulates ? 0 : monthlyLimit;
 
-      const [insertResult] = await connection.query(
-        `INSERT INTO envelopes (user_id, type_id, name, monthly_limit, current_amount, target_amount)
-         VALUES (?, ?, ?, ?, ?, ?)` ,
-        [
-          req.userId,
-          typeRow.id,
-          name,
-          monthlyLimit,
-          initialAmount,
-          targetAmount,
-        ]
-      );
+      const convert = await Convert.create({
+        userId: req.userId,
+        typeId: type.id,
+        name,
+        monthlyLimit,
+        currentAmount: initialAmount,
+        targetAmount,
+        isActive: true,
+      }, { transaction });
 
       return {
-        id: insertResult.insertId,
-        convert_type: typeRow.code,
+        id: convert.id,
+        convert_type: type.code,
         convert_name: name,
         limit_amount: monthlyLimit,
         current_amount: initialAmount,
         target_amount: targetAmount,
-        type_title: typeRow.title,
-        type_has_limit: typeRow.has_limit,
-        type_accumulates: typeRow.accumulates,
+        type_title: type.title,
+        type_has_limit: Boolean(type.hasLimit),
+        type_accumulates: Boolean(type.accumulates),
       };
     });
 
     res.status(201).json(result);
   } catch (error) {
-    console.error('Failed to create envelope', error);
+    console.error('Failed to create convert', error);
     if (error.status === 400) {
       return res.status(400).json({ message: error.message });
     }
@@ -150,31 +95,47 @@ router.post('/converts', requireAuth, async (req, res) => {
 
 router.get('/converts', requireAuth, async (req, res) => {
   try {
-    const rows = await query(
-      `SELECT e.id, e.name, e.monthly_limit, e.current_amount, e.target_amount, e.is_active, t.code, t.title, t.has_limit, t.accumulates
-       FROM envelopes e
-       JOIN envelope_types t ON t.id = e.type_id
-       WHERE e.user_id = ? AND e.is_active = 1
-       ORDER BY ${"CASE t.code WHEN 'necessary' THEN 1 WHEN 'desire' THEN 2 WHEN 'saving' THEN 3 WHEN 'investment' THEN 4 ELSE 5 END"}, e.name`,
-      [req.userId]
-    );
+    const converts = await Convert.findAll({
+      where: { userId: req.userId, isActive: true },
+      include: [{
+        model: ConvertType,
+        as: 'type',
+        attributes: ['code', 'title', 'hasLimit', 'accumulates'],
+      }],
+    });
 
-    const data = normalizeRows(rows).map((env) => ({
-      id: env.id,
-      convert_type: env.code,
-      convert_name: env.name,
-      limit_amount: toNumber(env.monthly_limit),
-      current_amount: toNumber(env.current_amount),
-      target_amount: env.target_amount !== null ? toNumber(env.target_amount) : null,
-      is_active: env.is_active === 1 || env.is_active === true,
-      type_title: env.title,
-      type_has_limit: env.has_limit === 1 || env.has_limit === true,
-      type_accumulates: env.accumulates === 1 || env.accumulates === true,
+    const orderPriority = {
+      necessary: 1,
+      desire: 2,
+      saving: 3,
+      investment: 4,
+    };
+
+    const data = converts.map((convert) => ({
+      id: convert.id,
+      convert_type: convert.type?.code,
+      convert_name: convert.name,
+      limit_amount: toNumber(convert.monthlyLimit),
+      current_amount: toNumber(convert.currentAmount),
+      target_amount: convert.targetAmount !== null ? toNumber(convert.targetAmount) : null,
+      is_active: Boolean(convert.isActive),
+      type_title: convert.type?.title,
+      type_has_limit: Boolean(convert.type?.hasLimit),
+      type_accumulates: Boolean(convert.type?.accumulates),
     }));
+
+    data.sort((a, b) => {
+      const priorityA = orderPriority[a.convert_type] ?? 99;
+      const priorityB = orderPriority[b.convert_type] ?? 99;
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+      return (a.convert_name || '').localeCompare(b.convert_name || '', 'ru');
+    });
 
     res.json(data);
   } catch (error) {
-    console.error('Failed to fetch envelopes', error);
+    console.error('Failed to fetch converts', error);
     res.status(500).json({ message: 'Ошибка сервера при получении конвертов' });
   }
 });
@@ -185,40 +146,41 @@ router.get('/converts-info', requireAuth, async (req, res) => {
     const startDate = new Date(start);
 
     const isSameMonth = (date) => {
-      if (!date) return false;
+      if (!date) {
+        return false;
+      }
       const dt = new Date(date);
       return dt.getFullYear() === startDate.getFullYear() && dt.getMonth() === startDate.getMonth();
     };
 
-    const userRow = await fetchUser(query, req.userId);
-    if (!userRow) {
+    const user = await User.findByPk(req.userId);
+    if (!user) {
       return res.status(404).json({ message: 'Пользователь не найден' });
     }
 
-    if (!userRow.last_reset_at || !isSameMonth(userRow.last_reset_at)) {
+    if (!user.lastResetAt || !isSameMonth(user.lastResetAt)) {
       await resetMonth(req.userId);
-      const updatedUser = await fetchUser(query, req.userId);
-      userRow.leftover_pool = updatedUser.leftover_pool;
-      userRow.last_reset_at = updatedUser.last_reset_at;
+      await user.reload();
     }
 
-    const rows = await query(
-      `SELECT e.monthly_limit, e.current_amount, t.has_limit, t.accumulates
-       FROM envelopes e
-       JOIN envelope_types t ON t.id = e.type_id
-       WHERE e.user_id = ? AND e.is_active = 1`,
-      [req.userId]
-    );
+    const converts = await Convert.findAll({
+      where: { userId: req.userId, isActive: true },
+      include: [{
+        model: ConvertType,
+        as: 'type',
+        attributes: ['hasLimit', 'accumulates'],
+      }],
+    });
 
     let monthlyBudget = 0;
     let currentBudget = 0;
 
-    normalizeRows(rows).forEach((row) => {
-      const hasLimit = row.has_limit === 1 || row.has_limit === true;
-      const accumulates = row.accumulates === 1 || row.accumulates === true;
+    converts.forEach((convert) => {
+      const hasLimit = Boolean(convert.type?.hasLimit);
+      const accumulates = Boolean(convert.type?.accumulates);
       if (hasLimit && !accumulates) {
-        monthlyBudget += toNumber(row.monthly_limit);
-        currentBudget += toNumber(row.current_amount);
+        monthlyBudget += toNumber(convert.monthlyLimit);
+        currentBudget += toNumber(convert.currentAmount);
       }
     });
 
@@ -233,67 +195,70 @@ router.get('/converts-info', requireAuth, async (req, res) => {
       leftover_pool: 0,
       period_start: formatRuDate(start),
       period_end: formatRuDate(end),
-      last_reset_at: userRow?.last_reset_at ? formatRuDate(userRow.last_reset_at) : null,
+      last_reset_at: user.lastResetAt ? formatRuDate(user.lastResetAt) : null,
     });
   } catch (error) {
-    console.error('Failed to fetch envelope summary', error);
+    console.error('Failed to fetch convert summary', error);
     res.status(500).json({ message: 'Ошибка сервера при получении сводки' });
   }
 });
 
 async function resetMonth(userId) {
-  return withTransaction(async (connection) => {
-    const user = await fetchUser(connection, userId, { forUpdate: true });
+  return sequelize.transaction(async (transaction) => {
+    const user = await User.findByPk(userId, {
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    });
+
     if (!user) {
       throw new Error('Пользователь не найден');
     }
 
-    const { rows: typeRows, byCode } = await loadEnvelopeTypes(connection);
+    const types = await ConvertType.findAll({
+      transaction,
+      lock: transaction.LOCK.SHARE,
+    });
+
+    const converts = await Convert.findAll({
+      where: { userId, isActive: true },
+      include: [{ model: ConvertType, as: 'type' }],
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    });
 
     const distribution = {
-      necessary: toNumber(user.percent_necessary) || DEFAULT_DISTRIBUTION.necessary,
-      desire: toNumber(user.percent_desire) || DEFAULT_DISTRIBUTION.desire,
-      saving: toNumber(user.percent_saving) || DEFAULT_DISTRIBUTION.saving,
-      investment: toNumber(user.percent_investment) || DEFAULT_DISTRIBUTION.investment,
+      necessary: toNumber(user.percentNecessary),
+      desire: toNumber(user.percentDesire),
+      saving: toNumber(user.percentSaving),
+      investment: toNumber(user.percentInvestment),
     };
 
-    const [envelopeRows] = await connection.query(
-      `SELECT e.id, e.name, e.monthly_limit, e.current_amount, t.code, t.has_limit, t.accumulates
-       FROM envelopes e
-       JOIN envelope_types t ON t.id = e.type_id
-       WHERE e.user_id = ? AND e.is_active = 1
-       FOR UPDATE`,
-      [userId]
-    );
-
-    const rows = normalizeRows(envelopeRows);
-
-    const envelopesByType = new Map();
+    const convertsByType = new Map();
     let leftover = 0;
 
-    rows.forEach((env) => {
-      const arr = envelopesByType.get(env.code) || [];
-      arr.push({
-        id: env.id,
-        name: env.name,
-        monthly_limit: toNumber(env.monthly_limit),
-        current_amount: toNumber(env.current_amount),
-        has_limit: env.has_limit === 1 || env.has_limit === true,
-        accumulates: env.accumulates === 1 || env.accumulates === true,
-      });
-      envelopesByType.set(env.code, arr);
+    converts.forEach((convert) => {
+      const typeCode = convert.type?.code;
+      if (!typeCode) {
+        return;
+      }
 
-      if (env.has_limit && !env.accumulates) {
-        leftover += toNumber(env.current_amount);
+      const list = convertsByType.get(typeCode) || [];
+      list.push(convert);
+      convertsByType.set(typeCode, list);
+
+      const hasLimit = Boolean(convert.type?.hasLimit);
+      const accumulates = Boolean(convert.type?.accumulates);
+      if (hasLimit && !accumulates) {
+        leftover += toNumber(convert.currentAmount);
       }
     });
 
     const roundedLeftover = Math.max(0, Math.round(leftover * 100) / 100);
 
-    const accumulativeTypes = typeRows.filter((type) => type.accumulates);
+    const accumulativeTypes = types.filter((type) => type.accumulates);
     const carryTargets = accumulativeTypes.reduce(
       (sum, type) => sum + (distribution[type.code] ?? 0),
-      0
+      0,
     );
 
     const allocationsByType = new Map();
@@ -306,7 +271,8 @@ async function resetMonth(userId) {
           allocationsByType.set(type.code, amount);
         });
 
-        const allocatedTotal = Array.from(allocationsByType.values()).reduce((sum, val) => sum + val, 0);
+        const allocatedTotal = Array.from(allocationsByType.values())
+          .reduce((sum, value) => sum + value, 0);
         const diff = Math.round((roundedLeftover - allocatedTotal) * 100) / 100;
         if (diff !== 0) {
           const firstCode = accumulativeTypes[0].code;
@@ -318,54 +284,42 @@ async function resetMonth(userId) {
       }
     }
 
-    for (const type of typeRows) {
-      const envelopes = envelopesByType.get(type.code) || [];
+    for (const type of types) {
+      const typeCode = type.code;
+      const typeConverts = convertsByType.get(typeCode) || [];
 
-      if (envelopes.length === 0) {
+      if (typeConverts.length === 0) {
         continue;
       }
 
-      if (type.has_limit && !type.accumulates) {
-        for (const env of envelopes) {
-          await connection.query(
-            `UPDATE envelopes SET current_amount = ?, updated_at = NOW()
-             WHERE id = ?`,
-            [env.monthly_limit, env.id]
-          );
+      if (type.hasLimit && !type.accumulates) {
+        for (const convert of typeConverts) {
+          await convert.update({ currentAmount: convert.monthlyLimit }, { transaction });
         }
         continue;
       }
 
-      const carryForType = allocationsByType.get(type.code) || 0;
-      const totalMonthlyLimit = envelopes.reduce((sum, env) => sum + env.monthly_limit, 0);
+      const carryForType = allocationsByType.get(typeCode) || 0;
+      const totalMonthlyLimit = typeConverts.reduce((sum, convert) => sum + toNumber(convert.monthlyLimit), 0);
 
-      for (const env of envelopes) {
-        const monthlyContribution = env.monthly_limit;
+      for (const convert of typeConverts) {
+        const monthlyContribution = toNumber(convert.monthlyLimit);
         let carryShare = 0;
 
         if (carryForType > 0) {
           if (totalMonthlyLimit > 0) {
-            carryShare = Math.round((carryForType * (env.monthly_limit / totalMonthlyLimit)) * 100) / 100;
+            carryShare = Math.round((carryForType * (monthlyContribution / totalMonthlyLimit)) * 100) / 100;
           } else {
-            carryShare = Math.round((carryForType / envelopes.length) * 100) / 100;
+            carryShare = Math.round((carryForType / typeConverts.length) * 100) / 100;
           }
         }
 
-        const newAmount = Math.round((env.current_amount + monthlyContribution + carryShare) * 100) / 100;
-
-        await connection.query(
-          `UPDATE envelopes SET current_amount = ?, updated_at = NOW()
-           WHERE id = ?`,
-          [newAmount, env.id]
-        );
+        const newAmount = Math.round((toNumber(convert.currentAmount) + monthlyContribution + carryShare) * 100) / 100;
+        await convert.update({ currentAmount: newAmount }, { transaction });
       }
     }
 
-    await connection.query(
-      `UPDATE users SET leftover_pool = 0, last_reset_at = ?, updated_at = NOW()
-       WHERE id = ?`,
-      [new Date(), userId]
-    );
+    await user.update({ leftoverPool: 0, lastResetAt: new Date() }, { transaction });
 
     const carriedOverObject = {};
     allocationsByType.forEach((value, code) => {
@@ -421,24 +375,15 @@ router.patch('/settings/budget', requireAuth, async (req, res) => {
       newPercents = percents;
     }
 
-    await query(
-      `UPDATE users
-       SET distribution_mode = ?,
-           percent_necessary = ?,
-           percent_desire = ?,
-           percent_saving = ?,
-           percent_investment = ?,
-           updated_at = NOW()
-       WHERE id = ?`,
-      [
-        distributionMode === 'flex' ? 'flex' : 'baseline',
-        newPercents.necessary,
-        newPercents.desire,
-        newPercents.saving,
-        newPercents.investment,
-        req.userId,
-      ]
-    );
+    await User.update({
+      distributionMode: distributionMode === 'flex' ? 'flex' : 'baseline',
+      percentNecessary: newPercents.necessary,
+      percentDesire: newPercents.desire,
+      percentSaving: newPercents.saving,
+      percentInvestment: newPercents.investment,
+    }, {
+      where: { id: req.userId },
+    });
 
     res.json({
       message: 'Схема распределения обновлена',

@@ -1,5 +1,4 @@
 const express = require('express');
-
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
@@ -22,7 +21,7 @@ app.use(
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -35,7 +34,6 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', convertsRoutes);
 
-// Centralized error handler to maintain consistent responses
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || 'Internal server error';
