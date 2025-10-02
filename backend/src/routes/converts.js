@@ -27,20 +27,6 @@ const MONTHS_RU = [
 
 const toNumber = (value) => (typeof value === 'number' ? value : Number(value || 0));
 const normalizeRows = (result) => (Array.isArray(result) && Array.isArray(result[0]) ? result[0] : result);
-const typeOrderValue = (code) => {
-  switch (code) {
-    case 'necessary':
-      return 1;
-    case 'desire':
-      return 2;
-    case 'saving':
-      return 3;
-    case 'investment':
-      return 4;
-    default:
-      return 5;
-  }
-};
 
 const formatRuDate = (date) => {
   if (!date) return null;
@@ -51,13 +37,17 @@ const formatRuDate = (date) => {
 };
 
 async function loadEnvelopeTypes(connectionOrQuery) {
-  const executor = connectionOrQuery.query ? connectionOrQuery.query.bind(connectionOrQuery) : connectionOrQuery;
+  const executor = connectionOrQuery.query
+    ? connectionOrQuery.query.bind(connectionOrQuery)
+    : connectionOrQuery;
+
   const result = await executor('SELECT id, code, title, has_limit, accumulates FROM envelope_types');
   const rows = normalizeRows(result).map((row) => ({
     ...row,
     has_limit: row.has_limit === 1 || row.has_limit === true,
     accumulates: row.accumulates === 1 || row.accumulates === true,
   }));
+
   return {
     rows,
     byCode: new Map(rows.map((row) => [row.code, row])),
@@ -66,7 +56,10 @@ async function loadEnvelopeTypes(connectionOrQuery) {
 
 async function fetchUser(connectionOrQuery, userId, { forUpdate = false } = {}) {
   const lock = forUpdate ? 'FOR UPDATE' : '';
-  const executor = connectionOrQuery.query ? connectionOrQuery.query.bind(connectionOrQuery) : connectionOrQuery;
+  const executor = connectionOrQuery.query
+    ? connectionOrQuery.query.bind(connectionOrQuery)
+    : connectionOrQuery;
+
   const result = await executor(
     `SELECT id, monthly_income, leftover_pool, percent_necessary, percent_desire, percent_saving, percent_investment, distribution_mode, last_reset_at
      FROM users WHERE id = ? ${lock}`,
@@ -77,6 +70,83 @@ async function fetchUser(connectionOrQuery, userId, { forUpdate = false } = {}) 
 }
 
 const router = express.Router();
+
+router.get('/converts/types', requireAuth, async (req, res) => {
+  try {
+    const { rows } = await loadEnvelopeTypes(query);
+    res.json(rows.map((row) => ({
+      id: row.id,
+      code: row.code,
+      title: row.title,
+      has_limit: row.has_limit,
+      accumulates: row.accumulates,
+    })));
+  } catch (error) {
+    console.error('Failed to fetch envelope types', error);
+    res.status(500).json({ message: 'Ошибка сервера при получении типов конвертов' });
+  }
+});
+
+router.post('/converts', requireAuth, async (req, res) => {
+  const { type_code: typeCode, name, monthly_limit: monthlyLimitInput, target_amount: targetAmountInput } = req.body || {};
+
+  if (!typeCode || !name) {
+    return res.status(400).json({ message: 'Требуются тип конверта и название' });
+  }
+
+  try {
+    const result = await withTransaction(async (connection) => {
+      const { byCode } = await loadEnvelopeTypes(connection);
+      const typeRow = byCode.get(typeCode);
+
+      if (!typeRow) {
+        const err = new Error('Неизвестный тип конверта');
+        err.status = 400;
+        throw err;
+      }
+
+      const monthlyLimit = Math.max(0, toNumber(monthlyLimitInput));
+      const targetAmount = targetAmountInput !== undefined && targetAmountInput !== null
+        ? Math.max(0, toNumber(targetAmountInput))
+        : null;
+
+      const initialAmount = typeRow.accumulates ? 0 : monthlyLimit;
+
+      const [insertResult] = await connection.query(
+        `INSERT INTO envelopes (user_id, type_id, name, monthly_limit, current_amount, target_amount)
+         VALUES (?, ?, ?, ?, ?, ?)` ,
+        [
+          req.userId,
+          typeRow.id,
+          name,
+          monthlyLimit,
+          initialAmount,
+          targetAmount,
+        ]
+      );
+
+      return {
+        id: insertResult.insertId,
+        convert_type: typeRow.code,
+        convert_name: name,
+        limit_amount: monthlyLimit,
+        current_amount: initialAmount,
+        target_amount: targetAmount,
+        type_title: typeRow.title,
+        type_has_limit: typeRow.has_limit,
+        type_accumulates: typeRow.accumulates,
+      };
+    });
+
+    res.status(201).json(result);
+  } catch (error) {
+    console.error('Failed to create envelope', error);
+    if (error.status === 400) {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Не удалось создать конверт' });
+  }
+});
 
 router.get('/converts', requireAuth, async (req, res) => {
   try {
@@ -140,11 +210,10 @@ router.get('/converts-info', requireAuth, async (req, res) => {
       [req.userId]
     );
 
-    const summaryRows = normalizeRows(rows);
     let monthlyBudget = 0;
     let currentBudget = 0;
 
-    summaryRows.forEach((row) => {
+    normalizeRows(rows).forEach((row) => {
       const hasLimit = row.has_limit === 1 || row.has_limit === true;
       const accumulates = row.accumulates === 1 || row.accumulates === true;
       if (hasLimit && !accumulates) {
@@ -188,10 +257,8 @@ async function resetMonth(userId) {
       investment: toNumber(user.percent_investment) || DEFAULT_DISTRIBUTION.investment,
     };
 
-    const monthlyIncome = toNumber(user.monthly_income);
-
     const [envelopeRows] = await connection.query(
-      `SELECT e.id, e.current_amount, t.code
+      `SELECT e.id, e.name, e.monthly_limit, e.current_amount, t.code, t.has_limit, t.accumulates
        FROM envelopes e
        JOIN envelope_types t ON t.id = e.type_id
        WHERE e.user_id = ? AND e.is_active = 1
@@ -201,89 +268,107 @@ async function resetMonth(userId) {
 
     const rows = normalizeRows(envelopeRows);
 
-    const existingBalances = new Map();
+    const envelopesByType = new Map();
     let leftover = 0;
 
     rows.forEach((env) => {
-      const amount = toNumber(env.current_amount);
-      existingBalances.set(env.code, amount);
-      const typeMeta = byCode.get(env.code);
-      if (typeMeta && typeMeta.has_limit && !typeMeta.accumulates) {
-        leftover += amount;
+      const arr = envelopesByType.get(env.code) || [];
+      arr.push({
+        id: env.id,
+        name: env.name,
+        monthly_limit: toNumber(env.monthly_limit),
+        current_amount: toNumber(env.current_amount),
+        has_limit: env.has_limit === 1 || env.has_limit === true,
+        accumulates: env.accumulates === 1 || env.accumulates === true,
+      });
+      envelopesByType.set(env.code, arr);
+
+      if (env.has_limit && !env.accumulates) {
+        leftover += toNumber(env.current_amount);
       }
     });
 
-    const calcLimit = (percent) => {
-      const raw = (monthlyIncome * percent) / 100;
-      return Math.round(raw * 100) / 100;
-    };
-
     const roundedLeftover = Math.max(0, Math.round(leftover * 100) / 100);
+
     const accumulativeTypes = typeRows.filter((type) => type.accumulates);
     const carryTargets = accumulativeTypes.reduce(
       (sum, type) => sum + (distribution[type.code] ?? 0),
       0
     );
 
-    const allocations = new Map();
+    const allocationsByType = new Map();
 
     if (roundedLeftover > 0 && accumulativeTypes.length > 0) {
       if (carryTargets > 0) {
         accumulativeTypes.forEach((type) => {
           const percent = distribution[type.code] ?? 0;
           const amount = Math.round((roundedLeftover * percent / carryTargets) * 100) / 100;
-          allocations.set(type.code, amount);
+          allocationsByType.set(type.code, amount);
         });
 
-        const allocatedTotal = Array.from(allocations.values()).reduce((sum, value) => sum + value, 0);
+        const allocatedTotal = Array.from(allocationsByType.values()).reduce((sum, val) => sum + val, 0);
         const diff = Math.round((roundedLeftover - allocatedTotal) * 100) / 100;
         if (diff !== 0) {
           const firstCode = accumulativeTypes[0].code;
-          allocations.set(firstCode, (allocations.get(firstCode) || 0) + diff);
+          allocationsByType.set(firstCode, (allocationsByType.get(firstCode) || 0) + diff);
         }
       } else {
         const firstCode = accumulativeTypes[0].code;
-        allocations.set(firstCode, roundedLeftover);
+        allocationsByType.set(firstCode, roundedLeftover);
       }
     }
 
-    const sortedTypes = [...typeRows].sort((a, b) => typeOrderValue(a.code) - typeOrderValue(b.code));
+    for (const type of typeRows) {
+      const envelopes = envelopesByType.get(type.code) || [];
 
-    for (const type of sortedTypes) {
-      const percent = distribution[type.code] ?? 0;
-      const limit = calcLimit(percent);
-      const carryAddition = allocations.get(type.code) || 0;
-
-      let currentValue;
-      if (type.has_limit && !type.accumulates) {
-        currentValue = limit;
-      } else {
-        const existing = existingBalances.get(type.code) || 0;
-        currentValue = Math.round((existing + limit + carryAddition) * 100) / 100;
+      if (envelopes.length === 0) {
+        continue;
       }
 
-      await connection.query(
-        `INSERT INTO envelopes (user_id, type_id, name, monthly_limit, current_amount, target_amount)
-         VALUES (?, ?, ?, ?, ?, NULL)
-         ON DUPLICATE KEY UPDATE
-           name = VALUES(name),
-           monthly_limit = VALUES(monthly_limit),
-           current_amount = VALUES(current_amount),
-           is_active = 1,
-           updated_at = NOW()`,
-        [userId, type.id, type.title, limit, currentValue]
-      );
+      if (type.has_limit && !type.accumulates) {
+        for (const env of envelopes) {
+          await connection.query(
+            `UPDATE envelopes SET current_amount = ?, updated_at = NOW()
+             WHERE id = ?`,
+            [env.monthly_limit, env.id]
+          );
+        }
+        continue;
+      }
+
+      const carryForType = allocationsByType.get(type.code) || 0;
+      const totalMonthlyLimit = envelopes.reduce((sum, env) => sum + env.monthly_limit, 0);
+
+      for (const env of envelopes) {
+        const monthlyContribution = env.monthly_limit;
+        let carryShare = 0;
+
+        if (carryForType > 0) {
+          if (totalMonthlyLimit > 0) {
+            carryShare = Math.round((carryForType * (env.monthly_limit / totalMonthlyLimit)) * 100) / 100;
+          } else {
+            carryShare = Math.round((carryForType / envelopes.length) * 100) / 100;
+          }
+        }
+
+        const newAmount = Math.round((env.current_amount + monthlyContribution + carryShare) * 100) / 100;
+
+        await connection.query(
+          `UPDATE envelopes SET current_amount = ?, updated_at = NOW()
+           WHERE id = ?`,
+          [newAmount, env.id]
+        );
+      }
     }
 
     await connection.query(
-      `UPDATE users
-       SET leftover_pool = 0, last_reset_at = ?, updated_at = NOW()
+      `UPDATE users SET leftover_pool = 0, last_reset_at = ?, updated_at = NOW()
        WHERE id = ?`,
       [new Date(), userId]
     );
 
     const carriedOverObject = {};
-    allocations.forEach((value, code) => {
+    allocationsByType.forEach((value, code) => {
       carriedOverObject[code] = value;
     });
 
