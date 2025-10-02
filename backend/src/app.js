@@ -1,4 +1,5 @@
 const express = require('express');
+
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
@@ -32,7 +33,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/converts', convertsRoutes);
+app.use('/api', convertsRoutes);
 
 // Centralized error handler to maintain consistent responses
 app.use((err, req, res, next) => {

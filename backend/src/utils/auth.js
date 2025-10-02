@@ -5,9 +5,24 @@ const { query } = require('../config/database');
 const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key-here-change-in-production';
 const ACCESS_TOKEN_EXPIRE_HOURS = Number(process.env.ACCESS_TOKEN_EXPIRE_HOURS) || 1;
 
+const normalizeNumber = (value) => (typeof value === 'number' ? value : Number(value || 0));
+
 async function findUserByLogin(login) {
   const rows = await query(
-    `SELECT id, login, name, email, monthly_income, password_hash
+    `SELECT
+       id,
+       login,
+       name,
+       email,
+       monthly_income,
+       password_hash,
+       distribution_mode,
+       percent_necessary,
+       percent_desire,
+       percent_saving,
+       percent_investment,
+       leftover_pool,
+       last_reset_at
      FROM users
      WHERE login = ?`,
     [login]
@@ -18,13 +33,19 @@ async function findUserByLogin(login) {
 
 function toPublicUser(userRow) {
   if (!userRow) return null;
+
   return {
     login: userRow.login,
     name: userRow.name,
     email: userRow.email,
-    monthly_income: typeof userRow.monthly_income === 'number'
-      ? userRow.monthly_income
-      : Number(userRow.monthly_income || 0),
+    monthly_income: normalizeNumber(userRow.monthly_income),
+    distribution_mode: userRow.distribution_mode || 'baseline',
+    percent_necessary: normalizeNumber(userRow.percent_necessary),
+    percent_desire: normalizeNumber(userRow.percent_desire),
+    percent_saving: normalizeNumber(userRow.percent_saving),
+    percent_investment: normalizeNumber(userRow.percent_investment),
+    leftover_pool: normalizeNumber(userRow.leftover_pool),
+    last_reset_at: userRow.last_reset_at,
   };
 }
 
