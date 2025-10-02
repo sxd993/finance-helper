@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { query } = require('../config/database');
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key-here-change-in-production';
-const ACCESS_TOKEN_EXPIRE_HOURS = Number(process.env.ACCESS_TOKEN_EXPIRE_HOURS) || 24;
+const ACCESS_TOKEN_EXPIRE_HOURS = Number(process.env.ACCESS_TOKEN_EXPIRE_HOURS) || 1;
 
 async function findUserByLogin(login) {
   const rows = await query(

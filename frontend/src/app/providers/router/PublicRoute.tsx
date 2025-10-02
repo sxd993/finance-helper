@@ -1,14 +1,13 @@
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-
-import { useAuth } from '@features/auth';
+import { useUser } from '@/entities/user';
 
 interface PublicRouteProps {
   children: ReactNode;
 }
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useUser();
 
   if (isLoading) {
     return (

@@ -1,16 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AuthApi } from '../api/AuthApi';
 
-// Хук для получения текущего пользователя
-export const useUser = () => {
-    const user = useQuery({
-        queryKey: ['user'],
-        queryFn: AuthApi.checkAuth,
-        staleTime: 30 * 60 * 1000, // 30 минут
-        retry: false,
-    })
-    return user
-}
 
 // Хук для входа
 export const useLogin = () => {
@@ -18,8 +8,8 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: AuthApi.login,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['user'], data || '');
+    onSuccess: () => {
+      queryClient.invalidateQueries(['user']);
     },
   });
 };
@@ -47,16 +37,4 @@ export const useLogout = () => {
       queryClient.clear();
     },
   });
-};
-
-// Простой хук для проверки авторизации
-export const useAuth = () => {
-  const { data: user, isLoading, error } = useUser();
-  
-  return {
-    user,
-    isAuthenticated: !!user && !error,
-    isLoading,
-    error,
-  };
 };

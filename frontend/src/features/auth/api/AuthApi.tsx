@@ -23,11 +23,6 @@ export const AuthApi = {
         const response = await client.post("/auth/register", data);
         return response.data;
     },
-    // Проверка авторизации
-    checkAuth: async (): Promise<User> => {
-        const response = await client.get<User>('/auth/check');
-        return response.data;
-    },
     logout: async (): Promise<void> => {
         await client.post('/auth/logout');
     }

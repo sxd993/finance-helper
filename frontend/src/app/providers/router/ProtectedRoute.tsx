@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { useAuth } from '@features/auth';
-import { useMockUser } from '@/entities/user';
+import { useUser } from '@/entities/user';
 import { Header } from '@widgets/header';
 import { Navigation } from '@widgets/navigation';
 
@@ -11,8 +10,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  const { user } = useMockUser();
+  const { user, isAuthenticated, isLoading } = useUser();
 
 
   if (isLoading) {

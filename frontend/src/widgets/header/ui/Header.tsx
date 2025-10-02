@@ -3,7 +3,7 @@ import { CalendarIcon, UserIcon } from 'lucide-react';
 import type { User } from '@shared/types/types';
 
 interface HeaderProps {
-  user?: User;
+  user: User | null;
 }
 
 const now = new Date();
