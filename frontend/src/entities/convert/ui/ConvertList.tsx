@@ -23,12 +23,7 @@ export const ConvertList = ({ converts }: ConvertListProps) => {
 
   return (
     <div className="flex flex-col gap-8">
-      <ContainerTabs converts={converts} active={active} onChange={handleTabChange} />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredConverts.map((c) => (
-          <ConvertCard key={c.id} convert={c} />
-        ))}
-      </div>
+      
     </div>
   );
 };

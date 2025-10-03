@@ -15,10 +15,18 @@ export interface Convert {
   target?: number;
 }
 
-export interface ConvertsInfo {
-  weekly_budget: number;
-  current_budget: number;
-  percentage?: number;
-  period_start: string;
-  period_end: string;
+export interface ConvertType {
+  id: number;
+  code: string;
+  title: string;
+  hasLimit: boolean;
+  accumulates: boolean;
+}
+
+export interface CreateConvertPayload {
+  name: string;
+  type_code: string;
+  monthly_limit?: number | null;
+  target_amount?: number | null;
+  is_active?: boolean;
 }

@@ -1,50 +1,17 @@
 const express = require('express');
-const { User, sequelize } = require('../db');
+const { User, sequelize } = require('../../db');
 const {
   findUserByLogin,
   toPublicUser,
   createToken,
   hashPassword,
-  verifyPassword,
   setAuthCookie,
-  requireAuth,
-} = require('../utils/auth');
-const { DEFAULT_DISTRIBUTION } = require('../utils/constants');
+} = require('../../utils/auth');
+const { DEFAULT_DISTRIBUTION } = require('../../utils/constants');
 
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
-  const { login, password } = req.body || {};
-
-  if (!login || !password) {
-    return res.status(400).json({ message: 'Login and password are required' });
-  }
-
-  try {
-    const user = await findUserByLogin(login);
-    if (!user) {
-      return res.status(401).json({ message: 'Wrong login or password' });
-    }
-
-    const isValid = await verifyPassword(password, user.passwordHash);
-    if (!isValid) {
-      return res.status(401).json({ message: 'Wrong login or password' });
-    }
-
-    const token = createToken(user.login);
-    setAuthCookie(res, token);
-
-    return res.json({
-      token,
-      user: toPublicUser(user),
-    });
-  } catch (error) {
-    console.error('Login failed', error);
-    return res.status(500).json({ message: 'Database error' });
-  }
-});
-
-router.post('/register', async (req, res) => {
+router.post('/', async (req, res) => {
   const {
     login,
     name,
@@ -100,15 +67,6 @@ router.post('/register', async (req, res) => {
     console.error('Registration failed', error);
     return res.status(500).json({ message: error.message || 'Database error' });
   }
-});
-
-router.get('/check', requireAuth, (req, res) => {
-  res.json(req.user);
-});
-
-router.post('/logout', (req, res) => {
-  res.clearCookie('token', { path: '/' });
-  res.json({ message: 'Successfully logged out' });
 });
 
 module.exports = router;
