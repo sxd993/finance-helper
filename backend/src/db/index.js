@@ -34,15 +34,21 @@ const sequelize = new Sequelize(MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD, {
 });
 
 const User = require('../models/User')(sequelize, DataTypes);
+const Cycle = require('../models/Cycle')(sequelize, DataTypes);
 const ConvertType = require('../models/ConvertType')(sequelize, DataTypes);
 const Convert = require('../models/Convert')(sequelize, DataTypes);
 const Transaction = require('../models/Transaction')(sequelize, DataTypes);
+const Deposit = require('../models/Deposit')(sequelize, DataTypes);
+const Remainder = require('../models/Remainder')(sequelize, DataTypes);
 
 const models = {
   User,
+  Cycle,
   ConvertType,
   Convert,
   Transaction,
+  Deposit,
+  Remainder,
 };
 
 Object.values(models).forEach((model) => {
@@ -56,7 +62,10 @@ module.exports = {
   Sequelize,
   models,
   User,
+  Cycle,
   ConvertType,
   Convert,
   Transaction,
+  Deposit,
+  Remainder,
 };

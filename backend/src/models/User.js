@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     monthlyIncome: {
       type: DataTypes.DECIMAL(12, 2),
-      allowNull: false,
-      defaultValue: 0,
+      allowNull: true,
+      defaultValue: null,
       field: 'monthly_income',
     },
     passwordHash: {
@@ -35,17 +35,17 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'baseline',
       field: 'distribution_mode',
     },
-    percentNecessary: {
+    percentImportant: {
       type: DataTypes.DECIMAL(5, 2),
       allowNull: false,
       defaultValue: 50.0,
-      field: 'percent_necessary',
+      field: 'percent_important',
     },
-    percentDesire: {
+    percentWishes: {
       type: DataTypes.DECIMAL(5, 2),
       allowNull: false,
       defaultValue: 30.0,
-      field: 'percent_desire',
+      field: 'percent_wishes',
     },
     percentSaving: {
       type: DataTypes.DECIMAL(5, 2),
@@ -59,31 +59,37 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 10.0,
       field: 'percent_investment',
     },
-    leftoverPool: {
-      type: DataTypes.DECIMAL(12, 2),
+    cycleType: {
+      type: DataTypes.ENUM('weekly', 'monthly'),
       allowNull: false,
-      defaultValue: 0,
-      field: 'leftover_pool',
-    },
-    resetDay: {
-      type: DataTypes.TINYINT.UNSIGNED,
-      allowNull: false,
-      defaultValue: 1,
-      field: 'reset_day',
-    },
-    lastResetAt: {
-      type: DataTypes.DATEONLY,
-      allowNull: true,
-      field: 'last_reset_at',
+      defaultValue: 'weekly',
+      field: 'cycle_type',
     },
   }, {
     tableName: 'users',
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   });
 
   User.associate = (models) => {
     User.hasMany(models.Convert, {
       as: 'converts',
+      foreignKey: 'userId',
+    });
+
+    User.hasMany(models.Cycle, {
+      as: 'cycles',
+      foreignKey: 'userId',
+    });
+
+    User.hasMany(models.Deposit, {
+      as: 'deposits',
+      foreignKey: 'userId',
+    });
+
+    User.hasMany(models.Remainder, {
+      as: 'remainders',
       foreignKey: 'userId',
     });
   };

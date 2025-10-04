@@ -1,5 +1,5 @@
-export { Login } from './ui/Login';
-export { Register } from './ui/Register';
+export { Login } from './ui/Login/Login';
+export { Register } from './ui/Register/Register';
 export {
   useLogin,
   useLogout,

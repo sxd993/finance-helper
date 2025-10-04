@@ -1,40 +1,42 @@
 module.exports = (sequelize, DataTypes) => {
-  const Transaction = sequelize.define('Transaction', {
+  const Remainder = sequelize.define('Remainder', {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
     },
-    convertId: {
+    userId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
-      field: 'convert_id',
+      field: 'user_id',
     },
-    type: {
-      type: DataTypes.ENUM('deposit', 'spend'),
+    cycleId: {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+      field: 'cycle_id',
     },
     amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
     },
-    note: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
   }, {
-    tableName: 'transactions',
+    tableName: 'remainders',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false,
   });
 
-  Transaction.associate = (models) => {
-    Transaction.belongsTo(models.Convert, {
-      as: 'convert',
-      foreignKey: 'convertId',
+  Remainder.associate = (models) => {
+    Remainder.belongsTo(models.User, {
+      as: 'user',
+      foreignKey: 'userId',
+    });
+
+    Remainder.belongsTo(models.Cycle, {
+      as: 'cycle',
+      foreignKey: 'cycleId',
     });
   };
 
-  return Transaction;
+  return Remainder;
 };

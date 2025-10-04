@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-secondary: #14b8a6;
+  --color-background: #f9fafb;
+  --color-text: #111827;
+
+  /* Конверты */
+  --color-important: #ef4444;
+  --color-wishes: #facc15;
+  --color-saving: #22c55e;
+  --color-investment: #8b5cf6;
+  --color-remainder: #64748b;
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  font-weight: 500;
+}

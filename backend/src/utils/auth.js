@@ -25,18 +25,22 @@ function toPublicUser(user) {
 
   const data = typeof user.toJSON === 'function' ? user.toJSON() : user;
 
+  const monthlyIncome = data.monthlyIncome ?? data.monthly_income;
+  const monthlyIncomeNormalized = (monthlyIncome === null || monthlyIncome === undefined || monthlyIncome === '')
+    ? null
+    : Number(monthlyIncome) || 0;
+
   return {
     login: data.login,
     name: data.name,
     email: data.email,
-    monthly_income: normalizeNumber(data.monthlyIncome ?? data.monthly_income),
+    monthly_income: monthlyIncomeNormalized,
     distribution_mode: data.distributionMode || data.distribution_mode || 'baseline',
-    percent_necessary: normalizeNumber(data.percentNecessary ?? data.percent_necessary),
-    percent_desire: normalizeNumber(data.percentDesire ?? data.percent_desire),
+    percent_important: normalizeNumber(data.percentImportant ?? data.percent_important),
+    percent_wishes: normalizeNumber(data.percentWishes ?? data.percent_wishes),
     percent_saving: normalizeNumber(data.percentSaving ?? data.percent_saving),
     percent_investment: normalizeNumber(data.percentInvestment ?? data.percent_investment),
-    leftover_pool: normalizeNumber(data.leftoverPool ?? data.leftover_pool),
-    last_reset_at: data.lastResetAt ?? data.last_reset_at ?? null,
+    cycle_type: data.cycleType || data.cycle_type || 'weekly',
   };
 }
 

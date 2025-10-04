@@ -10,6 +10,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'user_id',
     },
+    cycleId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      defaultValue: null,
+      field: 'cycle_id',
+    },
     typeId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
@@ -46,12 +52,19 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'converts',
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   });
 
   Convert.associate = (models) => {
     Convert.belongsTo(models.User, {
       as: 'user',
       foreignKey: 'userId',
+    });
+
+    Convert.belongsTo(models.Cycle, {
+      as: 'cycle',
+      foreignKey: 'cycleId',
     });
 
     Convert.belongsTo(models.ConvertType, {

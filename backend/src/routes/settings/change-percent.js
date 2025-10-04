@@ -12,8 +12,8 @@ router.patch('/settings/change-percent', requireAuth, async (req, res) => {
 
     if (distributionMode === 'flex') {
       const percents = {
-        necessary: toNumber(percent_necessary),
-        desire: toNumber(percent_desire),
+        important: toNumber(percent_necessary),
+        wishes: toNumber(percent_desire),
         saving: toNumber(percent_saving),
         investment: toNumber(percent_investment),
       };
@@ -28,8 +28,8 @@ router.patch('/settings/change-percent', requireAuth, async (req, res) => {
 
     await User.update({
       distributionMode: distributionMode === 'flex' ? 'flex' : 'baseline',
-      percentNecessary: newPercents.necessary,
-      percentDesire: newPercents.desire,
+      percentImportant: newPercents.important,
+      percentWishes: newPercents.wishes,
       percentSaving: newPercents.saving,
       percentInvestment: newPercents.investment,
     }, {
@@ -40,7 +40,10 @@ router.patch('/settings/change-percent', requireAuth, async (req, res) => {
       message: 'Схема распределения обновлена',
       distribution: {
         mode: distributionMode === 'flex' ? 'flex' : 'baseline',
-        ...newPercents,
+        percent_important: newPercents.important,
+        percent_wishes: newPercents.wishes,
+        percent_saving: newPercents.saving,
+        percent_investment: newPercents.investment,
       },
     });
   } catch (error) {

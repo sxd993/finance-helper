@@ -1,6 +1,6 @@
 const DEFAULT_DISTRIBUTION = {
-  necessary: 50,
-  desire: 30,
+  important: 50,
+  wishes: 30,
   saving: 10,
   investment: 10,
 };

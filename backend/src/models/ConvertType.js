@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'convert_types',
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   });
 
   ConvertType.associate = (models) => {

@@ -16,12 +16,14 @@ router.post('/', async (req, res) => {
     login,
     name,
     email,
-    monthly_income: monthlyIncome,
     password,
+    distributionMode,
+    monthly_income,
+    cycle_type,
   } = req.body || {};
 
-  if (!login || !name || !email || monthlyIncome === undefined || !password) {
-    return res.status(400).json({ message: 'Missing required fields' });
+  if (!login || !name || !email || !password) {
+    return res.status(400).json({ message: 'Отсутствуют необходимые поля' });
   }
 
   const transaction = await sequelize.transaction();
@@ -34,21 +36,31 @@ router.post('/', async (req, res) => {
     }
 
     const passwordHash = await hashPassword(password);
-    const normalizedIncome = Number(monthlyIncome) || 0;
+    const hasIncome = monthly_income !== undefined && monthly_income !== null && monthly_income !== '';
+    const normalizedIncome = hasIncome ? Number(monthly_income) || 0 : null;
+
+    const resolvedDistributionMode = distributionMode === 'flex' ? 'flex' : 'baseline';
+    const resolvedPercents = {
+      important: DEFAULT_DISTRIBUTION.important,
+      wishes: DEFAULT_DISTRIBUTION.wishes,
+      saving: DEFAULT_DISTRIBUTION.saving,
+      investment: DEFAULT_DISTRIBUTION.investment,
+    };
+
+    const cycleType = cycle_type === 'monthly' ? 'monthly' : 'weekly';
 
     await User.create({
       login,
       name,
       email,
-      monthlyIncome: normalizedIncome,
       passwordHash,
-      distributionMode: 'baseline',
-      percentNecessary: DEFAULT_DISTRIBUTION.necessary,
-      percentDesire: DEFAULT_DISTRIBUTION.desire,
-      percentSaving: DEFAULT_DISTRIBUTION.saving,
-      percentInvestment: DEFAULT_DISTRIBUTION.investment,
-      leftoverPool: 0,
-      lastResetAt: new Date(),
+      distributionMode: resolvedDistributionMode,
+      percentImportant: resolvedPercents.important,
+      percentWishes: resolvedPercents.wishes,
+      percentSaving: resolvedPercents.saving,
+      percentInvestment: resolvedPercents.investment,
+      monthlyIncome: normalizedIncome,
+      cycleType,
     }, { transaction });
 
     await transaction.commit();
@@ -60,7 +72,18 @@ router.post('/', async (req, res) => {
 
     return res.status(201).json({
       token,
-      user: toPublicUser(freshUser || { login, name, email, monthly_income: normalizedIncome }),
+      user: toPublicUser(freshUser || {
+        login,
+        name,
+        email,
+        monthly_income: normalizedIncome,
+        distribution_mode: resolvedDistributionMode,
+        percent_important: resolvedPercents.important,
+        percent_wishes: resolvedPercents.wishes,
+        percent_saving: resolvedPercents.saving,
+        percent_investment: resolvedPercents.investment,
+        cycle_type: cycleType,
+      }),
     });
   } catch (error) {
     await transaction.rollback();
