@@ -1,5 +1,5 @@
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
-import type { RegisterFormData } from '../../model/useRegisterForm';
+import type { RegisterFormData } from '@/features/auth/model/useRegisterForm';
 
 interface StepAuthUserInfoProps {
     register: UseFormRegister<RegisterFormData>;
@@ -47,8 +47,7 @@ export const StepAuthUserInfo = ({
                         minLength: { value: 3, message: 'Минимум 3 символа' },
                         pattern: { value: /^[a-zA-Z0-9_]+$/, message: 'Только буквы, цифры и _' },
                     })}
-                    className={`w-full px-4 py-2 border rounded-md ${errors.login ? 'border-red-300' : 'border-gray-200'
-                        }`}
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
                     disabled={isLoading}
                 />
                 {errors.login && <p className="text-red-500 text-xs">{errors.login.message}</p>}
@@ -65,8 +64,7 @@ export const StepAuthUserInfo = ({
                         minLength: { value: 2, message: 'Минимум 2 символа' },
                         maxLength: { value: 50, message: 'Не более 50 символов' },
                     })}
-                    className={`w-full px-4 py-2 border rounded-md ${errors.name ? 'border-red-300' : 'border-gray-200'
-                        }`}
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
                     disabled={isLoading}
                 />
                 {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
@@ -82,8 +80,7 @@ export const StepAuthUserInfo = ({
                         required: 'Email обязателен',
                         pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Введите корректный email' },
                     })}
-                    className={`w-full px-4 py-2 border rounded-md ${errors.email ? 'border-red-300' : 'border-gray-200'
-                        }`}
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
                     disabled={isLoading}
                 />
                 {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
@@ -100,8 +97,7 @@ export const StepAuthUserInfo = ({
                         minLength: { value: 6, message: 'Минимум 6 символов' },
                         pattern: { value: /^(?=.*[a-zA-Z])(?=.*\d).+$/, message: 'Буквы и цифры обязательны' },
                     })}
-                    className={`w-full px-4 py-2 border rounded-md ${errors.password ? 'border-red-300' : 'border-gray-200'
-                        }`}
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
                     disabled={isLoading}
                 />
                 {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
@@ -110,7 +106,7 @@ export const StepAuthUserInfo = ({
             {/* Кнопка */}
             <button
                 type="submit"
-                className="w-full px-4 py-2 mt-2 rounded-md bg-secondary text-white"
+                className="w-full px-4 py-2 mt-2 rounded-md bg-secondary hover:bg-secondary-dark text-white font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-offset-2"
                 disabled={isLoading}
             >
                 Продолжить

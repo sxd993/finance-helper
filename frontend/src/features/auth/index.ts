@@ -1,8 +1,10 @@
+// UI
 export { Login } from './ui/Login/Login';
-export { Register } from './ui/Register/Register';
-export {
-  useLogin,
-  useLogout,
-  useRegister,
-} from './model/hooks';
+
+// API
 export { AuthApi } from './api/AuthApi';
+
+// Хуки
+export * from "./model"
+
+//Консты

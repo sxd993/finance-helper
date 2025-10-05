@@ -1,4 +1,4 @@
-import { useLoginForm } from '../../model/useLoginForm';
+import { useLoginForm } from "@features/auth";
 
 interface LoginProps {
   onSwitchToRegister: () => void;
@@ -51,10 +51,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
                   message: 'Логин может содержать только буквы, цифры и подчеркивания',
                 },
               })}
-              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 ${errors.login
-                ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
-                : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-                }`}
+              className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
               disabled={isLoading}
             />
             {errors.login && (
@@ -77,10 +74,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
                   message: 'Пароль должен быть не менее 6 символов',
                 },
               })}
-              className={`w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-md focus:outline-none focus:ring-2 transition-all duration-200 ${errors.password
-                ? 'border-red-300 focus:ring-red-400 focus:border-red-300'
-                : 'border-gray-200 focus:ring-orange-400 focus:border-transparent'
-                }`}
+              className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
               disabled={isLoading}
             />
             {errors.password && (
@@ -93,7 +87,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
           {/* Кнопка входа */}
           <button
             type="submit"
-            className="w-full px-4 py-2 mt-2 rounded-md bg-secondary hover:bg-orange-600 text-white font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
+            className="w-full px-4 py-2 mt-2 rounded-md bg-secondary hover:bg-secondary-dark text-white font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-offset-2"
             disabled={isLoading}
           >
             {isLoading ? 'Загрузка...' : 'Войти'}
@@ -105,7 +99,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
             <button
               type="button"
               onClick={onSwitchToRegister}
-              className="text-primary hover:underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 rounded"
+              className="text-primary hover:underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded"
             >
               Зарегистрироваться
             </button>

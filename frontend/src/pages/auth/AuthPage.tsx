@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Logo } from '@/shared/ui/Logo';
 
-import { Login, Register } from '@features/auth';
+import { Login } from '@features/auth';
+import { Register } from '@widgets/register';
 
 export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);

@@ -2,7 +2,9 @@
 
 @theme {
   --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
   --color-secondary: #14b8a6;
+  --color-secondary-dark: #0e8376;
   --color-background: #f9fafb;
   --color-text: #111827;
 

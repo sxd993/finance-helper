@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AuthApi } from '../api/AuthApi';
 
-import { useRegister } from './hooks';
-
-export type RegisterStep = 'userInfo' | 'userSettings';
+export type RegisterStep = 'userInfo' | 'userSettings' | 'userOnboarding';
 
 export interface RegisterFormData {
   login: string;
@@ -16,8 +16,20 @@ export interface RegisterFormData {
   cycle_type: 'monthly' | 'weekly';
 }
 
+// Хук для регистрации
+export const useRegister = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: AuthApi.register,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['user'], data || '');
+    },
+  });
+};
+
 export const useRegisterForm = () => {
-  const [step, setStep] = useState<RegisterStep>('userInfo');
+  const [step, setStep] = useState<RegisterStep>('userOnboarding');
   const form = useForm<RegisterFormData>({
     defaultValues: {
       login: '',

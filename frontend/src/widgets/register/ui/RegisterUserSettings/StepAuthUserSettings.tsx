@@ -1,5 +1,5 @@
 import type { UseFormRegister, UseFormHandleSubmit } from 'react-hook-form';
-import type { RegisterFormData } from '../../model/useRegisterForm';
+import type { RegisterFormData } from '@/features/auth/model/hooks/useRegisterForm';
 
 interface StepAuthUserSettingsProps {
   register: UseFormRegister<RegisterFormData>;

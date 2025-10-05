@@ -1,13 +1,26 @@
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-
-import { useLogin } from './hooks';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AuthApi } from '../api/AuthApi';
 
 export interface LoginFormData {
   login: string;
   password: string;
 }
+
+
+export const useLogin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: AuthApi.login,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user"]);
+    },
+  });
+};
+
 
 export const useLoginForm = () => {
   const form = useForm<LoginFormData>({
