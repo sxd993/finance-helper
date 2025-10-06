@@ -32,7 +32,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api', convertsRoutes);
+app.use('/api/converts', convertsRoutes);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

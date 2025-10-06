@@ -1,4 +1,5 @@
 import { useLoginForm } from "@features/auth";
+import { Logo } from "@/shared/ui/Logo";
 
 interface LoginProps {
   onSwitchToRegister: () => void;
@@ -17,6 +18,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
   return (
     <>
       <div className="flex flex-col justify-center items-center">
+        <Logo />
         <form
           className="bg-white px-6 py-8 flex flex-col items-center gap-4 w-full max-w-sm rounded-lg"
           onSubmit={handleSubmit(onSubmit)}

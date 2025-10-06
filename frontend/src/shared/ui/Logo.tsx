@@ -1,7 +1,12 @@
+import logo from "@/assets/finance_helper_logo.png";
+
 export const Logo = () => {
-    return (
-        <h1 className="text-2xl font-bold text-center">
-            <span className="text-primary">Finance</span> Helper
-        </h1>
-    )
-}
+  return (
+    <img
+      src={logo}
+      alt="Finance Helper logo"
+      loading="lazy"
+      className="w-auto h-auto max-w-full max-h-full object-contain"
+    />
+  );
+};

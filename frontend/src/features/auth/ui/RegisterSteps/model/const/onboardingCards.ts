@@ -1,6 +1,4 @@
-import type { OnboardingInfo } from "@/shared/ui/OnboardingCard";
-
-export type OnboardingCardList = OnboardingInfo[];
+import type { OnboardingCardList } from '@shared/types/onboarding'
 
 export const onboardingCards: OnboardingCardList = [
     {

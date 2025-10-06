@@ -3,12 +3,13 @@ import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
-import { useUserOnboarding } from "@/features/auth/model/useUserOnboarding";
-import { onboardingCards } from "@/widgets/register/model/onboardingCards";
+import { useSwitchOnboardingCards } from "../";
+import { onboardingCards } from "../";
 import { OnboardingCard } from "@/shared/ui/OnboardingCard";
 
-export const StepAuthUserOnboarding = ({ onBack, onNext }) => {
-  const { onboardingStep, setOnboardingStep } = useUserOnboarding();
+export const RegisterUserOnboarding = ({ onBack, onNext }) => {
+
+  const { onboardingStep, setOnboardingStep } = useSwitchOnboardingCards();
   const swiperRef = useRef<SwiperType | null>(null);
 
   const handlePrev = () => {

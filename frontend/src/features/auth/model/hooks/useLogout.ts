@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AuthApi } from '../api/AuthApi';
+import { AuthApi } from '@features/auth';
 
 
 // Хук для выхода

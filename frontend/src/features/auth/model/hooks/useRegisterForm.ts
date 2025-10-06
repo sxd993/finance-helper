@@ -1,19 +1,11 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AuthApi } from '../api/AuthApi';
-import { useRegisterStore } from '@widgets/register/model/registerStore';
+import { AuthApi } from '@features/auth';
+import type { RegisterFormData } from '@features/auth'
 
-export interface RegisterFormData {
-  login: string;
-  name: string;
-  email: string;
-  password: string;
-  distributionMode: 'baseline' | 'flex';
-  monthly_income: number;
-  cycle_type: 'monthly' | 'weekly';
-}
+
 
 // Хук для регистрации
 export const useRegister = () => {
@@ -21,14 +13,14 @@ export const useRegister = () => {
 
   return useMutation({
     mutationFn: AuthApi.register,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['user'], data || '');
+    onSuccess: () => {
+      queryClient.invalidateQueries(['user']);
     },
   });
 };
 
+
 export const useRegisterForm = () => {
-  const { step, setStep, reset } = useRegisterStore();
   const form = useForm<RegisterFormData>({
     defaultValues: {
       login: '',
@@ -43,8 +35,6 @@ export const useRegisterForm = () => {
   const navigate = useNavigate();
   const registerMutation = useRegister();
 
-  useEffect(() => reset, [reset]);
-
   const onSubmit = useCallback(async (data: RegisterFormData) => {
     try {
       await registerMutation.mutateAsync(data);
@@ -55,15 +45,12 @@ export const useRegisterForm = () => {
   }, [navigate, registerMutation]);
 
   return {
-    form,
-    step,
-    setStep,
     register: form.register,
     handleSubmit: form.handleSubmit,
-    errors: form.formState.errors,
     watch: form.watch,
-    isLoading: registerMutation.isPending,
-    error: registerMutation.error instanceof Error ? registerMutation.error : null,
+    isPending: registerMutation.isPending,
+    form_errors: form.formState.errors,
+    send_error: registerMutation.error instanceof Error ? registerMutation.error : null,
     onSubmit,
   };
 };
