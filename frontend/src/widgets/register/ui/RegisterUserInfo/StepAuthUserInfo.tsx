@@ -28,13 +28,6 @@ export const StepAuthUserInfo = ({
         >
             <h2 className="text-2xl font-semibold text-gray-600 text-center">Регистрация</h2>
 
-            {error && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-2 w-full">
-                    <p className="text-red-600 text-xs text-center leading-tight">
-                        {error.message}
-                    </p>
-                </div>
-            )}
 
             {/* Логин */}
             <div className="flex flex-col gap-1 w-full">
@@ -47,7 +40,7 @@ export const StepAuthUserInfo = ({
                         minLength: { value: 3, message: 'Минимум 3 символа' },
                         pattern: { value: /^[a-zA-Z0-9_]+$/, message: 'Только буквы, цифры и _' },
                     })}
-                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-secondary"
                     disabled={isLoading}
                 />
                 {errors.login && <p className="text-red-500 text-xs">{errors.login.message}</p>}
@@ -64,7 +57,7 @@ export const StepAuthUserInfo = ({
                         minLength: { value: 2, message: 'Минимум 2 символа' },
                         maxLength: { value: 50, message: 'Не более 50 символов' },
                     })}
-                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-secondary"
                     disabled={isLoading}
                 />
                 {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
@@ -80,7 +73,7 @@ export const StepAuthUserInfo = ({
                         required: 'Email обязателен',
                         pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Введите корректный email' },
                     })}
-                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-secondary"
                     disabled={isLoading}
                 />
                 {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
@@ -97,7 +90,7 @@ export const StepAuthUserInfo = ({
                         minLength: { value: 6, message: 'Минимум 6 символов' },
                         pattern: { value: /^(?=.*[a-zA-Z])(?=.*\d).+$/, message: 'Буквы и цифры обязательны' },
                     })}
-                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
+                    className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-secondary"
                     disabled={isLoading}
                 />
                 {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}

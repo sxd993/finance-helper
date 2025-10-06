@@ -51,7 +51,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
                   message: 'Логин может содержать только буквы, цифры и подчеркивания',
                 },
               })}
-              className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
+              className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-secondary"
               disabled={isLoading}
             />
             {errors.login && (
@@ -74,7 +74,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
                   message: 'Пароль должен быть не менее 6 символов',
                 },
               })}
-              className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-1 transition-all duration-200 focus:text-secondary"
+              className="w-full px-4 py-2 text-gray-700 placeholder-gray-400 border rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 focus:ring-secondary"
               disabled={isLoading}
             />
             {errors.password && (

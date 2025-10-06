@@ -1,7 +1,7 @@
 import { StepAuthUserInfo } from './RegisterUserInfo/StepAuthUserInfo';
 import { StepAuthUserSettings } from './RegisterUserSettings/StepAuthUserSettings';
 import { StepAuthUserOnboarding } from './RegisterOnboarding/StepAuthUserOnboarding';
-import { useRegisterForm } from '@features/auth/model/useRegisterForm';
+import { useRegisterForm } from '@/features/auth';
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -28,14 +28,17 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
           errors={errors}
           isLoading={isLoading}
           error={error}
-          onNext={() => setStep('userSettings')}
+          onNext={() => setStep('userOnboarding')}
           onSwitchToLogin={onSwitchToLogin}
         />
       }
 
       {
         step === 'userOnboarding' &&
-        <StepAuthUserOnboarding />
+        <StepAuthUserOnboarding
+          onBack={() => setStep('userInfo')}
+          onNext={() => setStep('userSettings')}
+        />
       }
 
       {
@@ -46,7 +49,8 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
           onSubmit={onSubmit}
           onBack={() => setStep('userInfo')}
           isLoading={isLoading}
-          hasIncome={!!watch('monthly_income')}
+          watch={watch}
+          error={error}
         />
       }
     </>

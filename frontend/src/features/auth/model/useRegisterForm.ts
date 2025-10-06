@@ -1,10 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AuthApi } from '../api/AuthApi';
-
-export type RegisterStep = 'userInfo' | 'userSettings' | 'userOnboarding';
+import { useRegisterStore } from '@widgets/register/model/registerStore';
 
 export interface RegisterFormData {
   login: string;
@@ -29,7 +28,7 @@ export const useRegister = () => {
 };
 
 export const useRegisterForm = () => {
-  const [step, setStep] = useState<RegisterStep>('userOnboarding');
+  const { step, setStep, reset } = useRegisterStore();
   const form = useForm<RegisterFormData>({
     defaultValues: {
       login: '',
@@ -44,6 +43,8 @@ export const useRegisterForm = () => {
   const navigate = useNavigate();
   const registerMutation = useRegister();
 
+  useEffect(() => reset, [reset]);
+
   const onSubmit = useCallback(async (data: RegisterFormData) => {
     try {
       await registerMutation.mutateAsync(data);
@@ -54,6 +55,7 @@ export const useRegisterForm = () => {
   }, [navigate, registerMutation]);
 
   return {
+    form,
     step,
     setStep,
     register: form.register,
