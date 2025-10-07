@@ -1,23 +1,10 @@
 import { CalendarIcon, UserIcon } from 'lucide-react';
-
-import type { User } from '@shared/types/types';
+import type { User } from '@shared/types/types'
+import { currentDay, currentDate } from '../const';
 
 interface HeaderProps {
   user: User | null;
 }
-
-const now = new Date();
-const dayNames = [
-  "Воскресенье", "Понедельник", "Вторник", "Среда",
-  "Четверг", "Пятница", "Суббота",
-];
-const monthNames = [
-  "января", "февраля", "марта", "апреля", "мая", "июня",
-  "июля", "августа", "сентября", "октября", "ноября", "декабря",
-];
-
-const currentDay = dayNames[now.getDay()];
-const currentDate = `${now.getDate()} ${monthNames[now.getMonth()]}`;
 
 export const Header = ({ user }: HeaderProps) => {
   return (

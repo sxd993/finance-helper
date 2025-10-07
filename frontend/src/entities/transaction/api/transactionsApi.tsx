@@ -1,10 +1,7 @@
-import { mockLastTransactions } from '@/shared/mock/transactions';
+import { client } from "@/shared/api/client"
+import type { CreateTopUpTransactionDto } from "../types"
 
-// Простая задержка для имитации сети
-const delay = () => new Promise(resolve => setTimeout(resolve, 500));
-
-
-export const getLastTransactions = async () => {
-    await delay()
-    return mockLastTransactions
+export const createTopUpTransaction = async (data: CreateTopUpTransactionDto) => {
+    const response = await client.post('/transaction/create-top-up-transaction', data)
+    return response.data
 }
