@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Logo } from '@/shared/ui/Logo';
 
 import { Login } from '@features/auth/ui/Login';
 import { Register } from '@features/auth/ui/Register';

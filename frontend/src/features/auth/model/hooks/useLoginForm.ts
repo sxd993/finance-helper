@@ -46,7 +46,7 @@ export const useLoginForm = () => {
     handleSubmit: form.handleSubmit,
     errors: form.formState.errors,
     isLoading: loginMutation.isPending,
-    error: loginMutation.error instanceof Error ? loginMutation.error : null,
+    error: loginMutation.error instanceof Error ? loginMutation.error.response.data : null,
     onSubmit,
   };
 };

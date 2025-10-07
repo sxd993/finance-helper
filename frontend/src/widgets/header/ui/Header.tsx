@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export const Header = ({ user }: HeaderProps) => {
   return (
-    <header className="flex justify-baseline items-center p-4">
+    <header className="flex justify-baseline items-center">
       {/* Левая часть */}
       <div className="flex items-center gap-4">
         {/* Аватарка */}

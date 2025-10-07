@@ -1,7 +1,12 @@
 import { client } from "@/shared/api/client"
-import type { CreateTopUpTransactionDto } from "../types"
+import type { createExpenseData, createIncomeData } from "../model/types"
 
-export const createTopUpTransaction = async (data: CreateTopUpTransactionDto) => {
-    const response = await client.post('/transaction/create-top-up-transaction', data)
+export const createExpense = async (data: createExpenseData) => {
+    const response = await client.post('/transaction/create-expense', data)
+    return response.data
+}
+
+export const createIncome = async (data: createIncomeData) => {
+    const response = await client.post('/transaction/create-income', data)
     return response.data
 }
