@@ -50,7 +50,7 @@ export const useRegisterForm = () => {
     watch: form.watch,
     isPending: registerMutation.isPending,
     form_errors: form.formState.errors,
-    send_error: registerMutation.error instanceof Error ? registerMutation.error : null,
+    send_error: registerMutation.error instanceof Error ? registerMutation.error.response.data  : null,
     onSubmit,
   };
 };

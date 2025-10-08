@@ -8,11 +8,11 @@ interface HeaderProps {
 
 export const Header = ({ user }: HeaderProps) => {
   return (
-    <header className="flex justify-baseline items-center">
+    <header className="flex justify-baseline items-center max-w-3xl mx-auto">
       {/* Левая часть */}
       <div className="flex items-center gap-4">
         {/* Аватарка */}
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center text-white font-bold shadow-md">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold shadow-md">
           {user?.name ? user.name[0].toUpperCase() : <UserIcon size={20} />}
         </div>
 
@@ -20,7 +20,7 @@ export const Header = ({ user }: HeaderProps) => {
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-1">
             <h1 className="text-lg font-bold text-gray-900">Привет,</h1>
-            <span className="text-lg font-bold text-orange-500">
+            <span className="text-lg font-bold text-primary">
               {user?.name || 'Пользователь'}!
             </span>
           </div>

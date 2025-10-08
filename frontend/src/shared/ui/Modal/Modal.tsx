@@ -67,11 +67,11 @@ export const Modal = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`relative z-10 w-full ${widthClassName} bg-white rounded-2xl shadow-2xl overflow-hidden`}
+            className={`relative z-10 w-full ${widthClassName} bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[350px] flex justify-between flex-col py-6`}
           >
             {/* Заголовок */}
             {(title || true) && (
-              <div className="relative flex items-center justify-center border-b border-gray-100 px-6 py-4">
+              <div className="relative flex items-center justify-centerpx-6 mb-10 ">
                 {typeof title === "string" ? (
                   <h2 className="text-lg font-semibold text-gray-900 text-center w-full">
                     {title}
@@ -106,7 +106,7 @@ export const Modal = ({
             )}
 
             {/* Тело модалки */}
-            <div className="min-h-[250px] overflow-y-auto max-w-[sm] mx-auto">
+            <div className="f">
               {children}
             </div>
 

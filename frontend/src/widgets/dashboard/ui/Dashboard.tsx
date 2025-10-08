@@ -6,7 +6,7 @@ import { useTransactionModal } from "@widgets/transaction-modal/model/useTransac
 export const Dashboard = () => {
     const { openModal } = useTransactionModal()
     return (
-        <div className="flex flex-col gap-2 pt-5 mx-auto max-w-3xl">
+        <div className="flex flex-col gap-2 pt-5">
             <BalanceCard
                 title='Общий баланс'
                 sum={120000}
