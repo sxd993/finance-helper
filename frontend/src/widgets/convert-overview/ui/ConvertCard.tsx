@@ -13,7 +13,7 @@ export const ConvertCard = ({
     totalSum,
     icon }: ConvertCardProps) => {
     return (
-        <div className="shadow-sm">
+        <div className="shadow-sm rounded-2xl border-1 border-slate-200">
             <div className="p-4">
                 <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
