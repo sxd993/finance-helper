@@ -1,68 +1,81 @@
 const express = require('express');
 const { sequelize, Convert, ConvertType } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
+const { toNumberOrNull, getTypeBuilder } = require('./helpers');
 
 const router = express.Router();
 
+// Создание конверта по бизнес-правилам:
+// - important, wishes: имеют лимит (если baseline и указан доход — считаем от процента)
+// - saving: без лимита, есть цель (target), current опционален
+// - investment: без лимита, пополняется позже (на создании current=0, target=null)
 router.post('/add-convert', requireAuth, async (req, res) => {
-  const {
-    name,
-    type_code: typeCode,
-    monthly_limit: monthlyLimit,
-    target_amount: targetAmount,
-    is_active: isActive = true,
-  } = req.body?.convert || {};
-
-  if (!name || !typeCode) {
-    return res
-      .status(400)
-      .json({ message: 'Нужно указать название и тип конверта' });
-  }
-
   try {
-    const result = await sequelize.transaction(async (transaction) => {
-      const type = await ConvertType.findOne({
-        where: { code: typeCode },
-        transaction,
-      });
+    const userId = req.userId;
+    const user = req.user || {};
 
-      if (!type) {
-        const err = new Error('Такого типа нет');
-        err.status = 400;
-        throw err;
-      }
+    // Тело запроса ожидается в виде { convert: { ... } }
+    const payload = (req.body && req.body.convert) || {};
+    const {
+      name,
+      type_code: typeCode,
+      current_ammount: currentRaw = null,
+      target_amount: targetRaw = null,
+      is_active: isActiveRaw = true,
+    } = payload;
 
-      const safeMonthlyLimit = type.hasLimit
-        ? Math.max(0, Number(monthlyLimit) || 0)
-        : 0;
+    if (!name || !typeCode) {
+      return res.status(400).json({ message: 'Поля name и type_code обязательны' });
+    }
 
-      const safeTargetAmount = type.accumulates && targetAmount !== undefined
-        ? Math.max(0, Number(targetAmount) || 0)
-        : null;
+    const convertType = await ConvertType.findOne({ where: { code: typeCode } });
+    if (!convertType) {
+      return res.status(400).json({ message: `Неизвестный тип конверта: ${typeCode}` });
+    }
 
-      const convert = await Convert.create(
-        {
-          userId: req.userId,
-          typeId: type.id,
-          name,
-          monthlyLimit: safeMonthlyLimit,
-          currentAmount: type.accumulates ? 0 : safeMonthlyLimit,
-          targetAmount: safeTargetAmount,
-          isActive,
-        },
-        { transaction },
-      );
+    const distributionMode = user.distribution_mode || 'baseline';
+    const monthlyIncome = toNumberOrNull(user.monthly_income);
 
-      return convert;
+    // Получаем типовой билдер для расчёта полей
+    const builder = getTypeBuilder(typeCode);
+    if (!builder) {
+      return res.status(400).json({ message: `Обработчик для типа ${typeCode} не найден` });
+    }
+
+    const result = builder({ user, payload, convertType });
+    if (!result?.ok) {
+      return res.status(400).json({ message: result?.message || 'Некорректные данные для создания конверта' });
+    }
+
+    const { monthlyLimit, currentAmount, targetAmount } = result.data;
+
+    const isActive = Boolean(isActiveRaw);
+
+    // Создание конверта
+    const created = await Convert.create({
+      userId,
+      cycleId: null, // накопительные по умолчанию без цикла
+      typeId: convertType.id,
+      name,
+      monthlyLimit,
+      currentAmount,
+      targetAmount,
+      isActive,
     });
 
-    res.status(201).json(result);
+    // Ответ в удобном для фронтенда формате
+    return res.status(201).json({
+      id: created.id,
+      name: created.name,
+      type_code: typeCode,
+      monthly_limit: Number(created.monthlyLimit),
+      current_amount: Number(created.currentAmount),
+      target_amount: created.targetAmount === null ? null : Number(created.targetAmount),
+      is_active: Boolean(created.isActive),
+    });
   } catch (error) {
     console.error('Не удалось создать конверт', error);
-    res
-      .status(error.status || 500)
-      .json({ message: error.message || 'Ошибка при создании конверта' });
+    return res.status(500).json({ message: 'Ошибка сервера при создании конверта' });
   }
 });
-
 module.exports = router;
