@@ -7,29 +7,14 @@ import type {
 } from '@entities/convert/model/types';
 
 export const getConverts = async (): Promise<Convert[]> => {
-  const response = await client.get('/converts');
+  const response = await client.get('/converts/get-converts');
   return response.data;
 };
 
 
-type ConvertTypeResponse = {
-  id: number;
-  code: string;
-  title: string;
-  has_limit: boolean;
-  accumulates: boolean;
-};
-
 export const getConvertTypes = async (): Promise<ConvertType[]> => {
-  const response = await client.get<ConvertTypeResponse[]>('/converts/types');
-
-  return response.data.map((type) => ({
-    id: type.id,
-    code: type.code,
-    title: type.title,
-    hasLimit: Boolean(type.has_limit),
-    accumulates: Boolean(type.accumulates),
-  }));
+  const response = await client.get<ConvertType[]>('/converts/types');
+  return response.data
 };
 
 export const createConvert = async (payload: CreateConvertPayload) => {

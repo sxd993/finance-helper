@@ -47,7 +47,7 @@ export const AddConvertsForm = () => {
         <div className="flex flex-col gap-2 w-full">
           <h2>Сколько вы хотите накопить?</h2>
           <input
-            {...register('target_amount', { valueAsNumber: true })}
+            {...register('targetAmount', { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Введите сумму цели"
@@ -60,7 +60,7 @@ export const AddConvertsForm = () => {
         <div className="flex flex-col gap-2 w-full">
           <h2>Сколько сейчас денег накоплено?</h2>
           <input
-            {...register('current_ammount', { valueAsNumber: true })}
+            {...register('current_amount', { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Текущая сумма"

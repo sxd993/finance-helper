@@ -10,8 +10,8 @@ export const useAddConvertForm = () => {
     defaultValues: {
       name: '',
       type_code: '',
-      target_amount: null,
-      current_amount: null,
+      currentAmount: null,
+      targetAmount: null,
     },
   })
   const { onCreateConvert, isSuccess, isPending, error } = useAddConvert()

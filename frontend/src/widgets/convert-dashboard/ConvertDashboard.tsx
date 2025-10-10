@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 export const ConvertDashboard = () => {
     const navigate = useNavigate()
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
             <BalanceCard
                 title='Баланс конвертов'
                 sum={80000}
