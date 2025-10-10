@@ -3,10 +3,10 @@ import { Button } from "@/shared/ui/Button"
 import { TransactionModal } from "@widgets/transaction-modal"
 import { useTransactionModal } from "@widgets/transaction-modal/model/useTransactionModal"
 
-export const Dashboard = () => {
+export const HomeDashboard = () => {
     const { openModal } = useTransactionModal()
     return (
-        <div className="flex flex-col gap-2 pt-5">
+        <div className="flex flex-col gap-2">
             <BalanceCard
                 title='Общий баланс'
                 sum={120000}

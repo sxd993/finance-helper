@@ -3,7 +3,7 @@ import { formatPrice } from "../utils/formatPrice";
 interface BalanceCardProps {
     title: string;
     sum: number;
-    subtitle: string;
+    subtitle?: string;
 }
 
 export const BalanceCard = ({ title, sum, subtitle }: BalanceCardProps) => {

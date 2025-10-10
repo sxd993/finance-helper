@@ -1,13 +1,15 @@
 import './App.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Toaster } from 'sonner'
+
 
 import { ProtectedRoute, PublicRoute } from '@app/providers/router';
-import { AuthPage } from '@pages/auth/AuthPage';
-import { ConvertsPage } from '@pages/converts/ConvertsPage';
-import { ExpensesPage } from '@pages/expenses/ExpensesPage';
-import { HomePage } from '@pages/home/HomePage';
-import { SettingsPage } from '@pages/settings/SettingsPage';
+import { AuthPage } from '@pages/auth';
+import { ConvertsPage, AddConvertsPage } from '@pages/converts';
+import { TransactionsPage } from '@/pages/transactions';
+import { HomePage } from '@pages/home';
+import { SettingsPage } from '@pages/settings';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,10 +54,10 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/expenses',
+    path: '/transactions',
     element: (
       <ProtectedRoute>
-        <ExpensesPage />
+        <TransactionsPage />
       </ProtectedRoute>
     ),
   },
@@ -67,12 +69,21 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/converts/add-converts',
+    element: (
+      <ProtectedRoute>
+        <AddConvertsPage />
+      </ProtectedRoute>
+    )
+  }
 ]);
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <Toaster position="bottom-right" richColors duration={2000} />
     </QueryClientProvider>
   );
 }

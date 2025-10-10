@@ -3,7 +3,7 @@ import { Wallet } from 'lucide-react';
 
 import { CarIcon, FoodIcon, GameIcon } from '@shared/ui/icons/IconComponents';
 
-export const ExpensesPage = () => {
+export const TransactionsPage = () => {
     const [selectedCategory, setSelectedCategory] = useState<'all' | 'food' | 'transport' | 'entertainment'>('all');
     const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
     const expenses = [
@@ -103,8 +103,8 @@ export const ExpensesPage = () => {
                                 key={period.id}
                                 onClick={() => setSelectedPeriod(period.id as any)}
                                 className={`flex-1 py-2 px-3 rounded-lg text-sm transition-colors ${selectedPeriod === period.id
-                                        ? 'bg-white text-gray-900 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-800'
+                                    ? 'bg-white text-gray-900 shadow-sm'
+                                    : 'text-gray-600 hover:text-gray-800'
                                     }`}
                             >
                                 {period.label}
@@ -119,8 +119,8 @@ export const ExpensesPage = () => {
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id as any)}
                                 className={`flex items-center space-x-2 px-3 py-2 rounded-lg whitespace-nowrap transition-colors ${selectedCategory === category.id
-                                        ? 'bg-orange-500 text-white'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-orange-500 text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 <div className={`w-3 h-3 rounded-full ${selectedCategory === category.id ? 'bg-white' : category.color

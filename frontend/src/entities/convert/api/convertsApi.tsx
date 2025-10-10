@@ -2,7 +2,6 @@ import { client } from '@/shared/api/client';
 
 import type {
   Convert,
-  ConvertsInfo,
   ConvertType,
   CreateConvertPayload,
 } from '@entities/convert/model/types';
@@ -12,10 +11,6 @@ export const getConverts = async (): Promise<Convert[]> => {
   return response.data;
 };
 
-export const getConvertsInfo = async (): Promise<ConvertsInfo> => {
-  const response = await client.get('/converts-info');
-  return response.data;
-};
 
 type ConvertTypeResponse = {
   id: number;
@@ -38,7 +33,7 @@ export const getConvertTypes = async (): Promise<ConvertType[]> => {
 };
 
 export const createConvert = async (payload: CreateConvertPayload) => {
-  const response = await client.post('/add-convert', {
+  const response = await client.post('/converts/add-convert', {
     convert: payload,
   });
 

@@ -28,9 +28,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   return (
     <>
       <Header user={user} />
-      <main className="pb-20">
-        {children}
-      </main>
+      {children}
       <Navigation />
     </>
   );

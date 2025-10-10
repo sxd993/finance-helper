@@ -40,12 +40,14 @@ const Convert = require('../models/Convert')(sequelize, DataTypes);
 const Transaction = require('../models/Transaction')(sequelize, DataTypes);
 const Deposit = require('../models/Deposit')(sequelize, DataTypes);
 const Remainder = require('../models/Remainder')(sequelize, DataTypes);
+const ConvertTypeLimit = require('../models/ConvertTypeLimit.js')(sequelize, DataTypes);
 
 const models = {
   User,
   Cycle,
   ConvertType,
   Convert,
+  ConvertTypeLimit,
   Transaction,
   Deposit,
   Remainder,
@@ -65,6 +67,7 @@ module.exports = {
   Cycle,
   ConvertType,
   Convert,
+  ConvertTypeLimit,
   Transaction,
   Deposit,
   Remainder,

@@ -16,6 +16,20 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS convert_type_limits (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type_id INT NOT NULL,
+  total_limit DECIMAL(12,2) NOT NULL DEFAULT 0,  -- общий лимит для этого типа
+  used_limit DECIMAL(12,2) NOT NULL DEFAULT 0,   -- сколько уже занято конвертами
+  available_limit DECIMAL(12,2) GENERATED ALWAYS AS (total_limit - used_limit) STORED,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_type_limits_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_type_limits_type FOREIGN KEY (type_id) REFERENCES convert_types(id) ON DELETE CASCADE,
+  UNIQUE KEY uniq_user_type (user_id, type_id)
+);
+
 -- Циклы (недели/месяцы)
 CREATE TABLE IF NOT EXISTS cycles (
   id INT AUTO_INCREMENT PRIMARY KEY,

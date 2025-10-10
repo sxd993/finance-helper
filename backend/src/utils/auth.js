@@ -34,13 +34,13 @@ function toPublicUser(user) {
     login: data.login,
     name: data.name,
     email: data.email,
-    monthly_income: monthlyIncomeNormalized,
-    distribution_mode: data.distributionMode || data.distribution_mode || 'baseline',
-    percent_important: normalizeNumber(data.percentImportant ?? data.percent_important),
-    percent_wishes: normalizeNumber(data.percentWishes ?? data.percent_wishes),
-    percent_saving: normalizeNumber(data.percentSaving ?? data.percent_saving),
-    percent_investment: normalizeNumber(data.percentInvestment ?? data.percent_investment),
-    cycle_type: data.cycleType || data.cycle_type || 'weekly',
+    monthlyIncome: monthlyIncomeNormalized,
+    distributionMode: data.distributionMode || data.distribution_mode || 'baseline',
+    percentImportant: normalizeNumber(data.percentImportant ?? data.percent_important),
+    percentWishes: normalizeNumber(data.percentWishes ?? data.percent_wishes),
+    percentSaving: normalizeNumber(data.percentSaving ?? data.percent_saving),
+    percentInvestment: normalizeNumber(data.percentInvestment ?? data.percent_investment),
+    cycleType: data.cycleType || data.cycle_type || 'weekly',
   };
 }
 
