@@ -1,5 +1,7 @@
 const express = require('express');
-const { sequelize, Convert, ConvertType } = require('../../db');
+const { getUserConverts } = require('./utils/get-user-converts');
+const { getUserConvertLimits } = require('./utils/get-user-convert-limits');
+const { getConvertTypes } = require('./utils/get-convert-types');
 const { requireAuth } = require('../../utils/auth');
 
 const router = express.Router();
@@ -7,37 +9,17 @@ const router = express.Router();
 router.get('/converts-overview', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
+    const convertTypes = await getConvertTypes();
+    const converts = await getUserConverts(userId);
+    const converts_limit = await getUserConvertLimits(userId);
 
-    // 1️⃣ Получаем все типы конвертов
-    const convertTypes = await ConvertType.findAll({
-      attributes: ['id', 'code', 'title', 'hasLimit', 'accumulates'],
-      raw: true,
-    });
-
-    // 2️⃣ Получаем все конверты пользователя
-    const converts = await Convert.findAll({
-      where: { userId },
-      attributes: ['current_amount', 'monthly_limit', 'target_amount'],
-      include: [
-        {
-          model: ConvertType,
-          as: 'type',
-          attributes: ['code'],
-        },
-      ],
-      raw: true,
-      nest: true,
-    });
-
-    // Если у пользователя нет конвертов — вернуть null
     if (!converts || converts.length === 0) {
       return res.json(null);
     }
 
-    // 3️⃣ Готовим справочник типов по коду
     const typeByCode = new Map(convertTypes.map((t) => [t.code, t]));
+    const limitsByTypeId = new Map((converts_limit || []).map(l => [l.type_id, l]));
 
-    // 4️⃣ Агрегируем суммы только по типам, которые есть у пользователя
     const overview = {};
     for (const convert of converts) {
       const code = convert.type.code;
@@ -45,31 +27,65 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
 
       if (!overview[key]) {
         const metaType = typeByCode.get(code);
-        overview[key] = {
+        const base = {
           currentSum: 0,
-          totalSum: 0,
-          target_amount: null,
-          meta: metaType
+          totalSum: null,
+          targetAmount: null,
+          info: metaType
             ? {
-                id: metaType.id,
+                code: metaType.code,
                 title: metaType.title,
-                hasLimit: metaType.hasLimit,
-                accumulates: metaType.accumulates,
+                ...(limitsByTypeId.get(metaType.id) || {}),
+                type_id: metaType.id,
               }
             : null,
         };
+
+        // Инициализация по типу
+        switch (code) {
+          case 'wishes':
+          case 'important':
+            base.totalSum = 0; // для этих типов показываем общий доступный лимит
+            break;
+          case 'saving':
+          case 'investment':
+          default:
+            base.totalSum = null;
+            break;
+        }
+
+        overview[key] = base;
       }
 
-      overview[key].currentSum += Number(convert.current_amount);
-      overview[key].totalSum += Number(convert.monthly_limit);
+      const current = convert.current_amount != null ? Number(convert.current_amount) : 0;
+      const overall = convert.overall_limit != null ? Number(convert.overall_limit) : 0;
+      const target = convert.target_amount != null ? Number(convert.target_amount) : null;
 
-      if (convert.targetAmount && !overview[key].target_amount) {
-        overview[key].targetAmount = Number(convert.target_amount);
+      // Агрегация по типам
+      switch (code) {
+        case 'wishes':
+        case 'important':
+          overview[key].currentSum += current;
+          // totalSum существует для этих типов
+          overview[key].totalSum += overall;
+          // target не используется
+          break;
+
+        case 'saving':
+          overview[key].currentSum += current;
+          if (target != null && overview[key].targetAmount == null) {
+            overview[key].targetAmount = target;
+          }
+          break;
+
+        case 'investment':
+        default:
+          overview[key].currentSum += current;
+          break;
       }
     }
 
-    // 5️⃣ Отправляем результат
-    res.json(overview);
+    res.json(overview)
   } catch (error) {
     console.error('Failed to fetch converts overview', error);
     res.status(500).json({ message: 'Ошибка сервера при получении сводки конвертов' });

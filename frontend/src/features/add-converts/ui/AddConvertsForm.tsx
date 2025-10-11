@@ -1,3 +1,4 @@
+import { Button } from '@/shared/ui/Button'
 import { useAddConvertForm } from '../model/hooks/useAddConvertForm'
 
 export const AddConvertsForm = () => {
@@ -7,7 +8,8 @@ export const AddConvertsForm = () => {
     type,
     convert_types,
     isPending,
-    error,
+    canSubmit,
+    errorMessage,
   } = useAddConvertForm()
 
   return (
@@ -80,13 +82,15 @@ export const AddConvertsForm = () => {
       {/* Кнопка */}
       <button
         type="submit"
-        disabled={isPending}
-        className="mt-4 bg-secondary text-white px-6 py-2 rounded-xl hover:bg-secondary/90 transition-all"
+        disabled={isPending || !canSubmit}
+        className="mt-4 px-6 py-2 rounded-xl transition-all
+                   bg-secondary text-white hover:bg-secondary/90
+                   disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed disabled:hover:bg-slate-300"
       >
         {isPending ? 'Создание...' : 'Создать конверт'}
       </button>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
     </form>
   )
 }

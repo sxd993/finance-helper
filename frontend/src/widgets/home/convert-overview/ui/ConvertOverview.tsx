@@ -1,6 +1,8 @@
 import { ConvertCard } from "./ConvertCard";
 import { useConvertOverview } from "../model/useConvertOverview";
 import { ConvertOverviewEmpty } from "./ConvertOverviewEmpty";
+import { SectionTitle } from "@/shared/ui/SectionTItle";
+import { Info } from "lucide-react";
 
 export const ConvertOverview = () => {
   const { convertOverview, isLoading } = useConvertOverview();
@@ -12,16 +14,18 @@ export const ConvertOverview = () => {
     return <ConvertOverviewEmpty />;
   }
 
-  console.log(convertOverview);
 
   return (
     <div className="flex flex-col">
-      <h2 className="text-lg mb-4">Общая информация о конвертах</h2>
       <div className="flex flex-col gap-5">
+        <SectionTitle
+          title="Общая информация в конвертах"
+          icon={<Info className="w-6 h-6 text-primary" />}
+        />
         {convertOverview.map(([key, data]) => (
           <ConvertCard
             key={key}
-            type={data.meta.title}
+            type={data.info.title}
             currentSum={data.currentSum}
             totalSum={data.totalSum}
           />

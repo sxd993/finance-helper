@@ -1,15 +1,17 @@
-export interface ConvertMeta {
-  id: number;
+export interface ConvertInfo {
+  code: string;
   title: string;
-  hasLimit: boolean;
-  accumulates: boolean;
+  type_id: number;
+  total_limit: number;
+  used_limit: number;
+  avaliable_limit: number
 }
 
 export interface ConvertGroup {
   currentSum: number;
   totalSum: number;
   targetAmount: number | null;
-  meta: ConvertMeta;
+  info: ConvertInfo;
 }
 
 export type ConvertOverviewResponse = Record<string, ConvertGroup>;

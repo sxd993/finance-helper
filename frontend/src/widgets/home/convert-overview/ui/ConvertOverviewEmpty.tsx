@@ -1,6 +1,8 @@
 import { Button } from "@/shared/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export const ConvertOverviewEmpty = () => {
+    const navigate = useNavigate()
     return (
         <div className="flex flex-col gap-y-10">
             <h2 className="text-lg">Общая информация о конвертах</h2>
@@ -26,7 +28,11 @@ export const ConvertOverviewEmpty = () => {
                     Вы еще не создали ни одного конверта
                 </h2>
                 <div className="max-w-full">
-                    <Button title="Перейти к созданию?" bg="primary" />
+                    <Button
+                        title="Перейти к созданию?"
+                        onClick={() => navigate('/converts/add-converts')}
+                        bg="primary"
+                    />
                 </div>
             </div>
         </div>

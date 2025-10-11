@@ -14,8 +14,15 @@ export const useAddConvertForm = () => {
       target_amount: null,
     },
   })
-  const { onCreateConvert, isSuccess, isPending, error } = useAddConvert()
+  const { onCreateConvert, isSuccess, isPending, error, errorMessage } = useAddConvert()
   const type = watch('type_code')
+
+  // Контроль доступности сабмита: оба поля обязательны, а для saving — ещё и цель
+  const name = watch('name')?.trim()
+  const target = watch('target_amount')
+  const current = watch('current_amount')
+  const canSubmitBase = Boolean(name) && Boolean(type)
+  const canSubmit = type === 'saving' ? (canSubmitBase && (target !== null && target !== undefined)) : canSubmitBase
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -35,6 +42,8 @@ export const useAddConvertForm = () => {
     isPending,
     isSuccess,
     error,
+    errorMessage,
+    canSubmit,
 
   }
 }

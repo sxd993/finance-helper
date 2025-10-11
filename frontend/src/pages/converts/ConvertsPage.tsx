@@ -1,5 +1,4 @@
-import { ConvertDashboard } from "@/widgets/convert-dashboard";
-import { ConvertsList } from "@/widgets/converts-list";
+import { ConvertDashboard, ConvertsList } from "@/widgets/converts";
 
 export const ConvertsPage = () => {
   return (

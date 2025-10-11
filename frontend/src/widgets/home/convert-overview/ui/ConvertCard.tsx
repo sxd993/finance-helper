@@ -3,7 +3,7 @@ import { formatPrice } from "@/shared/utils/formatPrice"
 interface ConvertCardProps {
     type: string;
     currentSum: number;
-    totalSum: number;
+    totalSum?: number;
     icon?: string
 }
 
@@ -22,7 +22,9 @@ export const ConvertCard = ({
                     </div>
                     <div className="text-right">
                         <p className="font-medium">{formatPrice(currentSum)}</p>
-                        <p className="text-xs text-muted-foreground">из {formatPrice(totalSum)}</p>
+                        {totalSum || totalSum === 0 && (
+                            <p className="text-xs text-muted-foreground"> из {formatPrice(totalSum)}</p>
+                        )}
                     </div>
                 </div>
                 <div className="space-y-2">

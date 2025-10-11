@@ -2,7 +2,8 @@ export interface Convert {
   id: number;
   type_id: ConvertType;
   name: string;
-  current_amount?: number;
+  overall_limit?: number;
+  current_amount: number;
   target_amount?: number;
 }
 

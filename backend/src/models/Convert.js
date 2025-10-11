@@ -25,23 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    monthly_limit: {
+    overall_limit: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
       defaultValue: 0,
-      field: 'monthly_limit',
     },
     current_amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
       defaultValue: 0,
-      field: 'current_amount',
     },
     target_amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: true,
       defaultValue: null,
-      field: 'target_amount',
     },
     isActive: {
       type: DataTypes.BOOLEAN,

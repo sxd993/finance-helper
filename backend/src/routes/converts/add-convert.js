@@ -29,7 +29,11 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     const existingByName = await Convert.findOne({ where: { userId, name }, transaction });
     if (existingByName) {
       await transaction.rollback();
-      return res.status(400).json({ message: 'Конверт с таким названием уже существует' });
+      return res.status(409).json({
+        message: 'Конверт с таким названием уже существует',
+        code: 'DUPLICATE_NAME',
+        existing_id: existingByName.id,
+      });
     }
 
     // Находим тип конверта
@@ -56,55 +60,17 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     switch (typeCode) {
       case 'important': {
         console.log('CASE: important');
-
-        // Проверяем лимиты пользователя
-        const typeLimit = await ConvertTypeLimit.findOne({
-          where: { userId, typeId: convertType.id },
-          transaction,
-        });
-
-        if (!typeLimit) {
-          await transaction.rollback();
-          return res.status(400).json({ message: 'Лимит для типа important не найден' });
-        }
-
-        // если пользователь указал лимит для конверта — проверим не превышает ли
-        const newLimit = computedLimit || 0;
-        if (typeLimit.usedLimit + newLimit > typeLimit.totalLimit) {
-          await transaction.rollback();
-          return res.status(400).json({
-            message: `Превышен общий лимит по типу important. Доступно ещё ${(typeLimit.totalLimit - typeLimit.usedLimit).toFixed(2)}`,
-          });
-        }
-
-        computedCurrent = 0; // создаётся пустым
-        computedTarget = null;
+        // Временная логика: создаём только с именем и типом
+        computedCurrent = undefined;
+        computedTarget = undefined;
         break;
       }
 
       case 'wishes': {
         console.log('CASE: wishes');
-
-        const typeLimit = await ConvertTypeLimit.findOne({
-          where: { userId, typeId: convertType.id },
-          transaction,
-        });
-
-        if (!typeLimit) {
-          await transaction.rollback();
-          return res.status(400).json({ message: 'Лимит для типа wishes не найден' });
-        }
-
-        const newLimit = computedLimit || 0;
-        if (typeLimit.usedLimit + newLimit > typeLimit.totalLimit) {
-          await transaction.rollback();
-          return res.status(400).json({
-            message: `Превышен общий лимит по типу wishes. Доступно ещё ${(typeLimit.totalLimit - typeLimit.usedLimit).toFixed(2)}`,
-          });
-        }
-
-        computedCurrent = 0;
-        computedTarget = null;
+        // Временная логика: создаём только с именем и типом
+        computedCurrent = undefined;
+        computedTarget = undefined;
         break;
       }
 
@@ -114,15 +80,11 @@ router.post('/add-convert', requireAuth, async (req, res) => {
           await transaction.rollback();
           return res.status(400).json({ message: 'Для saving требуется target_amount' });
         }
-        computedLimit = null;
         break;
       }
 
       case 'investment': {
-        console.log('CASE: investment');
-        computedLimit = null;
-        computedCurrent = 0;
-        computedTarget = null;
+        computedCurrent = currentRaw
         break;
       }
 
@@ -131,29 +93,25 @@ router.post('/add-convert', requireAuth, async (req, res) => {
         return res.status(400).json({ message: `Обработчик для типа ${typeCode} не найден` });
     }
 
-    // Создаём конверт
-    const created = await Convert.create({
+    // Формируем данные для создания конверта
+    const createData = {
       userId,
       cycleId: null,
       typeId: convertType.id,
       name,
-      current_amount: computedCurrent ?? 0,
-      target_amount: computedTarget ?? null,
       isActive,
-    }, { transaction });
+    };
 
-    // Если тип important или wishes — обновим usedLimit
-    if (['important', 'wishes'].includes(typeCode) && computedLimit > 0) {
-      const typeLimit = await ConvertTypeLimit.findOne({
-        where: { userId, typeId: convertType.id },
-        transaction,
-      });
-
-      await typeLimit.update(
-        { usedLimit: typeLimit.usedLimit + computedLimit },
-        { transaction }
-      );
+    // Для saving указываем target_amount, для остальных временно не указываем суммы
+    if (computedTarget !== undefined) {
+      createData.target_amount = computedTarget;
     }
+    if (computedCurrent !== undefined) {
+      createData.current_amount = computedCurrent;
+    }
+
+    // Создаём конверт
+    const created = await Convert.create(createData, { transaction });
 
     await transaction.commit();
 
@@ -164,7 +122,7 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       name: created.name,
       type_code: typeCode,
       current_amount: Number(created.current_amount),
-      target_amount: created.targetAmount === null ? null : Number(created.target_amount),
+      target_amount: created.target_amount === null ? null : Number(created.target_amount),
       is_active: Boolean(created.isActive),
     });
   } catch (error) {
