@@ -15,8 +15,8 @@ export interface ConvertType {
 export interface CreateConvertPayload {
   name: string;
   type_code: string;
-  currentAmount?: number | null;
-  targetAmount?: number | null;
+  current_amount?: number | null;
+  target_amount?: number | null;
   is_active?: boolean;
 }
 

@@ -10,7 +10,7 @@ router.get('/get-converts', requireAuth, async (req, res) => {
 
     const rows = await Convert.findAll({
       where: { userId },
-      attributes: ['id', 'name', 'currentAmount', 'targetAmount'],
+      attributes: ['id', 'name', 'current_amount', 'target_amount'],
       include: [
         {
           model: ConvertType,
@@ -25,8 +25,8 @@ router.get('/get-converts', requireAuth, async (req, res) => {
     const result = rows.map((r) => ({
       id: r.id,
       name: r.name,
-      current_amount: r.currentAmount !== null && r.currentAmount !== undefined ? Number(r.currentAmount) : undefined,
-      target_amount: r.targetAmount !== null && r.targetAmount !== undefined ? Number(r.targetAmount) : undefined,
+      current_amount: r.current_amount !== null && r.current_amount !== undefined ? Number(r.current_amount) : undefined,
+      target_amount: r.target_amount !== null && r.target_amount !== undefined ? Number(r.target_amount) : undefined,
       type_id: r.type ? { id: r.type.id, code: r.type.code, title: r.type.title } : null,
     }));
 

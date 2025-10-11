@@ -17,7 +17,7 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
     // 2️⃣ Получаем все конверты пользователя
     const converts = await Convert.findAll({
       where: { userId },
-      attributes: ['currentAmount', 'monthlyLimit', 'targetAmount'],
+      attributes: ['current_amount', 'monthly_limit', 'target_amount'],
       include: [
         {
           model: ConvertType,
@@ -48,7 +48,7 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
         overview[key] = {
           currentSum: 0,
           totalSum: 0,
-          targetAmount: null,
+          target_amount: null,
           meta: metaType
             ? {
                 id: metaType.id,
@@ -60,11 +60,11 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
         };
       }
 
-      overview[key].currentSum += Number(convert.currentAmount);
-      overview[key].totalSum += Number(convert.monthlyLimit);
+      overview[key].currentSum += Number(convert.current_amount);
+      overview[key].totalSum += Number(convert.monthly_limit);
 
-      if (convert.targetAmount && !overview[key].targetAmount) {
-        overview[key].targetAmount = Number(convert.targetAmount);
+      if (convert.targetAmount && !overview[key].target_amount) {
+        overview[key].targetAmount = Number(convert.target_amount);
       }
     }
 

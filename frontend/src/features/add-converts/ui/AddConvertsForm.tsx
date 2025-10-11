@@ -47,7 +47,15 @@ export const AddConvertsForm = () => {
         <div className="flex flex-col gap-2 w-full">
           <h2>Сколько вы хотите накопить?</h2>
           <input
-            {...register('targetAmount', { valueAsNumber: true })}
+            {...register('target_amount', { valueAsNumber: true })}
+            type="number"
+            min={0}
+            placeholder="Введите сумму цели"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          />
+          <h2>Сколько у вас уже накоплено?</h2>
+          <input
+            {...register('current_amount', { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Введите сумму цели"
@@ -58,7 +66,7 @@ export const AddConvertsForm = () => {
 
       {type === 'investment' && (
         <div className="flex flex-col gap-2 w-full">
-          <h2>Сколько сейчас денег накоплено?</h2>
+          <h2>Сколько сейчас денег инвестировано?</h2>
           <input
             {...register('current_amount', { valueAsNumber: true })}
             type="number"

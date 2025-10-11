@@ -25,19 +25,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    monthlyLimit: {
+    monthly_limit: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
       defaultValue: 0,
       field: 'monthly_limit',
     },
-    currentAmount: {
+    current_amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
       defaultValue: 0,
       field: 'current_amount',
     },
-    targetAmount: {
+    target_amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: true,
       defaultValue: null,

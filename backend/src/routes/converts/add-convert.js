@@ -15,7 +15,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     const {
       name,
       type_code: typeCode,
-      monthly_limit: monthlyLimitRaw = null,
       current_amount: currentRaw = null,
       target_amount: targetRaw = null,
       is_active: isActiveRaw = true,
@@ -24,6 +23,13 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     if (!name || !typeCode) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Поля name и type_code обязательны' });
+    }
+
+    // Проверяем, что конверт с таким названием у пользователя ещё не существует
+    const existingByName = await Convert.findOne({ where: { userId, name }, transaction });
+    if (existingByName) {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'Конверт с таким названием уже существует' });
     }
 
     // Находим тип конверта
@@ -41,10 +47,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     const currentAmount = toNumberOrNull(currentRaw) ?? 0;
     const targetAmount = toNumberOrNull(targetRaw);
-    const monthlyLimit = toNumberOrNull(monthlyLimitRaw);
     const isActive = Boolean(isActiveRaw);
 
-    let computedLimit = monthlyLimit;
     let computedCurrent = currentAmount;
     let computedTarget = targetAmount;
 
@@ -133,9 +137,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       cycleId: null,
       typeId: convertType.id,
       name,
-      monthlyLimit: computedLimit ?? 0,
-      currentAmount: computedCurrent ?? 0,
-      targetAmount: computedTarget ?? null,
+      current_amount: computedCurrent ?? 0,
+      target_amount: computedTarget ?? null,
       isActive,
     }, { transaction });
 
@@ -160,9 +163,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       id: created.id,
       name: created.name,
       type_code: typeCode,
-      monthly_limit: created.monthlyLimit === null ? null : Number(created.monthlyLimit),
-      current_amount: Number(created.currentAmount),
-      target_amount: created.targetAmount === null ? null : Number(created.targetAmount),
+      current_amount: Number(created.current_amount),
+      target_amount: created.targetAmount === null ? null : Number(created.target_amount),
       is_active: Boolean(created.isActive),
     });
   } catch (error) {
