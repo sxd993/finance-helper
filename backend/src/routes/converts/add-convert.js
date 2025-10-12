@@ -10,12 +10,18 @@ router.post('/add-convert', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
     const payload = (req.body && req.body.convert) || {};
+    console.log('[add-convert] incoming payload:', JSON.stringify(payload));
 
     const {
       name,
       type_code: typeCode,
+      // common optional
       current_amount: currentRaw = null,
       target_amount: targetRaw = null,
+      monthly_limit: monthlyLimitRaw = null,
+      overall_limit: overallLimitRaw = null,
+      initial_investment: initialInvestmentRaw = null,
+      current_value: currentValueRaw = null,
       is_active: isActiveRaw = true,
     } = payload;
 
@@ -50,6 +56,10 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     const currentAmount = toNumberOrNull(currentRaw) ?? 0;
     const targetAmount = toNumberOrNull(targetRaw);
+    const monthlyLimit = toNumberOrNull(monthlyLimitRaw) ?? 0;
+    const overallLimit = toNumberOrNull(overallLimitRaw) ?? 0;
+    const initialInvestment = toNumberOrNull(initialInvestmentRaw);
+    const currentValue = toNumberOrNull(currentValueRaw);
     const isActive = Boolean(isActiveRaw);
 
     let computedCurrent = currentAmount;
@@ -58,17 +68,14 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     // ⚙️ Логика по типам
     switch (typeCode) {
       case 'important': {
-        console.log('CASE: important');
-        // Временная логика: создаём только с именем и типом
-        computedCurrent = undefined;
+        // Budget convert: allow monthly_limit/overall_limit and optional starting amount
+        computedCurrent = currentAmount;
         computedTarget = undefined;
         break;
       }
 
       case 'wishes': {
-        console.log('CASE: wishes');
-        // Временная логика: создаём только с именем и типом
-        computedCurrent = undefined;
+        computedCurrent = currentAmount;
         computedTarget = undefined;
         break;
       }
@@ -83,7 +90,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       }
 
       case 'investment': {
-        computedCurrent = currentRaw
+        computedCurrent = undefined;
+        computedTarget = undefined;
         break;
       }
 
@@ -105,9 +113,9 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     if (typeCode === 'important' || typeCode === 'wishes') {
       await ConvertBudgetDetails.create({
         convertId: created.id,
-        monthly_limit: 0,
+        monthly_limit: monthlyLimit,
         current_amount: computedCurrent ?? 0,
-        overall_limit: 0,
+        overall_limit: overallLimit,
       }, { transaction });
     } else if (typeCode === 'saving') {
       await ConvertSavingDetails.create({
@@ -118,15 +126,15 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     } else if (typeCode === 'investment') {
       await ConvertInvestmentDetails.create({
         convertId: created.id,
-        initial_investment: null,
-        current_value: computedCurrent ?? null,
+        initial_investment: initialInvestment ?? null,
+        current_value: currentValue ?? null,
         last_updated: new Date(),
       }, { transaction });
     }
 
     await transaction.commit();
 
-    console.log('CREATED CONVERT:', created.toJSON());
+    console.log('[add-convert] created base convert:', created.toJSON());
 
     return res.status(201).json({
       id: created.id,

@@ -1,7 +1,8 @@
 export const MiniCircularProgress = ({ percentage }: { percentage: number }) => {
     const radius = 28;
     const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+    const clamped = Math.max(0, Math.min(100, percentage ?? 0));
+    const strokeDashoffset = circumference - (clamped / 100) * circumference;
 
     const getColor = (percent: number) => {
         if (percent > 85) return '#10b981';
@@ -9,6 +10,11 @@ export const MiniCircularProgress = ({ percentage }: { percentage: number }) => 
         if (percent > 20) return '#f59e0b';
         return '#ef4444';
     };
+
+    const display = clamped.toLocaleString('ru-RU', {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+    });
 
     return (
         <div className="relative inline-flex items-center justify-center">
@@ -25,7 +31,7 @@ export const MiniCircularProgress = ({ percentage }: { percentage: number }) => 
                     cx="32"
                     cy="32"
                     r={radius}
-                    stroke={getColor(percentage)}
+                    stroke={getColor(clamped)}
                     strokeWidth="6"
                     fill="none"
                     strokeDasharray={circumference}
@@ -35,8 +41,8 @@ export const MiniCircularProgress = ({ percentage }: { percentage: number }) => 
                 />
             </svg>
             <div className="absolute">
-                <span className="text-xs font-bold" style={{ color: getColor(percentage) }}>
-                    {percentage}%
+                <span className="text-xs font-bold" style={{ color: getColor(clamped) }}>
+                    {display}%
                 </span>
             </div>
         </div>

@@ -12,13 +12,53 @@ router.get('/get-converts', requireAuth, async (req, res) => {
 
     const result = rows.map((r) => {
       const typeObj = r.type ? { id: r.type.id, code: r.type.code, title: r.type.title } : null;
-      // Flatten amounts based on available detail
-      const overall_limit = r.budget?.overall_limit;
-      const current_amount = r.budget?.current_amount ?? r.saving?.current_amount ?? null;
-      const target_amount = r.saving?.target_amount ?? null;
-      const initial_investment = r.investment?.initial_investment ?? null;
-      const current_value = r.investment?.current_value ?? null;
-      const last_updated = r.investment?.last_updated ?? null;
+      const code = typeObj?.code;
+
+      let overall_limit;
+      let current_amount;
+      let target_amount;
+      let initial_investment;
+      let current_value;
+      let last_updated;
+
+      switch (code) {
+        case 'important':
+        case 'wishes': {
+          overall_limit = r.budget?.overall_limit ?? null;
+          current_amount = r.budget?.current_amount ?? null;
+          target_amount = null;
+          initial_investment = null;
+          current_value = null;
+          last_updated = null;
+          break;
+        }
+        case 'saving': {
+          overall_limit = null;
+          current_amount = r.saving?.current_amount ?? null;
+          target_amount = r.saving?.target_amount ?? null;
+          initial_investment = null;
+          current_value = null;
+          last_updated = null;
+          break;
+        }
+        case 'investment': {
+          overall_limit = null;
+          current_amount = null;
+          target_amount = null;
+          initial_investment = r.investment?.initial_investment ?? null;
+          current_value = r.investment?.current_value ?? null;
+          last_updated = r.investment?.last_updated ?? null;
+          break;
+        }
+        default: {
+          overall_limit = null;
+          current_amount = null;
+          target_amount = null;
+          initial_investment = null;
+          current_value = null;
+          last_updated = null;
+        }
+      }
 
       return ({
         id: r.id,

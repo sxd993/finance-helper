@@ -65,14 +65,43 @@ export const AddConvertsForm = () => {
         </div>
       )}
 
-      {type === 'investment' && (
+      {(type === 'important' || type === 'wishes') && (
         <div className="flex flex-col gap-2 w-full">
-          <h2>Сколько сейчас денег инвестировано?</h2>
+          <h2>Месячный лимит (опционально)</h2>
+          <input
+            {...register('monthly_limit', { valueAsNumber: true })}
+            type="number"
+            min={0}
+            placeholder="Лимит на месяц"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          />
+          <h2>Начальная сумма (опционально)</h2>
           <input
             {...register('current_amount', { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Текущая сумма"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          />
+        </div>
+      )}
+
+      {type === 'investment' && (
+        <div className="flex flex-col gap-2 w-full">
+          <h2>Стартовая сумма (вложено)</h2>
+          <input
+            {...register('initial_investment', { valueAsNumber: true })}
+            type="number"
+            min={0}
+            placeholder="Вложено"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          />
+          <h2>Текущая рыночная стоимость</h2>
+          <input
+            {...register('current_value', { valueAsNumber: true })}
+            type="number"
+            min={0}
+            placeholder="Текущая стоимость"
             className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
           />
         </div>
@@ -89,7 +118,12 @@ export const AddConvertsForm = () => {
         {isPending ? 'Создание...' : 'Создать конверт'}
       </button>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {/* Safe error rendering */}
+      {(() => {
+        const anyErr: any = error;
+        const msg = anyErr?.response?.data?.message || anyErr?.message;
+        return msg ? <p className="text-red-500">{msg}</p> : null;
+      })()}
     </form>
   )
 }
