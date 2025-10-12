@@ -1,4 +1,3 @@
-import { Button } from '@/shared/ui/Button'
 import { useAddConvertForm } from '../model/hooks/useAddConvertForm'
 
 export const AddConvertsForm = () => {
@@ -9,7 +8,7 @@ export const AddConvertsForm = () => {
     convert_types,
     isPending,
     canSubmit,
-    errorMessage,
+    error,
   } = useAddConvertForm()
 
   return (
@@ -90,7 +89,7 @@ export const AddConvertsForm = () => {
         {isPending ? 'Создание...' : 'Создать конверт'}
       </button>
 
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      {error && <p className="text-red-500">{error}</p>}
     </form>
   )
 }

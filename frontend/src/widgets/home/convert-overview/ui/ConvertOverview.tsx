@@ -1,5 +1,5 @@
 import { ConvertCard } from "./ConvertCard";
-import { useConvertOverview } from "../model/useConvertOverview";
+import { useConvertOverview } from "../../../../entities/convert/model/hooks/useConvertOverview";
 import { ConvertOverviewEmpty } from "./ConvertOverviewEmpty";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { Info } from "lucide-react";

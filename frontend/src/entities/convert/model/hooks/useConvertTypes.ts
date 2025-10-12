@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getConvertTypes } from '@entities/convert/api/convertsApi'
+import { getConvertTypes } from '@entities/convert/api'
 import type { ConvertType } from '@entities/convert/model/types'
 
 export const useConvertTypes = () => {

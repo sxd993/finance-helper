@@ -1,5 +1,5 @@
 import { client } from '@shared/api/client';
-import type { User } from '@shared/types/types';
+import type { User } from '@/entities/user';
 
 interface LoginData {
     login: string;
