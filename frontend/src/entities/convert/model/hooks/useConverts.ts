@@ -11,7 +11,7 @@ export const useConverts = () => {
   })
 
   return {
-    converts: data ?? [],
+    converts: data || null,
     isLoading,
     error,
   }

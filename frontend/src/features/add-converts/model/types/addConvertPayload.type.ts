@@ -3,7 +3,6 @@ export interface CreateConvertPayload {
   type_code: string; // important | wishes | saving | investment
   is_active?: boolean;
   // Распределение бюджета
-  monthly_limit?: number | null;
   overall_limit?: number | null;
   current_amount?: number | null;
   // Накопление

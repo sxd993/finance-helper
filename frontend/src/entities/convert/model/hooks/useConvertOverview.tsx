@@ -10,8 +10,9 @@ export const useConvertOverview = () => {
   });
 
   return {
-    convertOverview: Object.entries(data || {}),
+    convertOverview: data ? Object.entries(data) : null,
     isLoading,
     error,
   };
+
 };

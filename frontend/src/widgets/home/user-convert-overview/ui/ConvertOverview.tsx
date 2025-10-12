@@ -9,11 +9,6 @@ export const ConvertOverview = () => {
 
   if (isLoading) return <p>Загрузка...</p>;
 
-  // если с бэка пришёл null — значит, конвертов нет
-  if (!convertOverview) {
-    return <ConvertOverviewEmpty />;
-  }
-
 
   return (
     <div className="flex flex-col">
@@ -22,14 +17,17 @@ export const ConvertOverview = () => {
           title="Общая информация в конвертах"
           icon={<Info className="w-6 h-6 text-primary" />}
         />
-        {convertOverview.map(([key, data]) => (
-          <ConvertCard
-            key={key}
-            type={data.info.title}
-            currentSum={data.currentSum}
-            totalSum={data.totalSum}
-          />
-        ))}
+        {convertOverview === null
+          ? <ConvertOverviewEmpty />
+          :
+          convertOverview.map(([key, data]) => (
+            <ConvertCard
+              key={key}
+              type={data.info.title}
+              currentSum={data.currentSum}
+              totalSum={data.totalSum}
+            />)
+          )}
       </div>
     </div>
   );

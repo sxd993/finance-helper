@@ -5,11 +5,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       field: 'convert_id',
     },
-    monthly_limit: {
-      type: DataTypes.DECIMAL(12, 2),
-      allowNull: false,
-      defaultValue: 0,
-    },
     current_amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,

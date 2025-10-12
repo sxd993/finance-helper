@@ -69,7 +69,7 @@ export const AddConvertsForm = () => {
         <div className="flex flex-col gap-2 w-full">
           <h2>Месячный лимит (опционально)</h2>
           <input
-            {...register('monthly_limit', { valueAsNumber: true })}
+            {...register('overall_limit', { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Лимит на месяц"

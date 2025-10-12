@@ -1,11 +1,10 @@
 export interface Convert {
   id: number;
-  type_id: ConvertType;
+  type: ConvertType;
   name: string;
   overall_limit?: number;
   current_amount: number;
   target_amount?: number;
-  // Investment-specific fields
   initial_investment?: number;
   current_value?: number;
   last_updated?: string;

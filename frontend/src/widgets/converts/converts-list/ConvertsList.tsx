@@ -7,7 +7,7 @@ export const ConvertsList = () => {
     const { converts } = useConverts();
     const { convert_types } = useConvertTypes();
 
-    if (!converts) {
+    if (!converts?.length) {
         return <ConvertsListEmpty />
     }
 
@@ -22,7 +22,7 @@ export const ConvertsList = () => {
             {/* Секции с конвертами по типам */}
             <div className="flex flex-col gap-4">
                 {convert_types.map((type) => {
-                    const typedConverts = converts.filter(c => c.type_id?.id === type.id);
+                    const typedConverts = converts.filter(c => c.type?.id === type.id);
                     if (typedConverts.length === 0) return null;
 
                     return (

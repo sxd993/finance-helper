@@ -5,7 +5,6 @@ export const ConvertOverviewEmpty = () => {
     const navigate = useNavigate()
     return (
         <div className="flex flex-col gap-y-10">
-            <h2 className="text-lg">Общая информация о конвертах</h2>
             <div className="flex flex-col items-center justify-start text-center p-10 shadow-lg rounded-2xl border-1 border-slate-200">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -15,10 +15,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     const {
       name,
       type_code: typeCode,
-      // common optional
       current_amount: currentRaw = null,
       target_amount: targetRaw = null,
-      monthly_limit: monthlyLimitRaw = null,
       overall_limit: overallLimitRaw = null,
       initial_investment: initialInvestmentRaw = null,
       current_value: currentValueRaw = null,
@@ -56,7 +54,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     const currentAmount = toNumberOrNull(currentRaw) ?? 0;
     const targetAmount = toNumberOrNull(targetRaw);
-    const monthlyLimit = toNumberOrNull(monthlyLimitRaw) ?? 0;
     const overallLimit = toNumberOrNull(overallLimitRaw) ?? 0;
     const initialInvestment = toNumberOrNull(initialInvestmentRaw);
     const currentValue = toNumberOrNull(currentValueRaw);
@@ -65,10 +62,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     let computedCurrent = currentAmount;
     let computedTarget = targetAmount;
 
-    // ⚙️ Логика по типам
     switch (typeCode) {
       case 'important': {
-        // Budget convert: allow monthly_limit/overall_limit and optional starting amount
         computedCurrent = currentAmount;
         computedTarget = undefined;
         break;
@@ -113,7 +108,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     if (typeCode === 'important' || typeCode === 'wishes') {
       await ConvertBudgetDetails.create({
         convertId: created.id,
-        monthly_limit: monthlyLimit,
         current_amount: computedCurrent ?? 0,
         overall_limit: overallLimit,
       }, { transaction });

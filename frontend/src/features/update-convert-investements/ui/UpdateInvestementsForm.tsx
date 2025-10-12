@@ -33,7 +33,7 @@ export const UpdateInvestementsForm = ({ convertId, initial_investment, current_
           />
         </label>
       </div>
-      <div className='mt-2 flex justify-end gap-2'>
+      <div className='mt-2 flex justify-center gap-2'>
         {onClose && (
           <button type='button' onClick={onClose} className='h-9 px-3 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50'>Отмена</button>
         )}

@@ -9,6 +9,7 @@ router.get('/get-converts', requireAuth, async (req, res) => {
     const userId = req.userId;
 
     const rows = await getUserConverts(userId);
+    console.log(rows)
 
     const result = rows.map((r) => {
       const typeObj = r.type ? { id: r.type.id, code: r.type.code, title: r.type.title } : null;
@@ -69,7 +70,6 @@ router.get('/get-converts', requireAuth, async (req, res) => {
         initial_investment: initial_investment != null ? Number(initial_investment) : undefined,
         current_value: current_value != null ? Number(current_value) : undefined,
         last_updated,
-        type_id: typeObj,
         type: typeObj,
       })
     });

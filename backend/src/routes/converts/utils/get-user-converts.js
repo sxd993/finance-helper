@@ -6,7 +6,7 @@ async function getUserConverts(userId) {
     attributes: ['id', 'name'],
     include: [
       { model: ConvertType, as: 'type', attributes: ['id', 'code', 'title'] },
-      { model: ConvertBudgetDetails, as: 'budget', required: false, attributes: ['monthly_limit', 'current_amount', 'overall_limit'] },
+      { model: ConvertBudgetDetails, as: 'budget', required: false, attributes: [ 'current_amount', 'overall_limit'] },
       { model: ConvertSavingDetails, as: 'saving', required: false, attributes: ['target_amount', 'current_amount'] },
       { model: ConvertInvestmentDetails, as: 'investment', required: false, attributes: ['initial_investment', 'current_value', 'last_updated'] },
     ],

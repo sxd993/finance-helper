@@ -59,7 +59,6 @@ CREATE TABLE IF NOT EXISTS converts (
 -- Детали для бюджетных конвертов (important/wishes)
 CREATE TABLE IF NOT EXISTS convert_budget_details (
   convert_id INT PRIMARY KEY,
-  monthly_limit DECIMAL(12,2) NOT NULL DEFAULT 0,
   current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
   overall_limit DECIMAL(12,2) DEFAULT 0,
   CONSTRAINT fk_budget_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
@@ -114,7 +113,6 @@ SELECT
   c.type_code,
   c.name,
   c.is_active,
-  b.monthly_limit,
   COALESCE(b.current_amount, s.current_amount, 0) AS current_amount,
   s.target_amount,
   b.overall_limit,

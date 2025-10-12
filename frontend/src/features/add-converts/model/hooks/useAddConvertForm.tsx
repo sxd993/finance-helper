@@ -12,7 +12,6 @@ export const useAddConvertForm = () => {
       type_code: '',
       current_amount: null,
       target_amount: null,
-      monthly_limit: null,
       overall_limit: null,
       initial_investment: null,
       current_value: null,
@@ -24,8 +23,8 @@ export const useAddConvertForm = () => {
   // Контроль доступности сабмита: оба поля обязательны, а для saving — ещё и цель
   const name = watch('name')?.trim()
   const target = watch('target_amount')
-  const monthly = watch('monthly_limit')
   const initialInv = watch('initial_investment')
+  const overall = watch('overall_limit')
   const currentVal = watch('current_value')
 
   const canSubmitBase = Boolean(name) && Boolean(type)
@@ -34,7 +33,7 @@ export const useAddConvertForm = () => {
     canSubmit = canSubmitBase && (target !== null && target !== undefined)
   } else if (type === 'important' || type === 'wishes') {
     // не обязательно, но если число задано — ок
-    canSubmit = canSubmitBase && (monthly === null || typeof monthly === 'number')
+    canSubmit = canSubmitBase && (overall === null || typeof overall === 'number')
   } else if (type === 'investment') {
     // хотя бы одно из значений можно передать
     canSubmit = canSubmitBase && (
@@ -63,7 +62,6 @@ export const useAddConvertForm = () => {
         case 'wishes':
           payload = {
             ...payload,
-            monthly_limit: data.monthly_limit ?? 0,
             overall_limit: data.overall_limit ?? 0,
             current_amount: data.current_amount ?? 0,
           };

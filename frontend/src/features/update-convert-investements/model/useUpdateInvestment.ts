@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateInvestment } from '@/entities/convert/api'
+import { toast } from 'sonner'
 
 type Payload = {
   id: number
@@ -15,6 +16,7 @@ export const useUpdateInvestment = () => {
     mutationFn: updateInvestment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['converts'] })
+      toast.success('Инвестиция обновлена!')
     }
   })
 

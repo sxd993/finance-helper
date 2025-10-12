@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,6 +9,8 @@ interface ModalProps {
   footer?: ReactNode;
   onClose: () => void;
   widthClassName?: string;
+  className?: string;
+  showCloseButton?: boolean;
 }
 
 const modalRoot = typeof document !== "undefined" ? document.body : null;
@@ -21,6 +22,8 @@ export const Modal = ({
   footer,
   onClose,
   widthClassName = "max-w-lg",
+  className = "",
+  showCloseButton = true,
 }: ModalProps) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -38,88 +41,70 @@ export const Modal = ({
     };
   }, [isOpen, onClose]);
 
-  if (!modalRoot) return null;
+  if (!modalRoot || !isOpen) return null;
 
   return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* затемнение фона */}
-          <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* затемнение фона */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* контент модалки */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className={`relative z-10 w-full ${widthClassName} bg-white rounded-2xl shadow-2xl overflow-hidden ${className}`}
+      >
+        {/* Заголовок */}
+        {title != null && (
+          <div className="relative flex items-center justify-center px-6 py-4 border-b border-gray-100">
+            {typeof title === "string" ? (
+              <h2 className="text-lg font-semibold text-gray-900 text-center w-full">
+                {title}
+              </h2>
+            ) : (
+              title
+            )}
+          </div>
+        )}
+
+        {/* Кнопка закрытия */}
+        {showCloseButton && (
+          <button
+            type="button"
             onClick={onClose}
-            aria-hidden="true"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-
-          {/* контент модалки */}
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`relative z-10 w-full ${widthClassName} bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[350px] flex justify-between flex-col py-6`}
+            aria-label="Закрыть"
+            className="absolute right-4 top-4 text-gray-500 hover:text-gray-800 transition"
           >
-            {/* Заголовок */}
-            {(title || true) && (
-              <div className="relative flex items-center justify-centerpx-6 mb-10 ">
-                {typeof title === "string" ? (
-                  <h2 className="text-lg font-semibold text-gray-900 text-center w-full">
-                    {title}
-                  </h2>
-                ) : (
-                  title
-                )}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
 
-                {/* Кнопка закрытия */}
-                <button
-                  type="button"
-                  onClick={onClose}
-                  aria-label="Закрыть"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            )}
+        {/* Тело модалки */}
+        <div className="px-6 py-6">
+          {children}
+        </div>
 
-            {/* Тело модалки */}
-            <div className="f">
-              {children}
-            </div>
-
-            {/* Футер */}
-            {footer && (
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                {footer}
-              </div>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+        {/* Футер */}
+        {footer && (
+          <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>,
     modalRoot
   );
 };
