@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/types', requireAuth, async (req, res) => {
   try {
     const types = await ConvertType.findAll({
-      attributes: ['id', 'code', 'title', 'hasLimit', 'accumulates'],
+      attributes: ['id', 'code', 'title'],
       order: [['id', 'ASC']],
     });
 
@@ -15,8 +15,6 @@ router.get('/types', requireAuth, async (req, res) => {
       id: type.id,
       code: type.code,
       title: type.title,
-      has_limit: Boolean(type.hasLimit),
-      accumulates: Boolean(type.accumulates),
     }));
 
     res.json(payload);

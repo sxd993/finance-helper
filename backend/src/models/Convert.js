@@ -16,29 +16,14 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: null,
       field: 'cycle_id',
     },
-    typeId: {
-      type: DataTypes.INTEGER.UNSIGNED,
+    typeCode: {
+      type: DataTypes.STRING(50),
       allowNull: false,
-      field: 'type_id',
+      field: 'type_code',
     },
     name: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    overall_limit: {
-      type: DataTypes.DECIMAL(12, 2),
-      allowNull: false,
-      defaultValue: 0,
-    },
-    current_amount: {
-      type: DataTypes.DECIMAL(12, 2),
-      allowNull: false,
-      defaultValue: 0,
-    },
-    target_amount: {
-      type: DataTypes.DECIMAL(12, 2),
-      allowNull: true,
-      defaultValue: null,
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -66,13 +51,25 @@ module.exports = (sequelize, DataTypes) => {
 
     Convert.belongsTo(models.ConvertType, {
       as: 'type',
-      foreignKey: 'typeId',
+      foreignKey: 'typeCode',
+      targetKey: 'code',
     });
 
     Convert.hasMany(models.Transaction, {
       as: 'transactions',
       foreignKey: 'convertId',
     });
+
+    // Type-specific details
+    if (models.ConvertBudgetDetails) {
+      Convert.hasOne(models.ConvertBudgetDetails, { as: 'budget', foreignKey: 'convertId' });
+    }
+    if (models.ConvertSavingDetails) {
+      Convert.hasOne(models.ConvertSavingDetails, { as: 'saving', foreignKey: 'convertId' });
+    }
+    if (models.ConvertInvestmentDetails) {
+      Convert.hasOne(models.ConvertInvestmentDetails, { as: 'investment', foreignKey: 'convertId' });
+    }
   };
 
   return Convert;

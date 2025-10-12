@@ -1,6 +1,6 @@
 import { AddIncomeForm } from "@/features/transaction"
 import { AddExpenseForm } from "@/features/transaction"
-import { useTransactionModal } from "@widgets/transaction-modal/model/useTransactionModal"
+import { useTransactionModal } from "@widgets/transaction/transaction-modal"
 
 export const ModalContent = () => {
     const { activeTab } = useTransactionModal()

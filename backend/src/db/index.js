@@ -38,19 +38,21 @@ const Cycle = require('../models/Cycle')(sequelize, DataTypes);
 const ConvertType = require('../models/ConvertType')(sequelize, DataTypes);
 const Convert = require('../models/Convert')(sequelize, DataTypes);
 const Transaction = require('../models/Transaction')(sequelize, DataTypes);
-const Deposit = require('../models/Deposit')(sequelize, DataTypes);
 const Remainder = require('../models/Remainder')(sequelize, DataTypes);
-const ConvertTypeLimit = require('../models/ConvertTypeLimit.js')(sequelize, DataTypes);
+const ConvertBudgetDetails = require('../models/ConvertBudgetDetails')(sequelize, DataTypes);
+const ConvertSavingDetails = require('../models/ConvertSavingDetails')(sequelize, DataTypes);
+const ConvertInvestmentDetails = require('../models/ConvertInvestmentDetails')(sequelize, DataTypes);
 
 const models = {
   User,
   Cycle,
   ConvertType,
   Convert,
-  ConvertTypeLimit,
   Transaction,
-  Deposit,
   Remainder,
+  ConvertBudgetDetails,
+  ConvertSavingDetails,
+  ConvertInvestmentDetails,
 };
 
 Object.values(models).forEach((model) => {
@@ -67,8 +69,9 @@ module.exports = {
   Cycle,
   ConvertType,
   Convert,
-  ConvertTypeLimit,
   Transaction,
-  Deposit,
   Remainder,
+  ConvertBudgetDetails,
+  ConvertSavingDetails,
+  ConvertInvestmentDetails,
 };

@@ -1,6 +1,5 @@
 const express = require('express');
 const { getUserConverts } = require('./utils/get-user-converts');
-const { getUserConvertLimits } = require('./utils/get-user-convert-limits');
 const { getConvertTypes } = require('./utils/get-convert-types');
 const { requireAuth } = require('../../utils/auth');
 
@@ -11,14 +10,12 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
     const userId = req.userId;
     const convertTypes = await getConvertTypes();
     const converts = await getUserConverts(userId);
-    const converts_limit = await getUserConvertLimits(userId);
 
     if (!converts || converts.length === 0) {
       return res.json(null);
     }
 
     const typeByCode = new Map(convertTypes.map((t) => [t.code, t]));
-    const limitsByTypeId = new Map((converts_limit || []).map(l => [l.type_id, l]));
 
     const overview = {};
     for (const convert of converts) {
@@ -35,7 +32,6 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
             ? {
                 code: metaType.code,
                 title: metaType.title,
-                ...(limitsByTypeId.get(metaType.id) || {}),
                 type_id: metaType.id,
               }
             : null,
@@ -66,8 +62,18 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
         case 'wishes':
         case 'important':
           overview[key].currentSum += current;
-          // totalSum существует для этих типов
           overview[key].totalSum += overall;
+          // Дополним info динамическими суммами как лимитами по типу
+          if (overview[key].info) {
+            const used_limit = overview[key].currentSum;
+            const total_limit = overview[key].totalSum;
+            overview[key].info = {
+              ...overview[key].info,
+              total_limit,
+              used_limit,
+              avaliable_limit: (total_limit ?? 0) - (used_limit ?? 0),
+            };
+          }
           // target не используется
           break;
 

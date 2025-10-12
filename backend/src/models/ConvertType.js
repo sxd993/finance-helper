@@ -14,17 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    hasLimit: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-      field: 'has_limit',
-    },
-    accumulates: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
   }, {
     tableName: 'convert_types',
     timestamps: true,
@@ -35,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
   ConvertType.associate = (models) => {
     ConvertType.hasMany(models.Convert, {
       as: 'converts',
-      foreignKey: 'typeId',
+      foreignKey: 'typeCode',
+      sourceKey: 'code',
     });
   };
 

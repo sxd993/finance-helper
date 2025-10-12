@@ -26,7 +26,7 @@ export const ConvertsList = () => {
                     if (typedConverts.length === 0) return null;
 
                     return (
-                        <ConvertSection key={type.id} section_title={type.title}>
+                        <ConvertSection key={type.id} section_title={type.title} section_code={type.code}>
                             {typedConverts.map((convert) => (
                                 <ConvertCard key={convert.id} convert={convert} />
                             ))}

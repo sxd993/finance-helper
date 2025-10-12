@@ -1,5 +1,5 @@
 const express = require('express');
-const { sequelize, Convert, ConvertType, ConvertTypeLimit } = require('../../db');
+const { sequelize, Convert, ConvertType, ConvertBudgetDetails, ConvertSavingDetails, ConvertInvestmentDetails } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
 
 const router = express.Router();
@@ -9,7 +9,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
   try {
     const userId = req.userId;
-    const user = req.user || {};
     const payload = (req.body && req.body.convert) || {};
 
     const {
@@ -94,24 +93,36 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     }
 
     // Формируем данные для создания конверта
-    const createData = {
+    const created = await Convert.create({
       userId,
       cycleId: null,
-      typeId: convertType.id,
+      typeCode: convertType.code,
       name,
       isActive,
-    };
+    }, { transaction });
 
-    // Для saving указываем target_amount, для остальных временно не указываем суммы
-    if (computedTarget !== undefined) {
-      createData.target_amount = computedTarget;
+    // Создаем детализацию по типу
+    if (typeCode === 'important' || typeCode === 'wishes') {
+      await ConvertBudgetDetails.create({
+        convertId: created.id,
+        monthly_limit: 0,
+        current_amount: computedCurrent ?? 0,
+        overall_limit: 0,
+      }, { transaction });
+    } else if (typeCode === 'saving') {
+      await ConvertSavingDetails.create({
+        convertId: created.id,
+        target_amount: computedTarget ?? null,
+        current_amount: computedCurrent ?? 0,
+      }, { transaction });
+    } else if (typeCode === 'investment') {
+      await ConvertInvestmentDetails.create({
+        convertId: created.id,
+        initial_investment: null,
+        current_value: computedCurrent ?? null,
+        last_updated: new Date(),
+      }, { transaction });
     }
-    if (computedCurrent !== undefined) {
-      createData.current_amount = computedCurrent;
-    }
-
-    // Создаём конверт
-    const created = await Convert.create(createData, { transaction });
 
     await transaction.commit();
 
@@ -121,8 +132,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       id: created.id,
       name: created.name,
       type_code: typeCode,
-      current_amount: Number(created.current_amount),
-      target_amount: created.target_amount === null ? null : Number(created.target_amount),
       is_active: Boolean(created.isActive),
     });
   } catch (error) {

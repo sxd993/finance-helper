@@ -5,6 +5,10 @@ export interface Convert {
   overall_limit?: number;
   current_amount: number;
   target_amount?: number;
+  // Investment-specific fields
+  initial_investment?: number;
+  current_value?: number;
+  last_updated?: string;
 }
 
 export interface ConvertType {
@@ -30,6 +34,5 @@ export interface ConvertGroup {
 }
 
 export type ConvertOverviewResponse = Record<string, ConvertGroup>;
-
 
 

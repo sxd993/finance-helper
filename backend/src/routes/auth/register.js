@@ -1,5 +1,5 @@
 const express = require('express');
-const { User, ConvertType, ConvertTypeLimit, sequelize } = require('../../db');
+const { User, ConvertType, sequelize } = require('../../db');
 const {
   findUserByLogin,
   toPublicUser,
@@ -73,40 +73,8 @@ router.post('/', async (req, res) => {
       { transaction }
     );
 
-    // 🧩 Получаем типы конвертов
-    const convertTypes = await ConvertType.findAll({ transaction });
-
-    // 🧮 Создаём лимиты по типам
-    for (const type of convertTypes) {
-      let totalLimit = 0;
-
-      if (resolvedDistributionMode === 'baseline' && normalizedIncome) {
-        switch (type.code) {
-          case 'important':
-            totalLimit = normalizedIncome * (resolvedPercents.important / 100);
-            break;
-          case 'wishes':
-            totalLimit = normalizedIncome * (resolvedPercents.wishes / 100);
-            break;
-          case 'saving':
-            totalLimit = 0;
-            break;
-          case 'investment':
-            totalLimit = 0;
-            break;
-        }
-      }
-
-      await ConvertTypeLimit.create(
-        {
-          userId: user.id,
-          typeId: type.id,
-          totalLimit,
-          usedLimit: 0,
-        },
-        { transaction }
-      );
-    }
+    // Типы конвертов остаются для справочника; лимиты по типам более не создаются
+    await ConvertType.findAll({ transaction });
 
     await transaction.commit();
 

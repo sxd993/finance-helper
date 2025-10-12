@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { useUser } from '@/entities/user';
-import { Header } from '@widgets/header';
-import { Navigation } from '@widgets/navigation';
+import { Header } from '@/widgets/layout/header';
+import { Navigation } from '@/widgets/layout/navigation';
 
 interface ProtectedRouteProps {
   children: ReactNode;

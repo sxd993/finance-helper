@@ -1,5 +1,5 @@
 import { Modal } from "@/shared/ui/Modal"
-import { useTransactionModal } from "../model/useTransactionModal"
+import { useTransactionModal } from "@widgets/transaction/transaction-modal"
 import { ModalTabs } from "./ModalTabs"
 import { ModalContent } from "./ModalContent"
 

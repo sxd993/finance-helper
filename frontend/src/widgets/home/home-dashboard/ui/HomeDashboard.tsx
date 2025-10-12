@@ -1,7 +1,7 @@
 import { BalanceCard } from "@/shared/ui/BalanceCard"
 import { Button } from "@/shared/ui/Button"
-import { TransactionModal } from "@widgets/transaction-modal"
-import { useTransactionModal } from "@widgets/transaction-modal/model/useTransactionModal"
+import { TransactionModal } from "@widgets/transaction/transaction-modal"
+import { useTransactionModal } from "@widgets/transaction/transaction-modal"
 
 export const HomeDashboard = () => {
     const { openModal } = useTransactionModal()

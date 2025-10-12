@@ -1,4 +1,4 @@
-import { ConvertOverview } from "@/widgets/home/convert-overview";
+import { ConvertOverview } from "@/widgets/home/user-convert-overview";
 import { HomeDashboard } from "@/widgets/home/home-dashboard";
 
 export const HomePage = () => {

@@ -12,12 +12,23 @@ router.get('/get-converts', requireAuth, async (req, res) => {
 
     const result = rows.map((r) => {
       const typeObj = r.type ? { id: r.type.id, code: r.type.code, title: r.type.title } : null;
+      // Flatten amounts based on available detail
+      const overall_limit = r.budget?.overall_limit;
+      const current_amount = r.budget?.current_amount ?? r.saving?.current_amount ?? null;
+      const target_amount = r.saving?.target_amount ?? null;
+      const initial_investment = r.investment?.initial_investment ?? null;
+      const current_value = r.investment?.current_value ?? null;
+      const last_updated = r.investment?.last_updated ?? null;
+
       return ({
         id: r.id,
         name: r.name,
-        overall_limit: r.overall_limit !== null && r.overall_limit !== undefined ? Number(r.overall_limit) : undefined,
-        current_amount: r.current_amount !== null && r.current_amount !== undefined ? Number(r.current_amount) : undefined,
-        target_amount: r.target_amount !== null && r.target_amount !== undefined ? Number(r.target_amount) : undefined,
+        overall_limit: overall_limit != null ? Number(overall_limit) : undefined,
+        current_amount: current_amount != null ? Number(current_amount) : undefined,
+        target_amount: target_amount != null ? Number(target_amount) : undefined,
+        initial_investment: initial_investment != null ? Number(initial_investment) : undefined,
+        current_value: current_value != null ? Number(current_value) : undefined,
+        last_updated,
         type_id: typeObj,
         type: typeObj,
       })

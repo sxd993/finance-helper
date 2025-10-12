@@ -83,11 +83,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
     });
 
-    User.hasMany(models.Deposit, {
-      as: 'deposits',
-      foreignKey: 'userId',
-    });
-
     User.hasMany(models.Remainder, {
       as: 'remainders',
       foreignKey: 'userId',
