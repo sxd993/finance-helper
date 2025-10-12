@@ -24,11 +24,11 @@ export const ConvertSection: React.FC<ConvertSectionProps> = ({
     }
   };
   return (
-    <section className="flex flex-col gap-3 bg-white">
+    <section className="flex flex-col gap-3 bg-white ">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
           {renderIcon(section_code)}
-          <span>{section_title}</span>
+          <h2 className='text-lg'>{section_title}</h2>
         </h3>
       </div>
       {children}

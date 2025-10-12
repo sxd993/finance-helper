@@ -33,7 +33,7 @@ export const Button = ({
   const textClass = (textClassMap as Record<string, string>)[text] ?? text;
 
   const sizeClass = size === 'sm'
-    ? 'py-1 px-3 rounded-md flex justify-between items-center'
+    ? 'py-1 px-1 rounded-md flex justify-between items-center'
     : 'py-3 px-6 rounded-2xl';
 
   return (

@@ -4,7 +4,7 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <main className='max-w-7xl mx-auto p-4'>
+    <main className='max-w-7xl mx-auto p-4 bg-gray-50'>
       <App />
     </main>
   </StrictMode>,
