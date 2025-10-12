@@ -1,12 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateInvestment } from '@/entities/convert/api'
-import { toast } from 'sonner'
+import type { UpdateInvestmentPayload } from '@/entities/convert/api/updateInvestment'
 
-type Payload = {
-  id: number
-  initial_investment: number
-  current_value: number
-}
+import { toast } from 'sonner'
 
 export const useUpdateInvestment = () => {
   const queryClient = useQueryClient();
@@ -20,7 +16,7 @@ export const useUpdateInvestment = () => {
     }
   })
 
-  const onUpdateInvestment = async (data: Payload) => {
+  const onUpdateInvestment = async (data: UpdateInvestmentPayload) => {
     await mutation.mutateAsync(data)
   }
 

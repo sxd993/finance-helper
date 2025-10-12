@@ -5,7 +5,7 @@ export const onboardingCards: OnboardingCardList = [
         id: 1,
         title: "Что делает Finance Helper?",
         description: "Finance Helper помогает держать финансы под контролем. Ты видишь, сколько денег осталось в каждом конверте и можешь планировать траты без лишней головной боли.",
-        image: 'https://img.icons8.com/?size=1200&id=P315u02MbQ5F&format=png'
+        image: 'https://svgsilh.com/svg_v2/1363011.svg'
     },
     {
         id: 2,
