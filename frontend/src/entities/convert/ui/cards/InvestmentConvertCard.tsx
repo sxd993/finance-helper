@@ -49,8 +49,8 @@ export const InvestmentConvertCard = ({ convert, balance, returnPercentage, abso
 
       {/* Правая часть*/}
       <div className='flex flex-col gap-2'>
-        <div className='flex items-center'>
-          <span className={`text-sm font-semibold ${colorClass}`}>
+        <div className='flex justify-center'>
+          <span className={` ${colorClass}`}>
             {formatPrice(signedAmount)}
           </span>
           <span className='text-slate-300'>•</span>
