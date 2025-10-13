@@ -10,6 +10,7 @@ import { ConvertsPage, AddConvertsPage } from '@pages/converts';
 import { TransactionsPage } from '@/pages/transactions';
 import { HomePage } from '@pages/home';
 import { SettingsPage } from '@pages/settings';
+import { StoreProvider } from './app/providers/StoreProvider/StoreProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -82,8 +83,10 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster position="bottom-right" richColors duration={2000} />
+      <StoreProvider>
+        <RouterProvider router={router} />
+        <Toaster position="bottom-right" richColors duration={2000} />
+      </StoreProvider>
     </QueryClientProvider>
   );
 }

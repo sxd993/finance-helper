@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { formatPrice } from '@/shared/utils/formatPrice';
 import type { Convert } from '../../model/types';
-import { TrendingUp, TrendingDown, Minus, Edit3 } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 import { Modal } from '@/shared/ui/Modal';
 import { UpdateInvestementsForm } from '@/features/update-convert-investements/ui/UpdateInvestementsForm';
 import { Button } from '@/shared/ui/Button';
+import { useModal } from '@/shared/ui/Modal/model/useModal';
 
 type Props = {
   convert: Convert;
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const InvestmentConvertCard = ({ convert, balance, returnPercentage, absoluteReturn, isProfit, isLoss }: Props) => {
-  const [isInvestOpen, setInvestOpen] = useState(false);
+  const { isOpen, open, close } = useModal('invest-card');
   const colorClass = isProfit ? 'text-emerald-600' : isLoss ? 'text-rose-600' : 'text-slate-600';
   const percentText = `${Math.abs(returnPercentage).toFixed(2)}%`;
   const signedAmount = isProfit
@@ -61,12 +61,12 @@ export const InvestmentConvertCard = ({ convert, balance, returnPercentage, abso
           bg='white'
           text='slate-700'
           size='sm'
-          onClick={() => setInvestOpen(true)}
+          onClick={open}
         />
       </div>
       <Modal
-        isOpen={isInvestOpen}
-        onClose={() => setInvestOpen(false)}
+        isOpen={isOpen}
+        onClose={close}
         title={
           <div className='flex items-center gap-2 justify-center'>
             <Edit3 className='w-4 h-4 text-slate-700' />
@@ -78,7 +78,7 @@ export const InvestmentConvertCard = ({ convert, balance, returnPercentage, abso
           convertId={convert.id}
           initial_investment={convert.initial_investment ?? null}
           current_value={convert.current_value ?? null}
-          onClose={() => setInvestOpen(false)}
+          onClose={close}
         />
       </Modal>
     </div>
