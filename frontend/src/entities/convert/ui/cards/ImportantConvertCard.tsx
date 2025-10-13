@@ -17,9 +17,9 @@ export const ImportantConvertCard = ({ convert, balance, limit, spent, percentag
         <h4 className="text-md text-slate-600">{convert.name}</h4>
       </div>
       <div className='flex items-baseline gap-2 justify-start mb-1'>
-        <p className='text-black text-3xl'>{formatPrice(balance)}</p>
+        <p className='text-black xs:text-2xl text-lg'>{formatPrice(balance)}</p>
         {limit > 0 && (
-          <p className='text-xl text-slate-400'>/ {formatPrice(limit)}</p>
+          <p className='text-sm xs:text-md text-slate-400'>/ {formatPrice(limit)}</p>
         )}
       </div>
       {limit > 0 && (

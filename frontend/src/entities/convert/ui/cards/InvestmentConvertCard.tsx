@@ -34,7 +34,7 @@ export const InvestmentConvertCard = ({ convert, balance, returnPercentage, abso
           <h4 className="text-md text-slate-600">{convert.name}</h4>
         </div>
         <div className='flex items-baseline gap-2 justify-start'>
-          <p className='text-black text-3xl'>{formatPrice(convert.current_value ?? balance)}</p>
+          <p className='text-black text-xl'>{formatPrice(convert.current_value ?? balance)}</p>
         </div>
         <div className='text-sm text-slate-600'>
           <div>
