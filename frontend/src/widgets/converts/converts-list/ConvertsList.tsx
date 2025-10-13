@@ -17,22 +17,24 @@ export const ConvertsList = () => {
     return (
         <div className="flex flex-col gap-10">
             {/* Заголовок секции */}
-            <div className="flex justify-between flex-col gap-5 sm:flex-row">
+            <div className="flex xs:justify-between justify-center xs:flex-row flex-col gap-5">
                 <SectionTitle
                     title="Ваши конверты"
                     subtitle="Управляйте своими финансовыми целями"
                     icon={<Wallet className="w-6 h-6 text-primary" />}
                 />
-                <Button 
-                title="+ Добавить конверт" 
-                onClick={
-                    () => {
-                        navigate('/converts/add-converts')
-                    }
-                }
-                size="md"
-                bg="primary"
-                />
+                <div className="flex xs:justify-between justify-center">
+                    <Button
+                        title="Добавить конверт"
+                        onClick={
+                            () => {
+                                navigate('/converts/add-converts')
+                            }
+                        }
+                        size='md'
+                        bg="primary"
+                    />
+                </div>
             </div>
 
             {/* Секции с конвертами по типам */}

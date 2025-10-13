@@ -19,7 +19,8 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
 
     const overview = {};
     for (const convert of converts) {
-      const code = convert.type.code;
+      const code = convert?.type?.code;
+      if (!code) continue;
       const key = `convert_${code}`;
 
       if (!overview[key]) {
@@ -37,33 +38,35 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
             : null,
         };
 
-        // Инициализация по типу
+        // Инициализация по типу (4 разных варианта)
         switch (code) {
           case 'wishes':
           case 'important':
-            base.totalSum = 0; // для этих типов показываем общий доступный лимит
+            base.totalSum = 0; // суммируем общий доступный лимит по бюджету
             break;
           case 'saving':
+            base.totalSum = 0; // суммируем целевые значения для отображения «из»
+            base.targetAmount = 0;
+            break;
           case 'investment':
           default:
-            base.totalSum = null;
+            base.totalSum = null; // для инвестиций общий лимит не отображаем
             break;
         }
 
         overview[key] = base;
       }
 
-      const current = convert.current_amount != null ? Number(convert.current_amount) : 0;
-      const overall = convert.overall_limit != null ? Number(convert.overall_limit) : 0;
-      const target = convert.target_amount != null ? Number(convert.target_amount) : null;
-
-      // Агрегация по типам
+      // Агрегация по типам на основе вложенных полей, как в get-converts
       switch (code) {
         case 'wishes':
-        case 'important':
+        case 'important': {
+          const current = convert?.budget?.current_amount != null ? Number(convert.budget.current_amount) : 0;
+          const overall = convert?.budget?.overall_limit != null ? Number(convert.budget.overall_limit) : 0;
           overview[key].currentSum += current;
           overview[key].totalSum += overall;
-          // Дополним info динамическими суммами как лимитами по типу
+
+          // Обновим динамическую информацию по лимитам
           if (overview[key].info) {
             const used_limit = overview[key].currentSum;
             const total_limit = overview[key].totalSum;
@@ -74,20 +77,23 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
               avaliable_limit: (total_limit ?? 0) - (used_limit ?? 0),
             };
           }
-          // target не используется
           break;
-
-        case 'saving':
+        }
+        case 'saving': {
+          const current = convert?.saving?.current_amount != null ? Number(convert.saving.current_amount) : 0;
+          const target = convert?.saving?.target_amount != null ? Number(convert.saving.target_amount) : 0;
           overview[key].currentSum += current;
-          if (target != null && overview[key].targetAmount == null) {
-            overview[key].targetAmount = target;
-          }
+          overview[key].totalSum += target; // отображаем общую цель «из»
+          overview[key].targetAmount += target;
           break;
-
+        }
         case 'investment':
-        default:
-          overview[key].currentSum += current;
+        default: {
+          // Для инвестиций показываем суммарную текущую стоимость портфеля
+          const currentValue = convert?.investment?.current_value != null ? Number(convert.investment.current_value) : 0;
+          overview[key].currentSum += currentValue;
           break;
+        }
       }
     }
 

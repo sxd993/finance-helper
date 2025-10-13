@@ -14,7 +14,7 @@ export const AddConvertsForm = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white px-6 py-8 flex flex-col items-center gap-4 rounded-lg w-full border border-slate-200 shadow-lg"
+      className="bg-white px-6 py-8 flex flex-col items-center gap-4 rounded-lg w-full border border-slate-200 shadow-lg "
     >
       {/* Название */}
       <div className="flex flex-col gap-2 w-full">

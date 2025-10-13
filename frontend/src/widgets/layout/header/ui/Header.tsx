@@ -17,7 +17,7 @@ export const Header = ({ user }: HeaderProps) => {
     location.pathname.startsWith("/settings/");
 
   return (
-    <header className={`flex justify-start items-center max-w-3xl mx-auto border-b border-slate-200 pb-5`}>
+    <header className={`flex justify-start items-center max-w-3xl border-b border-slate-200 pb-5 mx-auto w-full`}>
       <div>
         {showBackButton && (
           <button

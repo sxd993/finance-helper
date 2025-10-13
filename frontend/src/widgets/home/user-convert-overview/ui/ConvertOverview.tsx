@@ -14,18 +14,18 @@ export const ConvertOverview = () => {
     <div className="flex flex-col">
       <div className="flex flex-col gap-5">
         <SectionTitle
-          title="Общая информация в конвертах"
+          title="Общая информация"
           icon={<Info className="w-6 h-6 text-primary" />}
         />
         {convertOverview === null
           ? <ConvertOverviewEmpty />
           :
-          convertOverview.map(([key, data]) => (
+          convertOverview.map(([key, convert]) => (
             <ConvertCard
               key={key}
-              type={data.info.title}
-              currentSum={data.currentSum}
-              totalSum={data.totalSum}
+              type={convert.info.title}
+              currentSum={convert.currentSum}
+              code={convert.info.code}
             />)
           )}
       </div>

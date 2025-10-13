@@ -14,6 +14,8 @@
   --color-saving: #22c55e;
   --color-investment: #8b5cf6;
   --color-remainder: #64748b;
+
+  --breakpoint-xs: 426px;
 }
 
 body {
