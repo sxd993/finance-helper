@@ -1,14 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/app/providers";
+import { openModal, closeModal, toggleModal } from "./modal.slice";
 
-// Максимально простой локальный хук модалки.
-// Поддерживает сигнатуру useModal(id, scope?) для совместимости, но
-// работает локально без Redux — управляет только открытием/закрытием.
-export function useModal(_id?: string, _scope?: string | number) {
-  const [isOpen, setIsOpen] = useState(false);
+export const useModal = (id: string) => {
+    const dispatch = useDispatch();
+    const isOpen = useSelector((state: RootState) => state.modal[id] || false);
 
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
-  const toggle = useCallback(() => setIsOpen((v) => !v), []);
+    const open = () => dispatch(openModal(id));
+    const close = () => dispatch(closeModal(id));
+    const toggle = () => dispatch(toggleModal(id));
 
-  return { isOpen, open, close, toggle };
-}
+    return { isOpen, open, close, toggle };
+};

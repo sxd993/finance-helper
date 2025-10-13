@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const InvestmentConvertCard = ({ convert, balance, returnPercentage, absoluteReturn, isProfit, isLoss }: Props) => {
-  const { isOpen, open, close } = useModal('invest-card');
+  const { isOpen, open, close } = useModal(`invest-card-${convert.id}`);
   const colorClass = isProfit ? 'text-emerald-600' : isLoss ? 'text-rose-600' : 'text-slate-600';
   const percentText = `${Math.abs(returnPercentage).toFixed(2)}%`;
   const signedAmount = isProfit

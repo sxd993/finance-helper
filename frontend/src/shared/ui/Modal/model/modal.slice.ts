@@ -4,7 +4,9 @@ interface ModalState {
   [key: string]: boolean;
 }
 
-const initialState: ModalState = {};
+const initialState: ModalState = {
+    
+};
 
 export const modalSlice = createSlice({
   name: "modal",
