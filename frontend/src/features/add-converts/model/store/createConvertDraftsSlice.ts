@@ -9,9 +9,12 @@ export const createConvertDraftsSlice = createSlice({
     reducers: {
         addConvertInStore: (state, action: PayloadAction<CreateConvertPayload>) => {
             state.push(action.payload);
+        },
+        clearDrafts: (state) => {
+            state.length = 0;
         }
     }
 });
 
-export const { addConvertInStore } = createConvertDraftsSlice.actions;
+export const { addConvertInStore, clearDrafts } = createConvertDraftsSlice.actions;
 export const createConvertDraftsReducer = createConvertDraftsSlice.reducer;

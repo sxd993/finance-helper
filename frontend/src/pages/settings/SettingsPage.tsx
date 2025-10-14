@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
 
 export function SettingsPage() {
+  useScrollToTop();
   const [monthlyIncome, setMonthlyIncome] = useState(260000);
   const [weeklyBudget, setWeeklyBudget] = useState(25000);
   const [userName, setUserName] = useState('Владимир');

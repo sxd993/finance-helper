@@ -6,7 +6,7 @@ import { Toaster } from 'sonner'
 
 import { ProtectedRoute, PublicRoute } from '@app/providers/router';
 import { AuthPage } from '@pages/auth';
-import { ConvertsPage, AddConvertsPage } from '@pages/converts';
+import { ConvertsPage, AddConvertsPage, EditConvertPage } from '@pages/converts';
 import { TransactionsPage } from '@/pages/transactions';
 import { HomePage } from '@pages/home';
 import { SettingsPage } from '@pages/settings';
@@ -51,6 +51,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <ConvertsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/converts/edit/:type_code',
+    element: (
+      <ProtectedRoute>
+        <EditConvertPage />
       </ProtectedRoute>
     ),
   },

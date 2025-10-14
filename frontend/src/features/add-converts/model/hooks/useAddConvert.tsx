@@ -2,9 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { addConvert } from "../../api/addConvert"
 import type { CreateConvertPayload } from "../types/addConvertPayload.type"
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { clearDrafts } from "@features/add-converts/model/store/createConvertDraftsSlice";
 
 export const useAddConvert = () => {
     const queryClient = useQueryClient();
+    const dispatch = useDispatch()
 
     const addConvertMutation = useMutation({
         mutationKey: ['add-convert'],
@@ -12,7 +15,7 @@ export const useAddConvert = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['converts'] })
             toast.success('Конверты успешно созданы')
-            // Добавить чистку черновика
+            dispatch(clearDrafts())
         }
     })
 

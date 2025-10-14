@@ -1,6 +1,6 @@
 import type { User } from "./types"
 import { useQuery } from "@tanstack/react-query"
-import { UserApi } from "../api/userApi"
+import { UserApi } from "../api/UserApi"
 
 interface UseUserResult {
     user: User | null,

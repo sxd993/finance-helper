@@ -3,8 +3,10 @@ import { useSelector } from "react-redux"
 import type { RootState } from "@/app/providers"
 import { ConvertDraftsEmpty } from "@/features/add-converts/ui/ConvertDraftsEmpty"
 import { ConvertDraftsList } from "@/features/add-converts/ui/ConvertDraftsList"
+import { useScrollToTop } from "@/shared/hooks/useScrollToTop"
 
 export const AddConvertsPage = () => {
+    useScrollToTop();
     const drafts = useSelector((state: RootState) => state.converts_drafts)
     const hasDrafts = drafts.length > 0
 

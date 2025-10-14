@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Wallet } from 'lucide-react';
 
 import { CarIcon, FoodIcon, GameIcon } from '@shared/ui/icons/IconComponents';
+import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
 
 export const TransactionsPage = () => {
+    useScrollToTop();
     const [selectedCategory, setSelectedCategory] = useState<'all' | 'food' | 'transport' | 'entertainment'>('all');
     const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
     const expenses = [

@@ -17,13 +17,12 @@ export const Header = ({ user }: HeaderProps) => {
     location.pathname.startsWith("/settings/");
 
   const isEditConvertPage = location.pathname.startsWith("/converts/edit/");
-  const getTitle = location.pathname.includes()
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200">
-      <div className="mx-auto max-w-3xl p-5 flex items-center w-full">
+    <header className="sticky top-0 z-50 max-w-3xl bg-white border-b border-slate-200 w-full mx-auto">
+      <div className="mx-auto w-full p-5 flex items-center">
         {showBackButton && (
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => navigate(-1)}
               aria-label="Назад"
@@ -32,7 +31,7 @@ export const Header = ({ user }: HeaderProps) => {
               <ArrowLeft size={24} />
             </button>
             {isEditConvertPage && (
-              <h1 className="text-base font-semibold text-slate-900">Настройка категории {}</h1>
+              <h1 className="text-lg font-semibold text-slate-900">Настройка категории</h1>
             )}
           </div>
         )}
