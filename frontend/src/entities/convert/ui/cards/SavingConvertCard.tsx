@@ -21,8 +21,8 @@ export const SavingConvertCard = ({ convert, balance, goal_percentage, remaining
         </div>
       </div>
       {typeof convert.target_amount === 'number' && convert.target_amount > 0 && (
-        <p className='text-slate-600'>
-          <div className='text-sm'>
+        <div>
+          <div className='text-sm text-slate-600'>
             <span className='text-slate-500'>Цель: </span>
             <span className='mr-2'>{formatPrice(convert.target_amount)}</span>
           </div>
@@ -30,7 +30,7 @@ export const SavingConvertCard = ({ convert, balance, goal_percentage, remaining
             <span className='text-slate-500'>Осталось: </span>
             <span className=''>{formatPrice(remaining_to_goal)}</span>
           </div>
-        </p>
+        </div>
       )}
     </div>
     <div className='ml-1 flex items-center justify-center'>

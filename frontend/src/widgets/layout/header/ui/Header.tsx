@@ -2,12 +2,16 @@ import { CalendarIcon, ArrowLeft, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { User } from "@/entities/user";
 import { currentDay, currentDate } from "../model/const";
+import { useParams } from "react-router-dom";
+import { formatTypeCode } from "@/features/add-converts/model/lib/formatTypeCode";
+import { RenderConvertIcon } from "@/shared/ui/RenderConvertIcon";
 
 interface HeaderProps {
   user: User | null;
 }
 
 export const Header = ({ user }: HeaderProps) => {
+  const { type_code } = useParams<{ type_code: string }>();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -22,44 +26,52 @@ export const Header = ({ user }: HeaderProps) => {
     <header className="sticky top-0 z-50 max-w-3xl bg-white border-b border-slate-200 w-full mx-auto">
       <div className="mx-auto w-full p-5 flex items-center">
         {showBackButton && (
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center w-full justify-center">
             <button
               onClick={() => navigate(-1)}
               aria-label="Назад"
-              className="items-center gap-2 px-3 py-1.5 rounded-2xl text-slate-700 text-sm hover:bg-slate-200 active:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl text-slate-700 text-sm hover:bg-slate-200 active:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 absolute left-0"
             >
               <ArrowLeft size={24} />
             </button>
             {isEditConvertPage && (
-              <h1 className="text-lg font-semibold text-slate-900">Настройка категории</h1>
+              <div className="flex flex-col items-center gap-1">
+                <h1 className="text-base sm:text-lg font-semibold text-slate-900">Настройка категории</h1>
+                {type_code && (
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                    {RenderConvertIcon(type_code)}
+                    <span className="text-sm">{formatTypeCode(type_code)}</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}
 
         {!showBackButton && (
           <div className="flex items-center justify-between w-full">
-          {/* Левая часть: информация */}
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline gap-1">
-                <h1 className="text-lg font-bold text-gray-900">Привет,</h1>
-                <span className="text-lg font-bold text-primary">
-                  {user?.name || "Пользователь"}!
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <CalendarIcon size={14} className="text-blue-500" />
-                <p>
-                  {currentDay}, {currentDate}
-                </p>
+            {/* Левая часть: информация */}
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-baseline gap-1">
+                  <h1 className="text-lg font-bold text-gray-900">Привет,</h1>
+                  <span className="text-lg font-bold text-primary">
+                    {user?.name || "Пользователь"}!
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CalendarIcon size={14} className="text-blue-500" />
+                  <p>
+                    {currentDay}, {currentDate}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Правая часть: аватар */}
-          <div className=" rounded-md  flex items-center justify-center">
-            {<Settings width={30} height={30} />}
-          </div>
+            {/* Правая часть: аватар */}
+            <div className=" rounded-md  flex items-center justify-center">
+              {<Settings width={30} height={30} />}
+            </div>
           </div>
         )}
       </div>

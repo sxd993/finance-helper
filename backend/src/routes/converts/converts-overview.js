@@ -21,7 +21,8 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
     for (const convert of converts) {
       const code = convert?.type?.code;
       if (!code) continue;
-      const key = `convert_${code}`;
+      // Новые имена агрегатов: без префикса "convert_" (и без опечаток)
+      const key = code;
 
       if (!overview[key]) {
         const metaType = typeByCode.get(code);
@@ -57,7 +58,7 @@ router.get('/converts-overview', requireAuth, async (req, res) => {
         overview[key] = base;
       }
 
-      // Агрегация по типам на основе вложенных полей, как в get-converts
+      // Агрегация по типам на основе вложенных полей
       switch (code) {
         case 'wishes':
         case 'important': {

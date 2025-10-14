@@ -7,7 +7,8 @@ export type {
 // Hooks
 export {
   useConverts,
-  useConvertTypes
+  useConvertTypes,
+  useConvertOverview
 } from './model/hooks';
 
 // API
