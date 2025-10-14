@@ -16,23 +16,29 @@ export const Header = ({ user }: HeaderProps) => {
     location.pathname.startsWith("/transactions/") ||
     location.pathname.startsWith("/settings/");
 
-  return (
-    <header className={`flex items-center max-w-3xl border-b border-slate-200 pb-5 mx-auto w-full`}>
-      {showBackButton && (
-        <div>
-          <button
-            onClick={() => navigate(-1)}
-            aria-label="Назад"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 text-slate-700 text-sm hover:bg-slate-50 active:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <ArrowLeft size={16} />
-            <span>Назад</span>
-          </button>
-        </div>
-      )}
+  const isEditConvertPage = location.pathname.startsWith("/converts/edit/");
+  const getTitle = location.pathname.includes()
 
-      {!showBackButton && (
-        <div className="flex items-center justify-between w-full">
+  return (
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200">
+      <div className="mx-auto max-w-3xl p-5 flex items-center w-full">
+        {showBackButton && (
+          <div className="flex items-center justify-between w-full">
+            <button
+              onClick={() => navigate(-1)}
+              aria-label="Назад"
+              className="items-center gap-2 px-3 py-1.5 rounded-2xl text-slate-700 text-sm hover:bg-slate-200 active:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <ArrowLeft size={24} />
+            </button>
+            {isEditConvertPage && (
+              <h1 className="text-base font-semibold text-slate-900">Настройка категории {}</h1>
+            )}
+          </div>
+        )}
+
+        {!showBackButton && (
+          <div className="flex items-center justify-between w-full">
           {/* Левая часть: информация */}
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-1">
@@ -55,8 +61,9 @@ export const Header = ({ user }: HeaderProps) => {
           <div className=" rounded-md  flex items-center justify-center">
             {<Settings width={30} height={30} />}
           </div>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </header>
   );
 };
