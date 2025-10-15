@@ -1,12 +1,16 @@
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 
+-- ============================================================================
+-- ОСНОВНЫЕ ТАБЛИЦЫ
+-- ============================================================================
+
 -- Пользователи
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   login VARCHAR(255) NOT NULL UNIQUE,
   name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   distribution_mode ENUM('baseline', 'flex') NOT NULL DEFAULT 'baseline',
   monthly_income DECIMAL(12,2) DEFAULT NULL,
@@ -16,16 +20,18 @@ CREATE TABLE IF NOT EXISTS users (
   percent_saving DECIMAL(5,2) NOT NULL DEFAULT 10.0,
   percent_investment DECIMAL(5,2) NOT NULL DEFAULT 10.0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_users_email (email),
+  INDEX idx_users_login (login)
 ) ENGINE=InnoDB;
 
--- Типы конвертов
+-- Типы конвертов (справочник)
 CREATE TABLE IF NOT EXISTS convert_types (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  code VARCHAR(50) NOT NULL UNIQUE,  -- important, wishes, saving, investment
+  code VARCHAR(50) PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  description TEXT DEFAULT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- Циклы
@@ -34,70 +40,70 @@ CREATE TABLE IF NOT EXISTS cycles (
   user_id INT NOT NULL,
   start_date DATE NOT NULL,
   end_date DATE DEFAULT NULL,
-  is_closed TINYINT(1) NOT NULL DEFAULT 0,
+  is_closed BOOLEAN NOT NULL DEFAULT FALSE,
+  closed_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_cycles_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  CONSTRAINT fk_cycles_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_cycles_user_dates (user_id, start_date, end_date),
+  INDEX idx_cycles_user_closed (user_id, is_closed)
 ) ENGINE=InnoDB;
 
--- Базовая таблица конвертов
+-- Конверты (упрощенная единая таблица)
 CREATE TABLE IF NOT EXISTS converts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  cycle_id INT DEFAULT NULL,          -- NULL = накопительный
-  type_code VARCHAR(50) NOT NULL,     -- important, wishes, saving, investment
+  cycle_id INT DEFAULT NULL COMMENT 'NULL = накопительный конверт',
+  type_code VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
-  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  
+  -- Универсальные поля
+  target_amount DECIMAL(12,2) DEFAULT NULL COMMENT 'Цель для saving, лимит для important/wishes',
+  initial_amount DECIMAL(12,2) DEFAULT NULL COMMENT 'Начальная сумма для investment',
+  
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
   CONSTRAINT fk_converts_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_converts_cycles FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE CASCADE,
-  CONSTRAINT fk_converts_types_code FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE RESTRICT,
+  CONSTRAINT fk_converts_cycles FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE SET NULL,
+  CONSTRAINT fk_converts_types FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE RESTRICT,
+  
   INDEX idx_converts_user_active (user_id, is_active),
-  INDEX idx_converts_type_code (type_code)
+  INDEX idx_converts_user_type (user_id, type_code),
+  INDEX idx_converts_cycle (cycle_id),
+  INDEX idx_converts_type (type_code)
 ) ENGINE=InnoDB;
 
--- Детали для конвертов типа important
-CREATE TABLE IF NOT EXISTS convert_important_details (
-  convert_id INT PRIMARY KEY,
-  current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
-  overall_limit DECIMAL(12,2) DEFAULT 0,
-  CONSTRAINT fk_important_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+-- Транзакции - единственный источник правды о деньгах
+CREATE TABLE IF NOT EXISTS transactions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  convert_id INT NOT NULL,
+  type ENUM('deposit', 'spend', 'transfer_in', 'transfer_out') NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  note TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  
+  CONSTRAINT fk_transactions_converts FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE,
+  CONSTRAINT chk_amount_positive CHECK (amount > 0),
+  
+  INDEX idx_transactions_convert_date (convert_id, created_at DESC),
+  INDEX idx_transactions_type (type),
+  INDEX idx_transactions_created (created_at)
 ) ENGINE=InnoDB;
 
--- Детали для конвертов типа wishes
-CREATE TABLE IF NOT EXISTS convert_wishes_details (
-  convert_id INT PRIMARY KEY,
-  current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
-  overall_limit DECIMAL(12,2) DEFAULT 0,
-  CONSTRAINT fk_wishes_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- Детали для накоплений (saving)
-CREATE TABLE IF NOT EXISTS convert_saving_details (
-  convert_id INT PRIMARY KEY,
-  target_amount DECIMAL(12,2) DEFAULT NULL,
-  current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
-  CONSTRAINT fk_saving_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- Детали для инвестиций (investment)
-CREATE TABLE IF NOT EXISTS convert_investment_details (
-  convert_id INT PRIMARY KEY,
-  initial_investment DECIMAL(12,2) DEFAULT NULL,
-  current_value DECIMAL(12,2) DEFAULT NULL,
-  last_updated DATETIME DEFAULT NULL,
-  CONSTRAINT fk_investment_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- Лимиты пользователя по типам конвертов
 CREATE TABLE IF NOT EXISTS convert_type_limits (
   user_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
-  limit_amount DECIMAL(12,2) DEFAULT NULL,
+  cycle_id INT NOT NULL DEFAULT 0 COMMENT '0 = глобальный лимит',
+  limit_amount DECIMAL(12,2) NOT NULL,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_id, type_code),
+  
+  PRIMARY KEY (user_id, type_code, cycle_id),
   CONSTRAINT fk_type_limits_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_type_limits_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE CASCADE
+  CONSTRAINT fk_type_limits_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE CASCADE,
+  CONSTRAINT fk_type_limits_cycle FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE CASCADE,
+  
+  INDEX idx_limits_user_cycle (user_id, cycle_id)
 ) ENGINE=InnoDB;
 
 -- Остатки после закрытия цикла
@@ -105,66 +111,29 @@ CREATE TABLE IF NOT EXISTS remainders (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   cycle_id INT NOT NULL,
+  type_code VARCHAR(50) NOT NULL,
   amount DECIMAL(12,2) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  
   CONSTRAINT fk_remainders_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_remainders_cycles FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE CASCADE
+  CONSTRAINT fk_remainders_cycles FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_remainders_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE RESTRICT,
+  
+  UNIQUE KEY uk_remainder_cycle_type (cycle_id, type_code),
+  INDEX idx_remainders_user (user_id)
 ) ENGINE=InnoDB;
 
--- Транзакции (пополнения/траты) — без отдельной таблицы deposits
-CREATE TABLE IF NOT EXISTS transactions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  convert_id INT NOT NULL,
-  type ENUM('deposit', 'spend') NOT NULL, -- пополнение, трата
-  amount DECIMAL(12,2) NOT NULL,
-  note VARCHAR(255),
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_transactions_converts FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE,
-  INDEX idx_transactions_convert (convert_id, created_at)
-) ENGINE=InnoDB;
+-- ============================================================================
+-- НАЧАЛЬНЫЕ ДАННЫЕ
+-- ============================================================================
 
--- View для совместимости (плоский вид)
-CREATE OR REPLACE VIEW v_converts_legacy AS
-SELECT
-  c.id,
-  c.user_id,
-  c.cycle_id,
-  c.type_code,
-  c.name,
-  c.is_active,
-  CASE
-    WHEN c.type_code = 'important' THEN COALESCE(ci.current_amount, 0)
-    WHEN c.type_code = 'wishes' THEN COALESCE(cw.current_amount, 0)
-    WHEN c.type_code = 'saving' THEN COALESCE(s.current_amount, 0)
-    ELSE 0
-  END AS current_amount,
-  CASE
-    WHEN c.type_code = 'saving' THEN s.target_amount
-    ELSE NULL
-  END AS target_amount,
-  CASE
-    WHEN c.type_code = 'important' THEN ci.overall_limit
-    WHEN c.type_code = 'wishes' THEN cw.overall_limit
-    ELSE NULL
-  END AS overall_limit,
-  i.initial_investment,
-  i.current_value,
-  i.last_updated,
-  c.created_at,
-  c.updated_at
-FROM converts c
-LEFT JOIN convert_important_details ci ON ci.convert_id = c.id
-LEFT JOIN convert_wishes_details cw ON cw.convert_id = c.id
-LEFT JOIN convert_saving_details s ON s.convert_id = c.id
-LEFT JOIN convert_investment_details i ON i.convert_id = c.id;
-
--- Сидинг типов конвертов
-INSERT INTO convert_types (code, title)
+INSERT INTO convert_types (code, title, description, sort_order)
 VALUES
-  ('important',   'Необходимые расходы'),
-  ('wishes',      'Желания'),
-  ('saving',      'Накопления'),
-  ('investment',  'Инвестиции')
+  ('important',   'Необходимые расходы', 'Обязательные траты: аренда, продукты, коммуналка', 1),
+  ('wishes',      'Желания', 'Необязательные покупки и развлечения', 2),
+  ('saving',      'Накопления', 'Целевые накопления с заданной суммой', 3),
+  ('investment',  'Инвестиции', 'Долгосрочные инвестиции', 4)
 ON DUPLICATE KEY UPDATE
   title = VALUES(title),
-  updated_at = NOW();
+  description = VALUES(description),
+  sort_order = VALUES(sort_order);

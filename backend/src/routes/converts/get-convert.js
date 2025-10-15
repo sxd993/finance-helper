@@ -5,6 +5,11 @@ const { getTypeLimitsMap } = require('./utils/type-limits');
 
 const router = express.Router();
 
+const toNumberOrUndefined = (value) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : undefined;
+};
+
 router.get('/get-converts', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
@@ -12,87 +17,82 @@ router.get('/get-converts', requireAuth, async (req, res) => {
     const rows = await getUserConverts(userId);
     const typeLimits = await getTypeLimitsMap({ userId, user: req.user });
 
-    const result = rows.map((r) => {
-      const code = r.type?.code;
+    const result = rows.map((convert) => {
+      const code = convert.typeCode;
+      const balance = Number(convert.balance ?? 0);
+      const totalIn = Number(convert.total_in ?? 0);
+      const totalOut = Number(convert.total_out ?? 0);
+      const targetAmount = convert.targetAmount != null ? Number(convert.targetAmount) : null;
+      const initialAmount = convert.initialAmount != null ? Number(convert.initialAmount) : null;
 
-      let overall_limit;
-      let current_amount;
-      let target_amount;
-      let initial_investment;
-      let current_value;
-      let last_updated;
-      let type_limit;
+      let overallLimit;
+      let currentAmount;
+      let goalAmount;
+      let initialInvestment;
+      let currentValue;
 
       switch (code) {
-        case 'important': {
-          overall_limit = r.important?.overall_limit ?? null;
-          current_amount = r.important?.current_amount ?? null;
-          target_amount = null;
-          initial_investment = null;
-          current_value = null;
-          last_updated = null;
-          type_limit = typeLimits[code] ?? null;
-          break;
-        }
+        case 'important':
         case 'wishes': {
-          overall_limit = r.wishes?.overall_limit ?? null;
-          current_amount = r.wishes?.current_amount ?? null;
-          target_amount = null;
-          initial_investment = null;
-          current_value = null;
-          last_updated = null;
-          type_limit = typeLimits[code] ?? null;
+          overallLimit = targetAmount;
+          currentAmount = balance;
+          goalAmount = null;
+          initialInvestment = null;
+          currentValue = null;
           break;
         }
         case 'saving': {
-          overall_limit = null;
-          current_amount = r.saving?.current_amount ?? null;
-          target_amount = r.saving?.target_amount ?? null;
-          initial_investment = null;
-          current_value = null;
-          last_updated = null;
-          type_limit = typeLimits[code] ?? null;
+          overallLimit = null;
+          currentAmount = balance;
+          goalAmount = targetAmount;
+          initialInvestment = null;
+          currentValue = null;
           break;
         }
         case 'investment': {
-          overall_limit = null;
-          current_amount = null;
-          target_amount = null;
-          initial_investment = r.investment?.initial_investment ?? null;
-          current_value = r.investment?.current_value ?? null;
-          last_updated = r.investment?.last_updated ?? null;
-          type_limit = typeLimits[code] ?? null;
+          overallLimit = null;
+          currentAmount = null;
+          goalAmount = null;
+          initialInvestment = initialAmount;
+          currentValue = balance;
           break;
         }
         default: {
-          overall_limit = null;
-          current_amount = null;
-          target_amount = null;
-          initial_investment = null;
-          current_value = null;
-          last_updated = null;
-          type_limit = null;
+          overallLimit = null;
+          currentAmount = balance;
+          goalAmount = targetAmount;
+          initialInvestment = initialAmount;
+          currentValue = balance;
         }
       }
 
-      const typeObj = r.type ? {
-        id: r.type.id,
-        code: r.type.code,
-        title: r.type.title,
-        limit: type_limit != null ? Number(type_limit) : undefined,
-      } : null;
+      const typeData = convert.type
+        ? {
+            id: convert.type.id ?? convert.type.sortOrder ?? undefined,
+            code: convert.type.code,
+            title: convert.type.title,
+            description: convert.type.description ?? null,
+            sort_order: convert.type.sortOrder ?? null,
+            limit: typeLimits[code] != null ? Number(typeLimits[code]) : null,
+          }
+        : null;
 
-      return ({
-        id: r.id,
-        name: r.name,
-        overall_limit: overall_limit != null ? Number(overall_limit) : undefined,
-        current_amount: current_amount != null ? Number(current_amount) : undefined,
-        target_amount: target_amount != null ? Number(target_amount) : undefined,
-        initial_investment: initial_investment != null ? Number(initial_investment) : undefined,
-        current_value: current_value != null ? Number(current_value) : undefined,
-        last_updated,
-        type: typeObj,
-      })
+      return {
+        id: convert.id,
+        name: convert.name,
+        type_code: code,
+        is_active: Boolean(convert.isActive),
+        overall_limit: toNumberOrUndefined(overallLimit),
+        current_amount: toNumberOrUndefined(currentAmount),
+        target_amount: toNumberOrUndefined(goalAmount),
+        initial_investment: toNumberOrUndefined(initialInvestment),
+        initial_amount: toNumberOrUndefined(initialAmount),
+        current_value: toNumberOrUndefined(currentValue),
+        balance,
+        total_in: totalIn,
+        total_out: totalOut,
+        type: typeData,
+      };
     });
 
     res.json(result);

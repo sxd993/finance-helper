@@ -4,7 +4,7 @@ import { Button } from "@/shared/ui/Button";
 import { formatPrice } from "@/shared/utils/formatPrice";
 
 interface EditConvertModalProps
-  extends Pick<Convert, "id" | "name" | "overall_limit" | "current_amount" | "target_amount" | "initial_investment"> {
+  extends Pick<Convert, "id" | "name" | "overall_limit" | "current_amount" | "target_amount" | "initial_amount" | "initial_investment"> {
   convert_type_limit?: number | null;
   isOpen?: boolean;
   onClose?: () => void;
@@ -33,7 +33,7 @@ export const EditConvertModal = ({
             Лимит категории
           </span>
           <span className="text-lg font-semibold text-slate-900">
-            {formatPrice(convert_type_limit)}
+            {formatPrice(convert_type_limit ?? undefined)}
           </span>
         </div>
         <div className="flex flex-col gap-1 sm:items-end">

@@ -25,6 +25,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    targetAmount: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: true,
+      defaultValue: null,
+      field: 'target_amount',
+    },
+    initialAmount: {
+      type: DataTypes.DECIMAL(12, 2),
+      allowNull: true,
+      defaultValue: null,
+      field: 'initial_amount',
+    },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -59,20 +71,6 @@ module.exports = (sequelize, DataTypes) => {
       as: 'transactions',
       foreignKey: 'convertId',
     });
-
-    // Type-specific details
-    if (models.ConvertImportantDetails) {
-      Convert.hasOne(models.ConvertImportantDetails, { as: 'important', foreignKey: 'convertId' });
-    }
-    if (models.ConvertWishesDetails) {
-      Convert.hasOne(models.ConvertWishesDetails, { as: 'wishes', foreignKey: 'convertId' });
-    }
-    if (models.ConvertSavingDetails) {
-      Convert.hasOne(models.ConvertSavingDetails, { as: 'saving', foreignKey: 'convertId' });
-    }
-    if (models.ConvertInvestmentDetails) {
-      Convert.hasOne(models.ConvertInvestmentDetails, { as: 'investment', foreignKey: 'convertId' });
-    }
   };
 
   return Convert;

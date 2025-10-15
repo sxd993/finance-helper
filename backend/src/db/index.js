@@ -39,10 +39,6 @@ const ConvertType = require('../models/ConvertType')(sequelize, DataTypes);
 const Convert = require('../models/Convert')(sequelize, DataTypes);
 const Transaction = require('../models/Transaction')(sequelize, DataTypes);
 const Remainder = require('../models/Remainder')(sequelize, DataTypes);
-const ConvertImportantDetails = require('../models/ConvertImportantDetails')(sequelize, DataTypes);
-const ConvertWishesDetails = require('../models/ConvertWishesDetails')(sequelize, DataTypes);
-const ConvertSavingDetails = require('../models/ConvertSavingDetails')(sequelize, DataTypes);
-const ConvertInvestmentDetails = require('../models/ConvertInvestmentDetails')(sequelize, DataTypes);
 const ConvertTypeLimit = require('../models/ConvertTypeLimit')(sequelize, DataTypes);
 
 const models = {
@@ -52,10 +48,6 @@ const models = {
   Convert,
   Transaction,
   Remainder,
-  ConvertImportantDetails,
-  ConvertWishesDetails,
-  ConvertSavingDetails,
-  ConvertInvestmentDetails,
   ConvertTypeLimit,
 };
 
@@ -75,9 +67,5 @@ module.exports = {
   Convert,
   Transaction,
   Remainder,
-  ConvertImportantDetails,
-  ConvertWishesDetails,
-  ConvertSavingDetails,
-  ConvertInvestmentDetails,
   ConvertTypeLimit,
 };

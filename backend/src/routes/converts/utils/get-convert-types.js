@@ -1,10 +1,12 @@
 const { ConvertType } = require('../../../db');
 
 async function getConvertTypes() {
-  return ConvertType.findAll({
-    attributes: ['id', 'code', 'title'],
-    raw: true,
+  const rows = await ConvertType.findAll({
+    attributes: ['code', 'title', 'description', 'sortOrder', 'createdAt'],
+    order: [['sortOrder', 'ASC']],
   });
+
+  return rows.map((item) => item.toJSON());
 }
 
 module.exports = { getConvertTypes };

@@ -3,10 +3,7 @@ const {
   sequelize,
   Convert,
   ConvertType,
-  ConvertImportantDetails,
-  ConvertWishesDetails,
-  ConvertSavingDetails,
-  ConvertInvestmentDetails,
+  Transaction,
 } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
 const { ensureWithinTypeLimit } = require('./utils/type-limits');
@@ -26,8 +23,9 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       type_code: typeCode,
       current_amount: currentRaw = null,
       target_amount: targetRaw = null,
-      overall_limit: overallLimitRaw = null,
-      initial_investment: initialInvestmentRaw = null,
+      overall_limit: legacyLimitRaw = null,
+      initial_amount: initialAmountRaw = null,
+      initial_investment: legacyInitialRaw = null,
       current_value: currentValueRaw = null,
       is_active: isActiveRaw = true,
     } = payload;
@@ -61,46 +59,64 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       return Number.isFinite(num) ? num : null;
     };
 
-    const currentAmount = toNumberOrNull(currentRaw) ?? 0;
+    const currentAmount = toNumberOrNull(currentRaw);
     const targetAmount = toNumberOrNull(targetRaw);
-    const overallLimit = toNumberOrNull(overallLimitRaw) ?? 0;
-    const initialInvestment = toNumberOrNull(initialInvestmentRaw);
+    const fallbackLimit = toNumberOrNull(legacyLimitRaw);
+    const effectiveTarget = targetAmount != null ? targetAmount : fallbackLimit;
+    const initialInvestment = toNumberOrNull(legacyInitialRaw);
+    const initialAmount = toNumberOrNull(initialAmountRaw);
     const currentValue = toNumberOrNull(currentValueRaw);
     const isActive = Boolean(isActiveRaw);
 
-    let computedCurrent = currentAmount;
-    let computedTarget = targetAmount;
-    let amountForTypeLimit = 0;
+    const convertPayload = {
+      userId,
+      cycleId: null,
+      typeCode: convertType.code,
+      name,
+      isActive,
+      targetAmount: null,
+      initialAmount: null,
+    };
+
+    let allocationAmount = 0;
+    let initialDeposit = null;
 
     switch (typeCode) {
       case 'important': {
-        computedCurrent = currentAmount;
-        computedTarget = undefined;
-        amountForTypeLimit = overallLimit;
+        convertPayload.targetAmount = effectiveTarget != null ? effectiveTarget : 0;
+        allocationAmount = convertPayload.targetAmount ?? 0;
+        initialDeposit = currentAmount;
         break;
       }
 
       case 'wishes': {
-        computedCurrent = currentAmount;
-        computedTarget = undefined;
-        amountForTypeLimit = overallLimit;
+        convertPayload.targetAmount = effectiveTarget != null ? effectiveTarget : 0;
+        allocationAmount = convertPayload.targetAmount ?? 0;
+        initialDeposit = currentAmount;
         break;
       }
 
       case 'saving': {
-        console.log('CASE: saving');
-        if (computedTarget == null) {
+        if (effectiveTarget == null) {
           await transaction.rollback();
           return res.status(400).json({ message: 'Для saving требуется target_amount' });
         }
-        amountForTypeLimit = computedTarget;
+        convertPayload.targetAmount = effectiveTarget;
+        allocationAmount = convertPayload.targetAmount ?? 0;
+        initialDeposit = currentAmount;
         break;
       }
 
       case 'investment': {
-        computedCurrent = undefined;
-        computedTarget = undefined;
-        amountForTypeLimit = initialInvestment ?? 0;
+        convertPayload.initialAmount = initialAmount != null
+          ? initialAmount
+          : (initialInvestment != null ? initialInvestment : 0);
+        allocationAmount = convertPayload.initialAmount ?? 0;
+        if (currentValue != null) {
+          initialDeposit = currentValue;
+        } else if (allocationAmount) {
+          initialDeposit = allocationAmount;
+        }
         break;
       }
 
@@ -113,7 +129,7 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       userId,
       user: req.user,
       typeCode,
-      amount: amountForTypeLimit,
+      amount: allocationAmount,
       transaction,
     });
 
@@ -130,39 +146,14 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     }
 
     // Формируем данные для создания конверта
-    const created = await Convert.create({
-      userId,
-      cycleId: null,
-      typeCode: convertType.code,
-      name,
-      isActive,
-    }, { transaction });
+    const created = await Convert.create(convertPayload, { transaction });
 
-    // Создаем детализацию по типу
-    if (typeCode === 'important') {
-      await ConvertImportantDetails.create({
+    if (initialDeposit != null && initialDeposit > 0) {
+      await Transaction.create({
         convertId: created.id,
-        current_amount: computedCurrent ?? 0,
-        overall_limit: overallLimit,
-      }, { transaction });
-    } else if (typeCode === 'wishes') {
-      await ConvertWishesDetails.create({
-        convertId: created.id,
-        current_amount: computedCurrent ?? 0,
-        overall_limit: overallLimit,
-      }, { transaction });
-    } else if (typeCode === 'saving') {
-      await ConvertSavingDetails.create({
-        convertId: created.id,
-        target_amount: computedTarget ?? null,
-        current_amount: computedCurrent ?? 0,
-      }, { transaction });
-    } else if (typeCode === 'investment') {
-      await ConvertInvestmentDetails.create({
-        convertId: created.id,
-        initial_investment: initialInvestment ?? null,
-        current_value: currentValue ?? null,
-        last_updated: new Date(),
+        type: 'deposit',
+        amount: initialDeposit,
+        note: 'Initial funding',
       }, { transaction });
     }
 
@@ -175,6 +166,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       name: created.name,
       type_code: typeCode,
       is_active: Boolean(created.isActive),
+      target_amount: convertPayload.targetAmount != null ? Number(convertPayload.targetAmount) : null,
+      initial_amount: convertPayload.initialAmount != null ? Number(convertPayload.initialAmount) : null,
     });
   } catch (error) {
     console.error('Не удалось создать конверт', error);

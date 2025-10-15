@@ -32,8 +32,10 @@ export const ConvertByTypeCard = ({ convert }: ConvertByTypeCardProps) => {
                         <span>{formatPrice(convert?.overall_limit) || formatPrice(convert.target_amount)}</span>
                     </div>
                     <div className="flex gap-1">
-                        <span className="text-md text-gray-600">{convert?.initial_investment ? "Инвестиции" : "Баланс"}</span>
-                        <span>{formatPrice(convert?.initial_investment || convert?.current_amount)}</span>
+                        <span className="text-md text-gray-600">
+                            {(convert?.initial_amount ?? convert?.initial_investment) ? "Инвестиции" : "Баланс"}:
+                        </span>
+                        <span>{formatPrice((convert?.initial_amount ?? convert?.initial_investment) || convert?.balance || convert?.current_amount)}</span>
                     </div>
                 </div>
                 <div className="flex flex-col justify-between items-center mr-3">
@@ -61,7 +63,8 @@ export const ConvertByTypeCard = ({ convert }: ConvertByTypeCardProps) => {
                     name={convert.name}
                     overall_limit={convert.overall_limit}
                     current_amount={convert.current_amount}
-                    convert_type_limit={convert.type.limit}
+                    target_amount={convert.target_amount}
+                    convert_type_limit={convert.type?.limit ?? null}
                     onClose={closeEditModal}
                 />
             </Modal>

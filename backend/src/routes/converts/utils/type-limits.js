@@ -1,11 +1,7 @@
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 const {
   sequelize,
   Convert,
-  ConvertImportantDetails,
-  ConvertWishesDetails,
-  ConvertSavingDetails,
-  ConvertInvestmentDetails,
   ConvertTypeLimit,
 } = require('../../../db');
 
@@ -16,11 +12,11 @@ const PERCENT_KEY_BY_TYPE = {
   investment: 'percentInvestment',
 };
 
-const DETAIL_CONFIG = {
-  important: { model: ConvertImportantDetails, as: 'important', column: 'overall_limit' },
-  wishes: { model: ConvertWishesDetails, as: 'wishes', column: 'overall_limit' },
-  saving: { model: ConvertSavingDetails, as: 'saving', column: 'target_amount' },
-  investment: { model: ConvertInvestmentDetails, as: 'investment', column: 'initial_investment' },
+const LIMIT_COLUMN_BY_TYPE = {
+  important: '`converts`.`target_amount`',
+  wishes: '`converts`.`target_amount`',
+  saving: '`converts`.`target_amount`',
+  investment: '`converts`.`initial_amount`',
 };
 
 const toNumberOrZero = (value) => {
@@ -46,12 +42,24 @@ function calculateLimitValue(user, typeCode) {
 }
 
 async function upsertTypeLimit(userId, typeCode, limit, transaction) {
-  await ConvertTypeLimit.upsert({
+  const where = { userId, typeCode, cycleId: null };
+  const payload = {
     userId,
     typeCode,
-    limit_amount: limit != null ? Number(limit) : null,
-    updated_at: new Date(),
-  }, { transaction });
+    cycleId: null,
+    limitAmount: limit != null ? Number(limit) : 0,
+    updatedAt: new Date(),
+  };
+
+  const [row, created] = await ConvertTypeLimit.findOrCreate({
+    where,
+    defaults: payload,
+    transaction,
+  });
+
+  if (!created) {
+    await row.update(payload, { transaction });
+  }
 }
 
 async function getTypeLimitsMap({ userId, user, transaction }) {
@@ -66,8 +74,8 @@ async function getTypeLimitsMap({ userId, user, transaction }) {
 }
 
 async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transaction }) {
-  const config = DETAIL_CONFIG[typeCode];
-  if (!config) {
+  const column = LIMIT_COLUMN_BY_TYPE[typeCode];
+  if (!column) {
     return 0;
   }
 
@@ -82,19 +90,11 @@ async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transact
       [
         sequelize.fn(
           'COALESCE',
-          sequelize.fn('SUM', sequelize.col(`${config.as}.${config.column}`)),
+          sequelize.fn('SUM', literal(column)),
           0,
         ),
         'total',
       ],
-    ],
-    include: [
-      {
-        model: config.model,
-        as: config.as,
-        attributes: [],
-        required: false,
-      },
     ],
     raw: true,
     transaction,

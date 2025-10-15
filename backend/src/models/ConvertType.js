@@ -1,24 +1,32 @@
 module.exports = (sequelize, DataTypes) => {
   const ConvertType = sequelize.define('ConvertType', {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     code: {
       type: DataTypes.STRING(50),
-      allowNull: false,
-      unique: true,
+      primaryKey: true,
     },
     title: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    sortOrder: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'sort_order',
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created_at',
+    },
   }, {
     tableName: 'convert_types',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
+    timestamps: false,
   });
 
   ConvertType.associate = (models) => {
@@ -27,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'typeCode',
       sourceKey: 'code',
     });
+  };
+
+  ConvertType.prototype.toJSON = function toJSON() {
+    const values = { ...this.get() };
+    values.id = values.sortOrder;
+    return values;
   };
 
   return ConvertType;

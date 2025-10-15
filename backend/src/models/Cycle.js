@@ -27,6 +27,12 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false,
       field: 'is_closed',
     },
+    closedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      field: 'closed_at',
+    },
   }, {
     tableName: 'cycles',
     timestamps: true,

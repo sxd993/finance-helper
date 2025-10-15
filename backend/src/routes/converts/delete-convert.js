@@ -3,10 +3,6 @@ const {
   sequelize,
   Convert,
   Transaction,
-  ConvertImportantDetails,
-  ConvertWishesDetails,
-  ConvertSavingDetails,
-  ConvertInvestmentDetails,
 } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
 
@@ -32,11 +28,6 @@ router.delete('/delete-convert/:id', requireAuth, async (req, res) => {
     }
 
     await Transaction.destroy({ where: { convertId: id }, transaction });
-    await ConvertImportantDetails.destroy({ where: { convertId: id }, transaction });
-    await ConvertWishesDetails.destroy({ where: { convertId: id }, transaction });
-    await ConvertSavingDetails.destroy({ where: { convertId: id }, transaction });
-    await ConvertInvestmentDetails.destroy({ where: { convertId: id }, transaction });
-
     await convert.destroy({ transaction });
     await transaction.commit();
 

@@ -38,7 +38,7 @@ export const AddConvertsForm = () => {
         >
           <option value="">Выберите тип...</option>
           {convert_types?.map((convert) => (
-            <option key={convert.id} value={convert.code}>
+            <option key={convert.code} value={convert.code}>
               {convert.title}
             </option>
           ))}
@@ -71,7 +71,7 @@ export const AddConvertsForm = () => {
         <div className="flex flex-col gap-2 w-full">
           <h2>Месячный лимит (опционально)</h2>
           <input
-            {...register("overall_limit", { valueAsNumber: true })}
+            {...register("target_amount", { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Лимит на месяц"
@@ -92,7 +92,7 @@ export const AddConvertsForm = () => {
         <div className="flex flex-col gap-2 w-full">
           <h2>Стартовая сумма (вложено)</h2>
           <input
-            {...register("initial_investment", { valueAsNumber: true })}
+            {...register("initial_amount", { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Вложено"

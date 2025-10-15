@@ -40,12 +40,12 @@ export const ConvertsList = () => {
             {/* Секции с конвертами по типам */}
             <div className="flex flex-col gap-10">
                 {convert_types.map((type) => {
-                    const typedConverts = converts.filter(c => c.type?.id === type.id);
+                    const typedConverts = converts.filter(c => c.type?.code === type.code);
                     if (typedConverts.length === 0) return null;
 
                     return (
                         <ConvertSection
-                            key={type.id}
+                            key={type.code}
                             section_title={type.title}
                             section_code={type.code}
                             section_limit={type.limit}

@@ -32,13 +32,18 @@ export const ConvertDraftsList = () => {
               </div>
               <div className="flex flex-col justify-center text-sm text-slate-500 gap-2 items-center">
                 {draft.target_amount != null && (
-                  <span>Цель: {draft.target_amount}</span>
-                )}
-                {draft.overall_limit != null && (
-                  <span>Лимит: {draft.overall_limit}</span>
+                  <span>
+                    {(draft.type_code === "important" || draft.type_code === "wishes") ? "Лимит" : "Цель"}: {draft.target_amount}
+                  </span>
                 )}
                 {draft.current_amount != null && (
                   <span>Текущие: {draft.current_amount}</span>
+                )}
+                {draft.initial_amount != null && (
+                  <span>Вложено: {draft.initial_amount}</span>
+                )}
+                {draft.current_value != null && (
+                  <span>Стоимость: {draft.current_value}</span>
                 )}
               </div>
             </div>
@@ -55,4 +60,3 @@ export const ConvertDraftsList = () => {
     </div>
   )
 }
-

@@ -34,12 +34,12 @@ export const InvestmentConvertCard = ({ convert, balance, returnPercentage, abso
           <h4 className="text-md text-slate-600">{convert.name}</h4>
         </div>
         <div className='flex items-baseline gap-2 justify-start'>
-          <p className='text-black text-xl'>{formatPrice(convert.current_value ?? balance)}</p>
+          <p className='text-black text-xl'>{formatPrice(convert.current_value ?? convert.balance ?? balance)}</p>
         </div>
         <div className='text-sm text-slate-600'>
           <div>
             <span className='text-slate-500'>Вложено: </span>
-            <span className='font-medium'>{formatPrice(convert.initial_investment ?? 0)}</span>
+            <span className='font-medium'>{formatPrice(convert.initial_amount ?? convert.initial_investment ?? 0)}</span>
           </div>
           <div>
           </div>
@@ -76,8 +76,8 @@ export const InvestmentConvertCard = ({ convert, balance, returnPercentage, abso
       >
         <UpdateInvestementsForm
           convertId={convert.id}
-          initial_investment={convert.initial_investment ?? null}
-          current_value={convert.current_value ?? null}
+          initial_amount={convert.initial_amount ?? convert.initial_investment ?? null}
+          current_value={convert.current_value ?? convert.balance ?? null}
           onClose={close}
         />
       </Modal>

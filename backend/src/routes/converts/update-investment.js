@@ -1,42 +1,88 @@
 const express = require('express');
+const {
+  sequelize,
+  Convert,
+  Transaction,
+} = require('../../db');
 const { requireAuth } = require('../../utils/auth');
-const { ConvertInvestmentDetails } = require('../../db');
+const { getTransactionsSummary } = require('./utils/get-user-converts');
 
 const router = express.Router();
 
+const toNumberOrNull = (value) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+};
+
 router.patch('/:id/investment', requireAuth, async (req, res) => {
+  const transaction = await sequelize.transaction();
+
   try {
     const id = Number(req.params.id);
-    const { initial_investment, current_value } = req.body || {};
 
     if (!Number.isFinite(id)) {
+      await transaction.rollback();
       return res.status(400).json({ message: 'Некорректный id' });
     }
 
-    const payload = {
-      convertId: id,
-      initial_investment: initial_investment !== undefined ? Number(initial_investment) || 0 : null,
-      current_value: current_value !== undefined ? Number(current_value) || 0 : null,
-      last_updated: new Date(),
-    };
+    const userId = req.userId;
+    const convert = await Convert.findOne({ where: { id, userId }, transaction });
 
-    const [row, created] = await ConvertInvestmentDetails.findOrCreate({
-      where: { convertId: id },
-      defaults: payload,
-    });
-
-    if (!created) {
-      await row.update(payload);
+    if (!convert) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Конверт не найден' });
     }
 
+    if (convert.typeCode !== 'investment') {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'Обновлять инвестиции можно только для инвестиционных конвертов' });
+    }
+
+    const body = req.body || {};
+    const desiredInitial = toNumberOrNull(body.initial_amount ?? body.initial_investment);
+    const desiredValue = toNumberOrNull(body.current_value);
+
+    if (desiredInitial != null) {
+      await convert.update({ initialAmount: desiredInitial }, { transaction });
+    }
+
+    if (desiredValue != null) {
+      const currentSummary = await getTransactionsSummary([convert.id], { transaction });
+      const current = currentSummary.get(convert.id)?.balance ?? 0;
+      const diff = Number((desiredValue - current).toFixed(2));
+
+      if (diff > 0.005) {
+        await Transaction.create({
+          convertId: convert.id,
+          type: 'deposit',
+          amount: diff,
+          note: 'Valuation adjustment (increase)',
+        }, { transaction });
+      } else if (diff < -0.005) {
+        await Transaction.create({
+          convertId: convert.id,
+          type: 'spend',
+          amount: Math.abs(diff),
+          note: 'Valuation adjustment (decrease)',
+        }, { transaction });
+      }
+    }
+
+    const summaryAfter = await getTransactionsSummary([convert.id], { transaction });
+    const metrics = summaryAfter.get(convert.id) || { balance: 0, totalIn: 0, totalOut: 0 };
+
+    await transaction.commit();
+
     return res.json({
-      id,
-      initial_investment: row.initial_investment,
-      current_value: row.current_value,
-      last_updated: row.last_updated,
+      id: convert.id,
+      initial_amount: convert.initialAmount,
+      balance: metrics.balance,
+      total_in: metrics.totalIn,
+      total_out: metrics.totalOut,
     });
-  } catch (e) {
-    console.error('update investment error', e);
+  } catch (error) {
+    await transaction.rollback();
+    console.error('update investment error', error);
     return res.status(500).json({ message: 'Ошибка сервера при обновлении инвестиций' });
   }
 });

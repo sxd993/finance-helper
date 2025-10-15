@@ -15,12 +15,17 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'cycle_id',
     },
+    typeCode: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      field: 'type_code',
+    },
     amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
     },
   }, {
-    tableName: 'remainders',
+    tableName: 'cycle_remainders',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false,
@@ -35,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
     Remainder.belongsTo(models.Cycle, {
       as: 'cycle',
       foreignKey: 'cycleId',
+    });
+
+    Remainder.belongsTo(models.ConvertType, {
+      as: 'type',
+      foreignKey: 'typeCode',
+      targetKey: 'code',
     });
   };
 

@@ -13,7 +13,7 @@ export const useConvertByTypes = () => {
   })();
 
   const convert_group = converts?.filter(
-    convert => convert.type.code === type_code
+    convert => convert.type?.code === type_code
   );
 
   return {

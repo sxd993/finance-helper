@@ -13,7 +13,9 @@ type ConvertCardProps = {
 export const ConvertCard = ({ convert }: ConvertCardProps) => {
   const { balance, limit, spent, percentage, goal_percentage, remaining_to_goal, returnPercentage, absoluteReturn, isProfit, isLoss } = computeConvertMetrics(convert);
 
-  switch (convert.type.code) {
+  const typeCode = convert.type?.code ?? convert.type_code;
+
+  switch (typeCode) {
     case 'important':
       return (
         <ImportantConvertCard
@@ -58,4 +60,6 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
         />
       )
   }
+
+  return null;
 };

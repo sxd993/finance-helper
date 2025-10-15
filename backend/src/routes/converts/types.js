@@ -1,13 +1,7 @@
 const express = require('express');
-const {
-  ConvertType,
-  Convert,
-  ConvertImportantDetails,
-  ConvertWishesDetails,
-  ConvertSavingDetails,
-  ConvertInvestmentDetails,
-} = require('../../db');
 const { requireAuth } = require('../../utils/auth');
+const { getConvertTypes } = require('./utils/get-convert-types');
+const { getUserConverts } = require('./utils/get-user-converts');
 const { getTypeLimitsMap } = require('./utils/type-limits');
 
 const router = express.Router();
@@ -16,62 +10,29 @@ router.get('/types', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
 
-    const types = await ConvertType.findAll({
-      attributes: ['id', 'code', 'title'],
-      order: [['id', 'ASC']],
-    });
-    const limits = await getTypeLimitsMap({ userId, user: req.user });
+    const [types, limits, converts] = await Promise.all([
+      getConvertTypes(),
+      getTypeLimitsMap({ userId, user: req.user }),
+      getUserConverts(userId),
+    ]);
 
-    const converts = await Convert.findAll({
-      where: { userId },
-      attributes: ['typeCode'],
-      include: [
-        { model: ConvertImportantDetails, as: 'important', attributes: ['current_amount'], required: false },
-        { model: ConvertWishesDetails, as: 'wishes', attributes: ['current_amount'], required: false },
-        { model: ConvertSavingDetails, as: 'saving', attributes: ['current_amount'], required: false },
-        { model: ConvertInvestmentDetails, as: 'investment', attributes: ['current_value'], required: false },
-      ],
-      raw: true,
-      nest: true,
-    });
+    const totalsByType = converts.reduce((acc, convert) => {
+      const code = convert.typeCode;
+      if (!code) return acc;
 
-    const currentAmountByType = {};
-    for (const convert of converts) {
-      const code = convert?.typeCode;
-      if (!code) continue;
-
-      let amount = 0;
-      switch (code) {
-        case 'important':
-          amount = convert?.important?.current_amount != null ? Number(convert.important.current_amount) : 0;
-          break;
-        case 'wishes':
-          amount = convert?.wishes?.current_amount != null ? Number(convert.wishes.current_amount) : 0;
-          break;
-        case 'saving':
-          amount = convert?.saving?.current_amount != null ? Number(convert.saving.current_amount) : 0;
-          break;
-        case 'investment':
-          amount = convert?.investment?.current_value != null ? Number(convert.investment.current_value) : 0;
-          break;
-        default:
-          amount = 0;
-      }
-
-      if (!Number.isFinite(amount)) {
-        continue;
-      }
-
-      currentAmountByType[code] = (currentAmountByType[code] ?? 0) + amount;
-    }
+      const balance = Number(convert.balance ?? 0);
+      acc[code] = (acc[code] ?? 0) + balance;
+      return acc;
+    }, {});
 
     const payload = types.map((type) => ({
-      id: type.id,
+      id: type.id ?? type.sortOrder ?? null,
       code: type.code,
       title: type.title,
-      limit: limits[type.code] ?? null,
-      current_type_amount: Object.prototype.hasOwnProperty.call(currentAmountByType, type.code)
-        ? Number(currentAmountByType[type.code].toFixed(2))
+      description: type.description ?? null,
+      limit: limits[type.code] != null ? Number(limits[type.code]) : null,
+      current_type_amount: Object.prototype.hasOwnProperty.call(totalsByType, type.code)
+        ? Number(totalsByType[type.code].toFixed(2))
         : null,
     }));
 

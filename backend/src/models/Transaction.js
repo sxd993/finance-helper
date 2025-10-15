@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'convert_id',
     },
     type: {
-      type: DataTypes.ENUM('deposit', 'spend'),
+      type: DataTypes.ENUM('deposit', 'spend', 'transfer_in', 'transfer_out'),
       allowNull: false,
     },
     amount: {
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     note: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.TEXT,
       allowNull: true,
     },
   }, {
@@ -27,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false,
+    validate: {
+      amountPositive() {
+        const value = Number(this.getDataValue('amount'));
+        if (!(value > 0)) {
+          throw new Error('Transaction amount must be positive');
+        }
+      },
+    },
   });
 
   Transaction.associate = (models) => {

@@ -23,9 +23,9 @@ export const ConvertOverview = () => {
           convertOverview.map(([key, convert]) => (
             <ConvertCard
               key={key}
-              type={convert.info.title}
+              type={convert.info?.title ?? key}
               currentSum={convert.currentSum}
-              code={convert.info.code}
+              code={convert.info?.code ?? key}
             />)
           )}
       </div>
