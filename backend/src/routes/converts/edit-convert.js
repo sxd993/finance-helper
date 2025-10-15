@@ -90,7 +90,6 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       case 'important': {
         detailType = 'important';
         detailPayload = {
-          current_amount: currentAmount ?? 0,
           overall_limit: overallLimit ?? 0,
         };
         amountForTypeLimit = detailPayload.overall_limit ?? 0;
@@ -99,7 +98,6 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       case 'wishes': {
         detailType = 'wishes';
         detailPayload = {
-          current_amount: currentAmount ?? 0,
           overall_limit: overallLimit ?? 0,
         };
         amountForTypeLimit = detailPayload.overall_limit ?? 0;

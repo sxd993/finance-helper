@@ -8,6 +8,7 @@ interface ButtonProps {
   size?: 'sm' | 'md';
   leftIcon?: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 export const Button = ({
@@ -18,11 +19,12 @@ export const Button = ({
   size = 'md',
   leftIcon,
   className = '',
+  disabled = false,
 }: ButtonProps) => {
   const bgClassMap = {
     primary: "bg-primary hover:bg-primary-dark",
     secondary: "bg-secondary hover:bg-secondary-dark",
-    white: "bg-white hover:bg-slate-50 border border-slate-200",
+    white: "bg-white hover:bg-slate-50 border border-slate-300",
   } as const;
   const bgClass = (bgClassMap as Record<string, string>)[bg] ?? bg;
 
@@ -39,9 +41,10 @@ export const Button = ({
   return (
     <button
       onClick={onClick}
-      className={`${sizeClass} ${textClass} font-medium transition-colors duration-200 ${bgClass} ${className}`}
+      disabled={disabled}
+      className={`${sizeClass} ${textClass} font-medium transition-colors duration-200 ${bgClass} ${disabled ? "opacity-60 cursor-not-allowed" : ""} ${className}`}
     >
-      {leftIcon && <span className="inline-flex items-center">{leftIcon}</span>}
+      {leftIcon && <span className="inline-flex items-center mr-2">{leftIcon}</span>}
       <span>{title}</span>
     </button>
   );

@@ -1,1 +1,1 @@
-export { ConvertsByTypeBalance } from "../../widgets/converts-by-types/ui/ConvertsByTypeBalance";
+export { EditConvertModal } from "./ui/EditConvertModal";

@@ -1,6 +1,6 @@
 
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
-import { ConvertsByTypeBalance } from "@/features/edit-convert";
+import { ConvertsByTypeBalance } from "@/widgets/converts-by-types";
 import { ConvertsByTypeList } from "@/widgets/converts-by-types";
 
 export const ConvertByTypePage = () => {

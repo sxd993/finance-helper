@@ -93,7 +93,7 @@ export const Modal = ({
         )}
 
         {/* Тело модалки */}
-        <div className="px-6 py-6">
+        <div className="px-6 pb-6">
           {children}
         </div>
 

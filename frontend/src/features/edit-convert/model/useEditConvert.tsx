@@ -10,7 +10,7 @@ export const useEditConvert = () => {
         mutationKey: ['update-investment'],
         mutationFn: editConvert,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['converts'] })
+            queryClient.invalidateQueries();
             toast.success('Конверт успешно изменен')
         }
     })
