@@ -6,7 +6,11 @@ type FormValues = {
   current_value: number | null
 }
 
-export const useInvestmentForm = (opts: { convertId: number; initial_investment?: number | null; current_value?: number | null }) => {
+export const useInvestmentForm = (opts: {
+  convertId: number;
+  initial_investment?: number | null;
+  current_value?: number | null
+}) => {
   const { onUpdateInvestment, isPending, error } = useUpdateInvestment()
   const { register, handleSubmit, reset, formState } = useForm<FormValues>({
     defaultValues: {

@@ -1,8 +1,8 @@
 import { client } from "@/shared/api/client";
-import type { Convert } from "../model/types";
+import type { EditConvertPayload } from "@/features/edit-convert/model/type";
 
-export const editConvert = async (id: string, payload: Partial<Convert>) => {
-    const response = await client.patch(`/converts/${id}`, payload);
+export const editConvert = async (data: Partial<EditConvertPayload>) => {
+    const response = await client.patch(`/converts/edit-convert/${data.id}`, data);
     return response.data
 }
 

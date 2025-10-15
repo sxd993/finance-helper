@@ -35,7 +35,6 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
     const {
       name,
       type_code: typeCodeRaw,
-      current_amount: currentRaw,
       target_amount: targetRaw,
       overall_limit: overallLimitRaw,
       initial_investment: initialInvestmentRaw,
@@ -77,7 +76,6 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       });
     }
 
-    const currentAmount = toNumberOrNull(currentRaw);
     const targetAmount = toNumberOrNull(targetRaw);
     const overallLimit = toNumberOrNull(overallLimitRaw);
     const initialInvestment = toNumberOrNull(initialInvestmentRaw);
