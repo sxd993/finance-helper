@@ -1,5 +1,5 @@
-import { EditConvertCard } from "@/features/edit-convert/ui/EditConvertCard";
 import { useConvertByTypes } from "../model/useConvertByTypes";
+import { ConvertByTypeCard } from "./ConvertByTypeCard";
 
 export const ConvertsByTypeList = () => {
     const { convert_group } = useConvertByTypes();
@@ -7,7 +7,7 @@ export const ConvertsByTypeList = () => {
         <>
             {convert_group?.map(convert => (
                 <div key={convert.id}>
-                    <EditConvertCard convert={convert} />
+                    <ConvertByTypeCard convert={convert} />
                 </div>
             ))}
         </>
