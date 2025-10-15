@@ -1,2 +1,1 @@
-export { EditConvertList } from "./ui/EditConvertList";
-export { EditConvertBalance } from "./ui/EditConvertBalance";
+export { ConvertsByTypeBalance } from "../../widgets/converts-by-types/ui/ConvertsByTypeBalance";

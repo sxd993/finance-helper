@@ -1,7 +1,7 @@
 import { useConvertOverview, useConverts } from "@/entities/convert";
 import { useParams } from "react-router-dom";
 
-export const useConvertGroups = () => {
+export const useConvertByTypes = () => {
   const { type_code } = useParams<{ type_code: string }>();
   const { convertOverview, isLoading, error } = useConvertOverview();
   const { converts } = useConverts();

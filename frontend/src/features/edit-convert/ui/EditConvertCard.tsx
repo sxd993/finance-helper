@@ -2,7 +2,7 @@ import type { Convert } from "@/entities/convert"
 import { Modal } from "@/shared/ui/Modal"
 import { formatPrice } from "@/shared/utils/formatPrice"
 import { Edit2, Trash } from "lucide-react"
-import { EditConvertModal } from "./EditConverModal"
+import { EditConvertModal } from "./EditConvertModal"
 import { useModal } from "@/shared/ui/Modal/model/useModal"
 
 interface EditConvertCardProps {
