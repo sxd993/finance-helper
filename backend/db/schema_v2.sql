@@ -56,12 +56,20 @@ CREATE TABLE IF NOT EXISTS converts (
   INDEX idx_converts_type_code (type_code)
 ) ENGINE=InnoDB;
 
--- Детали для бюджетных конвертов (important/wishes)
-CREATE TABLE IF NOT EXISTS convert_budget_details (
+-- Детали для конвертов типа important
+CREATE TABLE IF NOT EXISTS convert_important_details (
   convert_id INT PRIMARY KEY,
   current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
   overall_limit DECIMAL(12,2) DEFAULT 0,
-  CONSTRAINT fk_budget_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+  CONSTRAINT fk_important_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Детали для конвертов типа wishes
+CREATE TABLE IF NOT EXISTS convert_wishes_details (
+  convert_id INT PRIMARY KEY,
+  current_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  overall_limit DECIMAL(12,2) DEFAULT 0,
+  CONSTRAINT fk_wishes_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- Детали для накоплений (saving)
@@ -79,6 +87,17 @@ CREATE TABLE IF NOT EXISTS convert_investment_details (
   current_value DECIMAL(12,2) DEFAULT NULL,
   last_updated DATETIME DEFAULT NULL,
   CONSTRAINT fk_investment_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Лимиты пользователя по типам конвертов
+CREATE TABLE IF NOT EXISTS convert_type_limits (
+  user_id INT NOT NULL,
+  type_code VARCHAR(50) NOT NULL,
+  limit_amount DECIMAL(12,2) DEFAULT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, type_code),
+  CONSTRAINT fk_type_limits_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_type_limits_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- Остатки после закрытия цикла
@@ -113,16 +132,29 @@ SELECT
   c.type_code,
   c.name,
   c.is_active,
-  COALESCE(b.current_amount, s.current_amount, 0) AS current_amount,
-  s.target_amount,
-  b.overall_limit,
+  CASE
+    WHEN c.type_code = 'important' THEN COALESCE(ci.current_amount, 0)
+    WHEN c.type_code = 'wishes' THEN COALESCE(cw.current_amount, 0)
+    WHEN c.type_code = 'saving' THEN COALESCE(s.current_amount, 0)
+    ELSE 0
+  END AS current_amount,
+  CASE
+    WHEN c.type_code = 'saving' THEN s.target_amount
+    ELSE NULL
+  END AS target_amount,
+  CASE
+    WHEN c.type_code = 'important' THEN ci.overall_limit
+    WHEN c.type_code = 'wishes' THEN cw.overall_limit
+    ELSE NULL
+  END AS overall_limit,
   i.initial_investment,
   i.current_value,
   i.last_updated,
   c.created_at,
   c.updated_at
 FROM converts c
-LEFT JOIN convert_budget_details b ON b.convert_id = c.id
+LEFT JOIN convert_important_details ci ON ci.convert_id = c.id
+LEFT JOIN convert_wishes_details cw ON cw.convert_id = c.id
 LEFT JOIN convert_saving_details s ON s.convert_id = c.id
 LEFT JOIN convert_investment_details i ON i.convert_id = c.id;
 

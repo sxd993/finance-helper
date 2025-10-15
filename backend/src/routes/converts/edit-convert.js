@@ -3,11 +3,13 @@ const {
   sequelize,
   Convert,
   ConvertType,
-  ConvertBudgetDetails,
+  ConvertImportantDetails,
+  ConvertWishesDetails,
   ConvertSavingDetails,
   ConvertInvestmentDetails,
 } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
+const { ensureWithinTypeLimit } = require('./utils/type-limits');
 
 const router = express.Router();
 
@@ -84,15 +86,25 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
 
     let detailType = null;
     let detailPayload = null;
+    let amountForTypeLimit = 0;
 
     switch (typeCode) {
-      case 'important':
-      case 'wishes': {
-        detailType = 'budget';
+      case 'important': {
+        detailType = 'important';
         detailPayload = {
           current_amount: currentAmount ?? 0,
           overall_limit: overallLimit ?? 0,
         };
+        amountForTypeLimit = detailPayload.overall_limit ?? 0;
+        break;
+      }
+      case 'wishes': {
+        detailType = 'wishes';
+        detailPayload = {
+          current_amount: currentAmount ?? 0,
+          overall_limit: overallLimit ?? 0,
+        };
+        amountForTypeLimit = detailPayload.overall_limit ?? 0;
         break;
       }
       case 'saving': {
@@ -105,6 +117,7 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
           current_amount: currentAmount ?? 0,
           target_amount: targetAmount,
         };
+        amountForTypeLimit = detailPayload.target_amount ?? 0;
         break;
       }
       case 'investment': {
@@ -114,6 +127,7 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
           current_value: currentValue ?? null,
           last_updated: new Date(),
         };
+        amountForTypeLimit = detailPayload.initial_investment ?? 0;
         break;
       }
       default: {
@@ -122,14 +136,38 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       }
     }
 
+    const limitCheck = await ensureWithinTypeLimit({
+      userId,
+      user: req.user,
+      typeCode,
+      amount: amountForTypeLimit,
+      transaction,
+      excludeConvertId: id,
+    });
+
+    if (!limitCheck.valid) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: `Превышен лимит для типа ${typeCode}`,
+        code: 'TYPE_LIMIT_EXCEEDED',
+        limit: limitCheck.limit,
+        used: limitCheck.used,
+        required: limitCheck.required,
+        available: limitCheck.available,
+      });
+    }
+
     await convert.update({
       name,
       typeCode: convertType.code,
       isActive,
     }, { transaction });
 
-    if (detailType !== 'budget') {
-      await ConvertBudgetDetails.destroy({ where: { convertId: id }, transaction });
+    if (detailType !== 'important') {
+      await ConvertImportantDetails.destroy({ where: { convertId: id }, transaction });
+    }
+    if (detailType !== 'wishes') {
+      await ConvertWishesDetails.destroy({ where: { convertId: id }, transaction });
     }
     if (detailType !== 'saving') {
       await ConvertSavingDetails.destroy({ where: { convertId: id }, transaction });
@@ -138,8 +176,18 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       await ConvertInvestmentDetails.destroy({ where: { convertId: id }, transaction });
     }
 
-    if (detailType === 'budget') {
-      const [row, created] = await ConvertBudgetDetails.findOrCreate({
+    if (detailType === 'important') {
+      const [row, created] = await ConvertImportantDetails.findOrCreate({
+        where: { convertId: id },
+        defaults: { convertId: id, ...detailPayload },
+        transaction,
+      });
+
+      if (!created) {
+        await row.update(detailPayload, { transaction });
+      }
+    } else if (detailType === 'wishes') {
+      const [row, created] = await ConvertWishesDetails.findOrCreate({
         where: { convertId: id },
         defaults: { convertId: id, ...detailPayload },
         transaction,

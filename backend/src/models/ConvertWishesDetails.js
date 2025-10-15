@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const ConvertBudgetDetails = sequelize.define('ConvertBudgetDetails', {
+  const ConvertWishesDetails = sequelize.define('ConvertWishesDetails', {
     convertId: {
       type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
@@ -16,17 +16,16 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
     },
   }, {
-    tableName: 'convert_budget_details',
+    tableName: 'convert_wishes_details',
     timestamps: false,
   });
 
-  ConvertBudgetDetails.associate = (models) => {
-    ConvertBudgetDetails.belongsTo(models.Convert, {
+  ConvertWishesDetails.associate = (models) => {
+    ConvertWishesDetails.belongsTo(models.Convert, {
       as: 'convert',
       foreignKey: 'convertId',
     });
   };
 
-  return ConvertBudgetDetails;
+  return ConvertWishesDetails;
 };
-

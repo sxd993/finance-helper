@@ -1,12 +1,15 @@
-import { useEditConvert } from "../model/useEditConvert"
+import { useConvertGroups } from "../model/useConvertGroups"
+import { EditConvertModal } from "./EditConverModal";
 import { EditConvertCard } from "./EditConvertCard";
 
 export const EditConvertList = () => {
-    const { convert_group } = useEditConvert();
+    const { convert_group } = useConvertGroups();
     return (
         <>
             {convert_group?.map(convert => (
-                <EditConvertCard convert={convert} />
+                <div key={convert.id}>
+                    <EditConvertCard convert={convert} />
+                </div>
             ))}
         </>
     )

@@ -61,8 +61,11 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     // Type-specific details
-    if (models.ConvertBudgetDetails) {
-      Convert.hasOne(models.ConvertBudgetDetails, { as: 'budget', foreignKey: 'convertId' });
+    if (models.ConvertImportantDetails) {
+      Convert.hasOne(models.ConvertImportantDetails, { as: 'important', foreignKey: 'convertId' });
+    }
+    if (models.ConvertWishesDetails) {
+      Convert.hasOne(models.ConvertWishesDetails, { as: 'wishes', foreignKey: 'convertId' });
     }
     if (models.ConvertSavingDetails) {
       Convert.hasOne(models.ConvertSavingDetails, { as: 'saving', foreignKey: 'convertId' });

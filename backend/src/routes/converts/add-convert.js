@@ -1,6 +1,15 @@
 const express = require('express');
-const { sequelize, Convert, ConvertType, ConvertBudgetDetails, ConvertSavingDetails, ConvertInvestmentDetails } = require('../../db');
+const {
+  sequelize,
+  Convert,
+  ConvertType,
+  ConvertImportantDetails,
+  ConvertWishesDetails,
+  ConvertSavingDetails,
+  ConvertInvestmentDetails,
+} = require('../../db');
 const { requireAuth } = require('../../utils/auth');
+const { ensureWithinTypeLimit } = require('./utils/type-limits');
 
 const router = express.Router();
 
@@ -61,17 +70,20 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     let computedCurrent = currentAmount;
     let computedTarget = targetAmount;
+    let amountForTypeLimit = 0;
 
     switch (typeCode) {
       case 'important': {
         computedCurrent = currentAmount;
         computedTarget = undefined;
+        amountForTypeLimit = overallLimit;
         break;
       }
 
       case 'wishes': {
         computedCurrent = currentAmount;
         computedTarget = undefined;
+        amountForTypeLimit = overallLimit;
         break;
       }
 
@@ -81,18 +93,40 @@ router.post('/add-convert', requireAuth, async (req, res) => {
           await transaction.rollback();
           return res.status(400).json({ message: 'Для saving требуется target_amount' });
         }
+        amountForTypeLimit = computedTarget;
         break;
       }
 
       case 'investment': {
         computedCurrent = undefined;
         computedTarget = undefined;
+        amountForTypeLimit = initialInvestment ?? 0;
         break;
       }
 
       default:
         await transaction.rollback();
         return res.status(400).json({ message: `Обработчик для типа ${typeCode} не найден` });
+    }
+
+    const limitCheck = await ensureWithinTypeLimit({
+      userId,
+      user: req.user,
+      typeCode,
+      amount: amountForTypeLimit,
+      transaction,
+    });
+
+    if (!limitCheck.valid) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: `Превышен лимит для типа ${typeCode}`,
+        code: 'TYPE_LIMIT_EXCEEDED',
+        limit: limitCheck.limit,
+        used: limitCheck.used,
+        required: limitCheck.required,
+        available: limitCheck.available,
+      });
     }
 
     // Формируем данные для создания конверта
@@ -105,8 +139,14 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     }, { transaction });
 
     // Создаем детализацию по типу
-    if (typeCode === 'important' || typeCode === 'wishes') {
-      await ConvertBudgetDetails.create({
+    if (typeCode === 'important') {
+      await ConvertImportantDetails.create({
+        convertId: created.id,
+        current_amount: computedCurrent ?? 0,
+        overall_limit: overallLimit,
+      }, { transaction });
+    } else if (typeCode === 'wishes') {
+      await ConvertWishesDetails.create({
         convertId: created.id,
         current_amount: computedCurrent ?? 0,
         overall_limit: overallLimit,

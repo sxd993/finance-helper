@@ -1,4 +1,11 @@
-const { Convert, ConvertType, ConvertBudgetDetails, ConvertSavingDetails, ConvertInvestmentDetails } = require('../../../db');
+const {
+  Convert,
+  ConvertType,
+  ConvertImportantDetails,
+  ConvertWishesDetails,
+  ConvertSavingDetails,
+  ConvertInvestmentDetails,
+} = require('../../../db');
 
 async function getUserConverts(userId) {
   return Convert.findAll({
@@ -6,7 +13,8 @@ async function getUserConverts(userId) {
     attributes: ['id', 'name'],
     include: [
       { model: ConvertType, as: 'type', attributes: ['id', 'code', 'title'] },
-      { model: ConvertBudgetDetails, as: 'budget', required: false, attributes: [ 'current_amount', 'overall_limit'] },
+      { model: ConvertImportantDetails, as: 'important', required: false, attributes: ['current_amount', 'overall_limit'] },
+      { model: ConvertWishesDetails, as: 'wishes', required: false, attributes: ['current_amount', 'overall_limit'] },
       { model: ConvertSavingDetails, as: 'saving', required: false, attributes: ['target_amount', 'current_amount'] },
       { model: ConvertInvestmentDetails, as: 'investment', required: false, attributes: ['initial_investment', 'current_value', 'last_updated'] },
     ],

@@ -1,6 +1,7 @@
 const express = require('express');
 const { getUserConverts } = require('./utils/get-user-converts');
 const { requireAuth } = require('../../utils/auth');
+const { getTypeLimitsMap } = require('./utils/type-limits');
 
 const router = express.Router();
 
@@ -9,11 +10,10 @@ router.get('/get-converts', requireAuth, async (req, res) => {
     const userId = req.userId;
 
     const rows = await getUserConverts(userId);
-    console.log(rows)
+    const typeLimits = await getTypeLimitsMap({ userId, user: req.user });
 
     const result = rows.map((r) => {
-      const typeObj = r.type ? { id: r.type.id, code: r.type.code, title: r.type.title } : null;
-      const code = typeObj?.code;
+      const code = r.type?.code;
 
       let overall_limit;
       let current_amount;
@@ -21,16 +21,27 @@ router.get('/get-converts', requireAuth, async (req, res) => {
       let initial_investment;
       let current_value;
       let last_updated;
+      let type_limit;
 
       switch (code) {
-        case 'important':
-        case 'wishes': {
-          overall_limit = r.budget?.overall_limit ?? null;
-          current_amount = r.budget?.current_amount ?? null;
+        case 'important': {
+          overall_limit = r.important?.overall_limit ?? null;
+          current_amount = r.important?.current_amount ?? null;
           target_amount = null;
           initial_investment = null;
           current_value = null;
           last_updated = null;
+          type_limit = typeLimits[code] ?? null;
+          break;
+        }
+        case 'wishes': {
+          overall_limit = r.wishes?.overall_limit ?? null;
+          current_amount = r.wishes?.current_amount ?? null;
+          target_amount = null;
+          initial_investment = null;
+          current_value = null;
+          last_updated = null;
+          type_limit = typeLimits[code] ?? null;
           break;
         }
         case 'saving': {
@@ -40,6 +51,7 @@ router.get('/get-converts', requireAuth, async (req, res) => {
           initial_investment = null;
           current_value = null;
           last_updated = null;
+          type_limit = typeLimits[code] ?? null;
           break;
         }
         case 'investment': {
@@ -49,6 +61,7 @@ router.get('/get-converts', requireAuth, async (req, res) => {
           initial_investment = r.investment?.initial_investment ?? null;
           current_value = r.investment?.current_value ?? null;
           last_updated = r.investment?.last_updated ?? null;
+          type_limit = typeLimits[code] ?? null;
           break;
         }
         default: {
@@ -58,8 +71,16 @@ router.get('/get-converts', requireAuth, async (req, res) => {
           initial_investment = null;
           current_value = null;
           last_updated = null;
+          type_limit = null;
         }
       }
+
+      const typeObj = r.type ? {
+        id: r.type.id,
+        code: r.type.code,
+        title: r.type.title,
+        limit: type_limit != null ? Number(type_limit) : undefined,
+      } : null;
 
       return ({
         id: r.id,

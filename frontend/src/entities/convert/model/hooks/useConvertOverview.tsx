@@ -8,7 +8,6 @@ export const useConvertOverview = () => {
     queryFn: getConvertOverview,
     staleTime: 30 * 60 * 1000, // 30 минут
   });
-  console.log(data)
 
   return {
     convertOverview: data ? Object.entries(data) : null,

@@ -1,8 +1,8 @@
 import { formatPrice } from "@/shared/utils/formatPrice";
-import { useEditConvert } from "../model/useEditConvert";
+import { useConvertGroups } from "../model/useConvertGroups";
 
 export const EditConvertBalance = () => {
-    const { convert_overview_group, isLoading } = useEditConvert();
+    const { convert_overview_group, isLoading } = useConvertGroups();
 
 
     if (isLoading) {
