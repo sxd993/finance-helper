@@ -4,6 +4,8 @@ import { RegisterUserSettings } from './RegisterSteps/ui/RegisterUserSettings';
 
 import { useRegisterForm } from '@/features/auth';
 import { useSwitchRegisterStage } from './RegisterSteps/model/hooks/useSwitchRegisterStage'
+import { onboardingCards } from './RegisterSteps';
+import { usePreloadImages } from './RegisterSteps/model/hooks/usePreloadImages';
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -20,6 +22,9 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
     send_error
   } = useRegisterForm();
   const { step, onBack, onNext } = useSwitchRegisterStage();
+
+  usePreloadImages(onboardingCards.map((card) => card.image));
+
   return (
     <>
       {
