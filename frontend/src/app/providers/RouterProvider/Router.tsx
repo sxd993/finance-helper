@@ -40,7 +40,7 @@ export const Router = createBrowserRouter([
         },
       },
       {
-        path: 'add',
+        path: 'add-converts',
         lazy: async () => {
           const { AddConvertsPage } = await import('@pages/converts');
           return { Component: AddConvertsPage };
