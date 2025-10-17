@@ -58,7 +58,7 @@ export const AddConvertsForm = () => {
           />
           <h2>Сколько у вас уже накоплено?</h2>
           <input
-            {...register("current_amount", { valueAsNumber: true })}
+            {...register("initial_amount", { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Введите сумму цели"
@@ -79,7 +79,7 @@ export const AddConvertsForm = () => {
           />
           <h2>Начальная сумма (опционально)</h2>
           <input
-            {...register("current_amount", { valueAsNumber: true })}
+            {...register("initial_amount", { valueAsNumber: true })}
             type="number"
             min={0}
             placeholder="Текущая сумма"

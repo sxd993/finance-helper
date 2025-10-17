@@ -11,8 +11,21 @@ type ConvertCardProps = {
 
 
 export const ConvertCard = ({ convert }: ConvertCardProps) => {
-  const { balance, limit, spent, percentage, goal_percentage, remaining_to_goal, returnPercentage, absoluteReturn, isProfit, isLoss } = computeConvertMetrics(convert);
+  const metrics = computeConvertMetrics(convert);
+  const {
+    balance,
+    limit,
+    spent,
+    percentage,
+    goal_percentage,
+    remaining_to_goal,
+    returnPercentage,
+    absoluteReturn,
+    isProfit,
+    isLoss
+  } = metrics;
 
+  const percentValue = percentage();
   const typeCode = convert.type?.code ?? convert.type_code;
 
   switch (typeCode) {
@@ -23,9 +36,9 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
           balance={balance}
           limit={limit}
           spent={spent}
-          percentage={percentage}
+          percentage={percentValue}
         />
-      )
+      );
 
     case 'wishes':
       return (
@@ -34,9 +47,9 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
           balance={balance}
           limit={limit}
           spent={spent}
-          percentage={percentage}
+          percentage={percentValue}
         />
-      )
+      );
 
     case 'saving':
       return (
@@ -46,9 +59,9 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
           goal_percentage={goal_percentage}
           remaining_to_goal={remaining_to_goal}
         />
-      )
+      );
 
-    case "investment":
+    case 'investment':
       return (
         <InvestmentConvertCard
           convert={convert}
@@ -58,7 +71,7 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
           isProfit={isProfit}
           isLoss={isLoss}
         />
-      )
+      );
   }
 
   return null;

@@ -4,11 +4,8 @@ export interface Convert {
   type: ConvertType | null;
   name: string;
   is_active: boolean;
-  overall_limit?: number;
-  current_amount?: number;
   target_amount?: number;
-  initial_investment?: number;
-  initial_amount?: number;
+  initial_amount: number;
   current_value?: number;
   balance: number;
   total_in: number;

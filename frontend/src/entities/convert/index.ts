@@ -2,6 +2,7 @@
 export type {
   Convert,
   ConvertType,
+  ConvertInfo,
 } from './model/types';
 
 // Hooks

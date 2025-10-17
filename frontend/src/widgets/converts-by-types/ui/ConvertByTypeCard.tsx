@@ -1,4 +1,4 @@
-import type { Convert } from "@/entities/convert";
+import type { Convert, ConvertInfo } from "@/entities/convert";
 import { Modal } from "@/shared/ui/Modal";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { Edit2, Trash } from "lucide-react";
@@ -8,9 +8,10 @@ import { DeleteConvertModal } from "@/features/delete-convert";
 
 interface ConvertByTypeCardProps {
     convert: Convert;
+    overviewInfo?: ConvertInfo | null;
 }
 
-export const ConvertByTypeCard = ({ convert }: ConvertByTypeCardProps) => {
+export const ConvertByTypeCard = ({ convert, overviewInfo }: ConvertByTypeCardProps) => {
     const {
         isOpen: isEditOpen,
         open: openEditModal,
@@ -64,7 +65,9 @@ export const ConvertByTypeCard = ({ convert }: ConvertByTypeCardProps) => {
                     overall_limit={convert.overall_limit}
                     current_amount={convert.current_amount}
                     target_amount={convert.target_amount}
-                    convert_type_limit={convert.type?.limit ?? null}
+                    convert_type_limit={convert.type?.limit ?? overviewInfo?.total_limit ?? null}
+                    convert_type_used={overviewInfo?.used_limit ?? null}
+                    convert_type_available={overviewInfo?.avaliable_limit ?? null}
                     onClose={closeEditModal}
                 />
             </Modal>

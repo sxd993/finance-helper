@@ -13,7 +13,7 @@ export const useAddConvert = () => {
         mutationKey: ['add-convert'],
         mutationFn: addConvert,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['converts'] })
+            queryClient.invalidateQueries()
             toast.success('Конверты успешно созданы')
             dispatch(clearDrafts())
         }

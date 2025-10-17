@@ -94,17 +94,14 @@ CREATE TABLE IF NOT EXISTS transactions (
 CREATE TABLE IF NOT EXISTS convert_type_limits (
   user_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
-  cycle_id INT NOT NULL DEFAULT 0 COMMENT '0 = глобальный лимит',
   limit_amount DECIMAL(12,2) NOT NULL,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
-  PRIMARY KEY (user_id, type_code, cycle_id),
+  PRIMARY KEY (user_id, type_code),
   CONSTRAINT fk_type_limits_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_type_limits_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE CASCADE,
-  CONSTRAINT fk_type_limits_cycle FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE CASCADE,
-  
-  INDEX idx_limits_user_cycle (user_id, cycle_id)
+  CONSTRAINT fk_type_limits_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
 
 -- Остатки после закрытия цикла
 CREATE TABLE IF NOT EXISTS remainders (

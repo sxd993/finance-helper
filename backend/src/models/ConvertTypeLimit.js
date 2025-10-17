@@ -10,12 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       field: 'type_code',
     },
-    cycleId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      field: 'cycle_id',
-    },
     limitAmount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
@@ -30,12 +24,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'convert_type_limits',
     timestamps: false,
-    indexes: [
-      {
-        name: 'idx_limits_user_cycle',
-        fields: ['user_id', 'cycle_id'],
-      },
-    ],
   });
 
   ConvertTypeLimit.associate = (models) => {
@@ -48,11 +36,6 @@ module.exports = (sequelize, DataTypes) => {
       as: 'type',
       foreignKey: 'typeCode',
       targetKey: 'code',
-    });
-
-    ConvertTypeLimit.belongsTo(models.Cycle, {
-      as: 'cycle',
-      foreignKey: 'cycleId',
     });
   };
 

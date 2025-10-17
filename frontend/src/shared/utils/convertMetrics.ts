@@ -2,15 +2,14 @@ import type { Convert } from '@/entities/convert/model/types';
 
 export type ConvertMetrics = {
   balance: number;
-  limit: number;
+  limit: number | null;
   spent: number;
   goal: number;
-  percentage: number;
+  percentage: () => number;
   goal_percentage: number;
   remaining_to_goal: number;
-  // Investment metrics
   returnPercentage: number; // ROI %
-  absoluteReturn: number; // P/L
+  absoluteReturn: number;   // P/L
   isProfit: boolean;
   isLoss: boolean;
   isNeutral: boolean;
@@ -19,49 +18,36 @@ export type ConvertMetrics = {
 export function computeConvertMetrics(convert: Convert): ConvertMetrics {
   const typeCode = convert.type?.code ?? convert.type_code;
 
-  const balance = Number.isFinite(convert.balance)
-    ? Number(convert.balance)
-    : Number(convert.current_amount ?? 0);
+  const safeNum = (v: unknown, fallback = 0): number => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  };
 
-  const totalOut = Number.isFinite(convert.total_out)
-    ? Number(convert.total_out)
-    : 0;
-
-  const limit = (() => {
-    if (typeCode === 'saving') {
-      return typeof convert.target_amount === 'number' ? convert.target_amount : 0;
-    }
-    return typeof convert.overall_limit === 'number' ? convert.overall_limit : 0;
-  })();
-
-  const target = typeof convert.target_amount === 'number' ? convert.target_amount : 0;
-
-  const percentage = limit > 0
-    ? Math.min(100, Math.max(0, (balance / limit) * 100))
-    : 100;
-
+  const balance = safeNum(convert.balance ?? convert.initial_amount);
+  const limit = convert.target_amount != null ? safeNum(convert.target_amount) : null;
+  const totalOut = safeNum(convert.total_out);
   const spent = totalOut;
 
-  const remaining_to_goal = typeCode === 'saving'
-    ? Math.max(0, target - balance)
-    : 0;
+  const percentage = (): number => {
+    if (limit !== null && limit > 0) {
+      const pct = (balance / limit) * 100;
+      return Math.round(Math.min(100, Math.max(0, pct)));
+    }
+    return 100;
+  };
 
-  const goal_percentage = typeCode === 'saving' && target > 0
-    ? Math.min(100, Math.max(0, (balance / target) * 100))
-    : 100;
-
+  // --- saving goal only ---
+  const target = safeNum(convert.target_amount);
+  const remaining_to_goal = typeCode === 'saving' ? Math.max(0, target - balance) : 0;
+  const goal_percentage =
+    typeCode === 'saving' && target > 0
+      ? Math.min(100, Math.max(0, (balance / target) * 100))
+      : 100;
   const goal = typeCode === 'saving' ? remaining_to_goal : 0;
 
-  const initial = typeof convert.initial_amount === 'number'
-    ? convert.initial_amount
-    : typeof convert.initial_investment === 'number'
-      ? convert.initial_investment
-      : 0;
-
-  const current = typeof convert.current_value === 'number'
-    ? convert.current_value
-    : balance;
-
+  // --- investment stats ---
+  const initial = safeNum(convert.initial_amount);
+  const current = safeNum(convert.balance ?? convert.initial_amount);
   const absoluteReturn = current - initial;
   const returnPercentage = initial > 0 ? (absoluteReturn / initial) * 100 : 0;
   const isProfit = absoluteReturn > 0;

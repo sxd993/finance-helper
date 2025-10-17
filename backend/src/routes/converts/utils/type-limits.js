@@ -1,4 +1,4 @@
-const { Op, literal } = require('sequelize');
+const { Op } = require('sequelize');
 const {
   sequelize,
   Convert,
@@ -13,15 +13,28 @@ const PERCENT_KEY_BY_TYPE = {
 };
 
 const LIMIT_COLUMN_BY_TYPE = {
-  important: '`converts`.`target_amount`',
-  wishes: '`converts`.`target_amount`',
-  saving: '`converts`.`target_amount`',
-  investment: '`converts`.`initial_amount`',
+  important: 'target_amount',
+  wishes: 'target_amount',
+  saving: 'target_amount',
+  investment: 'initial_amount',
 };
 
 const toNumberOrZero = (value) => {
   const num = Number(value);
   return Number.isFinite(num) ? num : 0;
+};
+
+const toNumberOrNull = (value) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+};
+
+const normalizeLimit = (value) => {
+  const num = Number(value);
+  if (!Number.isFinite(num)) {
+    return null;
+  }
+  return Number(num.toFixed(2));
 };
 
 function calculateLimitValue(user, typeCode) {
@@ -42,35 +55,57 @@ function calculateLimitValue(user, typeCode) {
 }
 
 async function upsertTypeLimit(userId, typeCode, limit, transaction) {
-  const where = { userId, typeCode, cycleId: null };
-  const payload = {
+  const normalized = normalizeLimit(limit);
+  if (normalized == null) {
+    return;
+  }
+
+  await ConvertTypeLimit.upsert({
     userId,
     typeCode,
-    cycleId: null,
-    limitAmount: limit != null ? Number(limit) : 0,
-    updatedAt: new Date(),
-  };
+    limitAmount: normalized,
+  }, { transaction });
+}
 
-  const [row, created] = await ConvertTypeLimit.findOrCreate({
-    where,
-    defaults: payload,
+async function findStoredTypeLimit(userId, typeCode, transaction) {
+  const row = await ConvertTypeLimit.findOne({
+    where: { userId, typeCode },
+    attributes: ['limitAmount'],
+    raw: true,
     transaction,
   });
 
-  if (!created) {
-    await row.update(payload, { transaction });
+  if (!row) {
+    return null;
   }
+
+  return toNumberOrNull(row.limitAmount);
+}
+
+async function resolveTypeLimit({ userId, user, typeCode, transaction }) {
+  const stored = await findStoredTypeLimit(userId, typeCode, transaction);
+  if (stored != null) {
+    return stored;
+  }
+
+  const computed = calculateLimitValue(user, typeCode);
+  if (computed == null) {
+    return null;
+  }
+
+  await upsertTypeLimit(userId, typeCode, computed, transaction);
+  return computed;
 }
 
 async function getTypeLimitsMap({ userId, user, transaction }) {
-  const entries = Object.keys(PERCENT_KEY_BY_TYPE).map(async (code) => {
-    const limit = calculateLimitValue(user, code);
-    await upsertTypeLimit(userId, code, limit, transaction);
-    return [code, limit];
-  });
+  const entries = await Promise.all(
+    Object.keys(PERCENT_KEY_BY_TYPE).map(async (code) => {
+      const limit = await resolveTypeLimit({ userId, user, typeCode: code, transaction });
+      return [code, limit != null ? Number(limit) : null];
+    }),
+  );
 
-  const resolved = await Promise.all(entries);
-  return Object.fromEntries(resolved);
+  return Object.fromEntries(entries);
 }
 
 async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transaction }) {
@@ -90,7 +125,7 @@ async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transact
       [
         sequelize.fn(
           'COALESCE',
-          sequelize.fn('SUM', literal(column)),
+          sequelize.fn('SUM', sequelize.col(`Convert.${column}`)),
           0,
         ),
         'total',
@@ -111,8 +146,7 @@ async function ensureWithinTypeLimit({
   transaction,
   excludeConvertId,
 }) {
-  const limit = calculateLimitValue(user, typeCode);
-  await upsertTypeLimit(userId, typeCode, limit, transaction);
+  const limit = await resolveTypeLimit({ userId, user, typeCode, transaction });
 
   if (limit == null) {
     return {

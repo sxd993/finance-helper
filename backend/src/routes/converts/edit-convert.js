@@ -26,14 +26,12 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Некорректный id конверта' });
     }
 
-    const payload = (req.body && req.body.convert) || req.body || {};
+    const payload = req.body?.convert || req.body || {};
     const {
       name,
       type_code: typeCodeRaw,
       target_amount: targetRaw,
-      overall_limit: legacyLimitRaw,
       initial_amount: initialAmountRaw,
-      initial_investment: legacyInitialRaw,
       is_active: isActiveRaw,
     } = payload;
 
@@ -56,11 +54,8 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       return res.status(400).json({ message: `Неизвестный тип конверта: ${nextTypeCode}` });
     }
 
-    const duplicate = await Convert.findOne({
-      where: { userId, name },
-      transaction,
-    });
-
+    // Проверка на дубликат имени
+    const duplicate = await Convert.findOne({ where: { userId, name }, transaction });
     if (duplicate && duplicate.id !== id) {
       await transaction.rollback();
       return res.status(409).json({
@@ -70,11 +65,9 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       });
     }
 
+    // Преобразование числовых значений
     const targetAmount = toNumberOrNull(targetRaw);
-    const fallbackLimit = toNumberOrNull(legacyLimitRaw);
-    const effectiveTarget = targetAmount != null ? targetAmount : fallbackLimit;
     const initialAmount = toNumberOrNull(initialAmountRaw);
-    const legacyInitial = toNumberOrNull(legacyInitialRaw);
     const isActive = isActiveRaw === undefined ? convert.isActive : Boolean(isActiveRaw);
 
     const convertUpdate = {
@@ -87,35 +80,35 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
 
     let allocationAmount = 0;
 
+    // Унифицированная логика
     switch (convertType.code) {
       case 'important':
-      case 'wishes': {
-        convertUpdate.targetAmount = effectiveTarget != null ? effectiveTarget : 0;
-        allocationAmount = convertUpdate.targetAmount ?? 0;
-        break;
-      }
+      case 'wishes':
       case 'saving': {
-        if (effectiveTarget == null) {
+        if (convertType.code === 'saving' && targetAmount == null) {
           await transaction.rollback();
           return res.status(400).json({ message: 'Для saving требуется target_amount' });
         }
-        convertUpdate.targetAmount = effectiveTarget;
-        allocationAmount = convertUpdate.targetAmount ?? 0;
+
+        convertUpdate.targetAmount = targetAmount ?? 0;
+        convertUpdate.initialAmount = initialAmount ?? convert.initialAmount ?? 0;
+        allocationAmount = convertUpdate.targetAmount;
         break;
       }
+
       case 'investment': {
-        convertUpdate.initialAmount = initialAmount != null
-          ? initialAmount
-          : (legacyInitial != null ? legacyInitial : convert.initialAmount ?? 0);
-        allocationAmount = convertUpdate.initialAmount ?? 0;
+        convertUpdate.initialAmount = initialAmount ?? convert.initialAmount ?? 0;
+        allocationAmount = convertUpdate.initialAmount;
         break;
       }
+
       default: {
         await transaction.rollback();
         return res.status(400).json({ message: `Обработчик для типа ${convertType.code} не найден` });
       }
     }
 
+    // Проверка лимита
     const limitCheck = await ensureWithinTypeLimit({
       userId,
       user: req.user,
@@ -137,8 +130,8 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       });
     }
 
+    // Обновление данных
     await convert.update(convertUpdate, { transaction });
-
     await transaction.commit();
 
     return res.json({
