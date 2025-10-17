@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useUser } from '@/entities/user';
 
 interface PublicRouteProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
@@ -21,5 +21,5 @@ export const PublicRoute = ({ children }: PublicRouteProps) => {
     return <Navigate to="/home" replace />;
   }
 
-  return <>{children}</>;
+  return <>{children ?? <Outlet />}</>;
 };

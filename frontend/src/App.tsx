@@ -1,98 +1,18 @@
 import './App.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+import { Router } from '@/app/providers/RouterProvider';
+import { RouterProvider } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@app/providers/QueryProvider';
+import { StoreProvider } from './app/providers/StoreProvider/StoreProvider';
 import { Toaster } from 'sonner'
 
-
-import { ProtectedRoute, PublicRoute } from '@app/providers/router';
-import { AuthPage } from '@pages/auth';
-import { ConvertsPage, AddConvertsPage, ConvertByTypePage } from '@pages/converts';
-import { TransactionsPage } from '@/pages/transactions';
-import { HomePage } from '@pages/home';
-import { SettingsPage } from '@pages/settings';
-import { StoreProvider } from './app/providers/StoreProvider/StoreProvider';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      retry: 1,
-    },
-  },
-});
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: (
-      <PublicRoute>
-        <AuthPage />
-      </PublicRoute>
-    ),
-  },
-  {
-    path: '/auth',
-    element: (
-      <PublicRoute>
-        <AuthPage />
-      </PublicRoute>
-    ),
-  },
-  {
-    path: '/home',
-    element: (
-      <ProtectedRoute>
-        <HomePage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/converts',
-    element: (
-      <ProtectedRoute>
-        <ConvertsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/converts/edit/:type_code',
-    element: (
-      <ProtectedRoute>
-        <ConvertByTypePage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/transactions',
-    element: (
-      <ProtectedRoute>
-        <TransactionsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/settings',
-    element: (
-      <ProtectedRoute>
-        <SettingsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/converts/add-converts',
-    element: (
-      <ProtectedRoute>
-        <AddConvertsPage />
-      </ProtectedRoute>
-    )
-  }
-]);
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        <RouterProvider router={router} />
+        <RouterProvider router={Router} />
         <Toaster position="bottom-right" richColors duration={2000} />
       </StoreProvider>
     </QueryClientProvider>

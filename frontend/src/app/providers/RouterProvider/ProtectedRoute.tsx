@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 import { useUser } from '@/entities/user';
 import { Header } from '@/widgets/layout/header';
 import { Navigation } from '@/widgets/layout/navigation';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
@@ -25,11 +25,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" replace />;
   }
 
+  const content = children ?? <Outlet />;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header user={user} />
       <main className='flex-1'>
-        {children}
+        {content}
       </main>
       <Navigation />
     </div>
