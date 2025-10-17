@@ -2,15 +2,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AuthApi } from '@features/auth';
 
 
-// Хук для выхода
 export const useLogout = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  const logoutMutation = useMutation({
     mutationFn: AuthApi.logout,
     onSuccess: () => {
       queryClient.setQueryData(['user'], null);
       queryClient.clear();
     },
   });
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync()
+  }
+  return { handleLogout }
 };

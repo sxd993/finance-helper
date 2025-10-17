@@ -1,10 +1,11 @@
-import { CalendarIcon, ArrowLeft, Settings } from "lucide-react";
+import { CalendarIcon, ArrowLeft, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { User } from "@/entities/user";
 import { currentDay, currentDate } from "../model/const";
 import { useParams } from "react-router-dom";
 import { formatTypeCode } from "@/features/add-converts/model/lib/formatTypeCode";
 import { RenderConvertIcon } from "@/shared/ui/RenderConvertIcon";
+import { useLogout } from "@/features/auth";
 
 interface HeaderProps {
   user: User | null;
@@ -12,6 +13,7 @@ interface HeaderProps {
 
 export const Header = ({ user }: HeaderProps) => {
   const { type_code } = useParams<{ type_code: string }>();
+  const { handleLogout } = useLogout()
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -69,9 +71,11 @@ export const Header = ({ user }: HeaderProps) => {
             </div>
 
             {/* Правая часть: аватар */}
-            <div className=" rounded-md  flex items-center justify-center">
-              {<Settings width={30} height={30} />}
-            </div>
+            <button
+              onClick={handleLogout}
+              className=" rounded-md  flex items-center justify-center">
+              {<LogOut width={25} height={25} />}
+            </button>
           </div>
         )}
       </div>
