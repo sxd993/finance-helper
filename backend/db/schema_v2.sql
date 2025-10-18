@@ -52,25 +52,22 @@ CREATE TABLE IF NOT EXISTS cycles (
 CREATE TABLE IF NOT EXISTS converts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  cycle_id INT DEFAULT NULL COMMENT 'NULL = накопительный конверт',
   type_code VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
   
   -- Универсальные поля
   target_amount DECIMAL(12,2) DEFAULT NULL COMMENT 'Цель для saving, лимит для important/wishes',
   initial_amount DECIMAL(12,2) DEFAULT NULL COMMENT 'Начальная сумма для investment',
-  
+
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   CONSTRAINT fk_converts_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_converts_cycles FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE SET NULL,
   CONSTRAINT fk_converts_types FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE RESTRICT,
   
   INDEX idx_converts_user_active (user_id, is_active),
   INDEX idx_converts_user_type (user_id, type_code),
-  INDEX idx_converts_cycle (cycle_id),
   INDEX idx_converts_type (type_code)
 ) ENGINE=InnoDB;
 

@@ -10,12 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'user_id',
     },
-    cycleId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
-      defaultValue: null,
-      field: 'cycle_id',
-    },
     typeCode: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -54,11 +48,6 @@ module.exports = (sequelize, DataTypes) => {
     Convert.belongsTo(models.User, {
       as: 'user',
       foreignKey: 'userId',
-    });
-
-    Convert.belongsTo(models.Cycle, {
-      as: 'cycle',
-      foreignKey: 'cycleId',
     });
 
     Convert.belongsTo(models.ConvertType, {

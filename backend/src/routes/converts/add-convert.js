@@ -62,7 +62,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     // Основная запись
     const convertPayload = {
       userId,
-      cycleId: null,
       typeCode: convertType.code,
       name,
       isActive,

@@ -1,5 +1,5 @@
 const express = require('express');
-const { User, ConvertType, sequelize } = require('../../db');
+const { User, ConvertType, Cycle, sequelize } = require('../../db');
 const {
   findUserByLogin,
   toPublicUser,
@@ -69,6 +69,15 @@ router.post('/', async (req, res) => {
         percentInvestment: resolvedPercents.investment,
         monthlyIncome: normalizedIncome,
         cycleType,
+      },
+      { transaction }
+    );
+
+    await Cycle.create(
+      {
+        userId: user.id,
+        startDate: new Date(),
+        isClosed: false,
       },
       { transaction }
     );

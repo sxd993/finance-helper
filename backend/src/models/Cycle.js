@@ -46,11 +46,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
     });
 
-    Cycle.hasMany(models.Convert, {
-      as: 'converts',
-      foreignKey: 'cycleId',
-    });
-
     Cycle.hasMany(models.Remainder, {
       as: 'remainders',
       foreignKey: 'cycleId',
