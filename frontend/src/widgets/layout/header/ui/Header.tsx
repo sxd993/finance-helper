@@ -16,6 +16,8 @@ export const Header = ({ user }: HeaderProps) => {
   const { handleLogout } = useLogout()
   const location = useLocation();
   const navigate = useNavigate();
+  const trimmedName = user?.name?.trim();
+  const userInitial = trimmedName ? trimmedName.charAt(0).toUpperCase() : "П";
 
   const showBackButton =
     location.pathname.startsWith("/converts/") ||
@@ -54,6 +56,12 @@ export const Header = ({ user }: HeaderProps) => {
           <div className="flex items-center justify-between w-full">
             {/* Левая часть: информация */}
             <div className="flex items-center gap-4">
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-400 text-lg font-semibold uppercase text-white"
+                aria-label={`Профиль ${trimmedName || "пользователя"}`}
+              >
+                {userInitial}
+              </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-baseline gap-1">
                   <h1 className="text-lg font-bold text-gray-900">Привет,</h1>

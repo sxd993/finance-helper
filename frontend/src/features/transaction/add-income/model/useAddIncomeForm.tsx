@@ -1,6 +1,6 @@
-import type { createIncomeData } from "@/entities/transaction"
+import type { createIncomeData } from "@/entities/expense"
 import { useForm } from "react-hook-form"
-import { useCreateIncomeMutation } from "@/entities/transaction"
+import { useCreateIncomeMutation } from "@/entities/expense"
 
 export const useAddIncomeForm = () => {
 

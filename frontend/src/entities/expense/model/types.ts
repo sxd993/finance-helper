@@ -3,8 +3,3 @@ export interface createExpenseData {
   amount: number;
   convert_id: number
 }
-
-export interface createIncomeData {
-  title: string
-  amount: number;
-}

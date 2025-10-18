@@ -22,7 +22,7 @@ export const ConvertCard = ({
                         <h3>{type}</h3>
                     </div>
                     <div className="flex">
-                        <p className="font-medium">{formatPrice(currentSum)}</p>
+                        <p className="font-medium">Остаток: {formatPrice(currentSum)}</p>
                     </div>
                 </div>
                 <div className="space-y-2">

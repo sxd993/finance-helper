@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { createExpense } from "@/entities/transaction";
+import { createExpense } from "@/entities/expense";
 
 
 export const useAddExpense = () => {
-    
+
 }
