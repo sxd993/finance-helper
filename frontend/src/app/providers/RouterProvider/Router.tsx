@@ -56,14 +56,14 @@ export const Router = createBrowserRouter([
     ],
   },
   {
-    path: '/transactions',
+    path: '/expenses',
     element: <ProtectedRoute />,
     children: [
       {
         index: true,
         lazy: async () => {
-          const { TransactionsPage } = await import('@pages/transactions');
-          return { Component: TransactionsPage };
+          const { ExpensesPage } = await import('@/pages/expenses');
+          return { Component: ExpensesPage };
         },
       },
     ],
