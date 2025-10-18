@@ -12,6 +12,7 @@ const {
   Convert,
   Remainder,
 } = require('../../db');
+const { getUserConverts } = require('../../routes/converts/utils/get-user-converts');
 
 /* 
 Функция закрытия предыдущего цикла
@@ -100,6 +101,9 @@ async function saveRemainders(userId, cycleId, convertSnapshots, transaction) {
 Функция сброса цикла
 */
 async function resetConverts(userId, transaction) {
+  const rows = await getUserConverts(userId)
+  const targetAmount = rows.map(convert => convert.targetAmount)
+
   const converts = await Convert.findAll({
     where: {
       userId,
@@ -124,7 +128,7 @@ async function resetConverts(userId, transaction) {
 
     await convert.update(
       {
-        initialAmount: 0,
+        initialAmount: targetAmount,
       },
       { transaction }
     );

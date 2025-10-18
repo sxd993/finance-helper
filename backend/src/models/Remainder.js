@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   }, {
-    tableName: 'cycle_remainders',
+    tableName: 'remainders',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false,
