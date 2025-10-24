@@ -22,7 +22,7 @@ export const OnboardingCard = ({
                     </div>
                 )}
                 <figcaption className="space-y-3">
-                    <h2 className="text-2xl font-semibold text-slate-900">{title}</h2>
+                    <h2 className="text-2xl  text-slate-900">{title}</h2>
                     <p className="text-base leading-relaxed text-slate-600">
                         {description}
                     </p>

@@ -40,7 +40,7 @@ export const Header = ({ user }: HeaderProps) => {
             </button>
             {isEditConvertPage && (
               <div className="flex flex-col items-center gap-1">
-                <h1 className="text-base sm:text-lg font-semibold text-slate-900">Настройка категории</h1>
+                <h1 className="text-base sm:text-lg  text-slate-900">Настройка категории</h1>
                 {type_code && (
                   <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     {RenderConvertIcon(type_code)}
@@ -57,7 +57,7 @@ export const Header = ({ user }: HeaderProps) => {
             {/* Левая часть: информация */}
             <div className="flex items-center gap-4">
               <div
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-400 text-lg font-semibold uppercase text-white"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-400 text-lg  uppercase text-white"
                 aria-label={`Профиль ${trimmedName || "пользователя"}`}
               >
                 {userInitial}

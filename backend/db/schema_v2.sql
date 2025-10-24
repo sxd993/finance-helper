@@ -71,21 +71,21 @@ CREATE TABLE IF NOT EXISTS converts (
   INDEX idx_converts_type (type_code)
 ) ENGINE=InnoDB;
 
--- Транзакции - единственный источник правды о деньгах
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE IF NOT EXISTS expenses (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  convert_id INT NOT NULL,
-  type ENUM('deposit', 'spend', 'transfer_in', 'transfer_out') NOT NULL,
-  amount DECIMAL(12,2) NOT NULL,
-  note TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  name VARCHAR(255) NOT NULL,
+  convert_name VARCHAR(255) NOT NULL,
+  convert_type VARCHAR(50) NOT NULL,
+  sum DECIMAL(12,2) NOT NULL,
+  date BIGINT UNSIGNED NOT NULL COMMENT
+  icon_name VARCHAR(100) NOT NULL,
+  icon_color VARCHAR(32) NOT NULL,
   
-  CONSTRAINT fk_transactions_converts FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE,
-  CONSTRAINT chk_amount_positive CHECK (amount > 0),
+  CONSTRAINT fk_expenses_convert_type FOREIGN KEY (convert_type) REFERENCES convert_types(code) ON DELETE RESTRICT,
+  CONSTRAINT chk_expenses_sum_positive CHECK (sum > 0),
   
-  INDEX idx_transactions_convert_date (convert_id, created_at DESC),
-  INDEX idx_transactions_type (type),
-  INDEX idx_transactions_created (created_at)
+  INDEX idx_expenses_convert_type (convert_type),
+  INDEX idx_expenses_date (date)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS convert_type_limits (

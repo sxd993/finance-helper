@@ -37,7 +37,7 @@ const User = require('../models/User')(sequelize, DataTypes);
 const Cycle = require('../models/Cycle')(sequelize, DataTypes);
 const ConvertType = require('../models/ConvertType')(sequelize, DataTypes);
 const Convert = require('../models/Convert')(sequelize, DataTypes);
-const Transaction = require('../models/Transaction')(sequelize, DataTypes);
+const Expense = require('../models/Expense')(sequelize, DataTypes);
 const Remainder = require('../models/Remainder')(sequelize, DataTypes);
 const ConvertTypeLimit = require('../models/ConvertTypeLimit')(sequelize, DataTypes);
 
@@ -46,7 +46,7 @@ const models = {
   Cycle,
   ConvertType,
   Convert,
-  Transaction,
+  Expense,
   Remainder,
   ConvertTypeLimit,
 };
@@ -65,7 +65,7 @@ module.exports = {
   Cycle,
   ConvertType,
   Convert,
-  Transaction,
+  Expense,
   Remainder,
   ConvertTypeLimit,
 };

@@ -2,7 +2,7 @@ const express = require('express');
 const {
   sequelize,
   Convert,
-  Transaction,
+  Expense,
 } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
 
@@ -27,7 +27,13 @@ router.delete('/delete-convert/:id', requireAuth, async (req, res) => {
       return res.status(404).json({ message: 'Конверт не найден' });
     }
 
-    await Transaction.destroy({ where: { convertId: id }, transaction });
+    await Expense.destroy({
+      where: {
+        convertName: convert.name,
+        convertType: convert.typeCode,
+      },
+      transaction,
+    });
     await convert.destroy({ transaction });
     await transaction.commit();
 

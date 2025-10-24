@@ -1,5 +1,5 @@
 // Types
-export type { createExpenseData } from './model/types';
+export type { Expense } from './model/types';
 
 // API
 export { createExpense } from './api/expenseApi';

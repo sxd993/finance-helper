@@ -3,7 +3,6 @@ const {
   sequelize,
   Convert,
   ConvertType,
-  Transaction,
 } = require('../../db');
 const { requireAuth } = require('../../utils/auth');
 const { ensureWithinTypeLimit } = require('./utils/type-limits');
@@ -123,16 +122,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     // Создаём конверт
     const created = await Convert.create(convertPayload, { transaction });
-
-    // Добавляем стартовую транзакцию, если есть баланс
-    if (initialAmount && initialAmount > 0) {
-      await Transaction.create({
-        convertId: created.id,
-        type: 'deposit',
-        amount: initialAmount,
-        note: 'Initial balance',
-      }, { transaction });
-    }
 
     await transaction.commit();
 

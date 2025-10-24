@@ -24,7 +24,7 @@ export function computeConvertMetrics(convert: Convert): ConvertMetrics {
   };
 
   const balance = safeNum(convert.balance ?? convert.initial_amount);
-  const limit = convert.target_amount != null ? safeNum(convert.target_amount) : null;
+  const limit = safeNum(convert.target_amount, null);
   const totalOut = safeNum(convert.total_out);
   const spent = totalOut;
 

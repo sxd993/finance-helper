@@ -1,53 +1,71 @@
-const { Op, literal } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
 const {
-  sequelize,
   Convert,
   ConvertType,
-  Transaction,
+  Expense,
 } = require('../../../db');
-
-const IN_TYPES = "('deposit','transfer_in')";
-const OUT_TYPES = "('spend','transfer_out')";
 
 async function getTransactionsSummary(convertIds, { transaction } = {}) {
   if (!convertIds.length) {
     return new Map();
   }
 
-  const rows = await Transaction.findAll({
-    where: { convertId: { [Op.in]: convertIds } },
+  const converts = await Convert.findAll({
+    where: { id: { [Op.in]: convertIds } },
+    attributes: ['id', 'name', 'typeCode', 'targetAmount', 'initialAmount'],
+    transaction,
+  });
+
+  if (!converts.length) {
+    return new Map();
+  }
+
+  const convertNames = converts.map((convert) => convert.name);
+
+  const expenseRows = await Expense.findAll({
+    where: { convertName: { [Op.in]: convertNames } },
     attributes: [
-      'convertId',
-      [
-        sequelize.fn(
-          'COALESCE',
-          sequelize.fn('SUM', literal(`CASE WHEN type IN ${IN_TYPES} THEN amount ELSE 0 END`)),
-          0,
-        ),
-        'total_in',
-      ],
-      [
-        sequelize.fn(
-          'COALESCE',
-          sequelize.fn('SUM', literal(`CASE WHEN type IN ${OUT_TYPES} THEN amount ELSE 0 END`)),
-          0,
-        ),
-        'total_out',
-      ],
+      'convertName',
+      [fn('COALESCE', fn('SUM', col('sum')), literal('0')), 'total_out'],
     ],
-    group: ['convertId'],
+    group: ['convertName'],
     raw: true,
     transaction,
   });
 
+  const expensesByConvertName = new Map(
+    expenseRows.map((row) => [row.convertName, Number(row.total_out) || 0]),
+  );
+
   const summary = new Map();
-  for (const row of rows) {
-    const totalIn = Number(row.total_in) || 0;
-    const totalOut = Number(row.total_out) || 0;
-    summary.set(Number(row.convertId), {
+  for (const convert of converts) {
+    const totalOut = expensesByConvertName.get(convert.name) || 0;
+    const targetAmount = Number(convert.targetAmount ?? 0) || 0;
+    const initialAmount = Number(convert.initialAmount ?? 0) || 0;
+    const fallbackAmount = targetAmount || initialAmount;
+
+    let totalIn = 0;
+    switch (convert.typeCode) {
+      case 'investment':
+        totalIn = initialAmount;
+        break;
+      case 'saving':
+        totalIn = targetAmount || fallbackAmount;
+        break;
+      case 'important':
+      case 'wishes':
+        totalIn = fallbackAmount;
+        break;
+      default:
+        totalIn = fallbackAmount;
+    }
+
+    const balance = Number((totalIn - totalOut).toFixed(2));
+
+    summary.set(Number(convert.id), {
       totalIn,
       totalOut,
-      balance: Number((totalIn - totalOut).toFixed(2)),
+      balance,
     });
   }
 

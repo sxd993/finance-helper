@@ -33,26 +33,26 @@ export const EditConvertModal = ({
     <form onSubmit={onSubmit} className="flex flex-col gap-2">
       <div className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 sm:grid-cols-3">
         <div className="flex flex-col gap-1">
-          <span className="text-lg font-semibold text-slate-500">
+          <span className="text-lg  text-slate-500">
             Лимит категории
           </span>
-          <span className="text-lg font-semibold text-slate-900">
+          <span className="text-lg  text-slate-900">
             {formatPrice(convert_type_limit ?? undefined)}
           </span>
         </div>
         <div className="flex flex-col gap-1 sm:items-end">
-          <span className="text-lg font-semibold text-slate-500">
+          <span className="text-lg  text-slate-500">
             Использовано:
           </span>
-          <span className="text-lg font-semibold text-slate-900">
+          <span className="text-lg  text-slate-900">
             {formatPrice(convert_type_used ?? undefined)}
           </span>
         </div>
         <div className="flex flex-col gap-1 sm:items-end">
-          <span className="text-lg font-semibold text-slate-500">
+          <span className="text-lg  text-slate-500">
             Доступно
           </span>
-          <span className="text-lg font-semibold text-slate-900">
+          <span className="text-lg  text-slate-900">
             {formatPrice(convert_type_available ?? undefined)}
           </span>
         </div>

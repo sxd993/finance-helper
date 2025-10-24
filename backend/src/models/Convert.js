@@ -56,9 +56,11 @@ module.exports = (sequelize, DataTypes) => {
       targetKey: 'code',
     });
 
-    Convert.hasMany(models.Transaction, {
-      as: 'transactions',
-      foreignKey: 'convertId',
+    Convert.hasMany(models.Expense, {
+      as: 'expenses',
+      foreignKey: 'convertName',
+      sourceKey: 'name',
+      constraints: false,
     });
   };
 

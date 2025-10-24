@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/auth');
 const convertsRoutes = require('./routes/converts/');
+const expensesRoutes = require('./routes/expenses/');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/converts', convertsRoutes);
+app.use('/api/expenses', expensesRoutes);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

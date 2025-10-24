@@ -1,7 +1,7 @@
 import { client } from "@/shared/api/client"
-import type { createExpenseData } from "../model/types"
+import type { Expense } from "../model/types"
 
-export const createExpense = async (data: createExpenseData) => {
-    const response = await client.post('/transaction/create-expense', data)
+export const getUserExpenses = async (): Promise<Expense[]> => {
+    const response = await client.get<Expense[]>('/expenses/get-expenses')
     return response.data
 }

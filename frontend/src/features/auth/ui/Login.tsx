@@ -23,7 +23,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
           className="bg-white px-6 py-8 flex flex-col items-center gap-4 w-full max-w-sm rounded-lg"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <h2 className="text-2xl text-gray-600 text-center font-semibold">
+          <h2 className="text-2xl text-gray-600 text-center ">
             Авторизация
           </h2>
 
@@ -89,7 +89,7 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
           {/* Кнопка входа */}
           <button
             type="submit"
-            className="w-full px-4 py-2 mt-2 rounded-md bg-secondary hover:bg-secondary-dark text-white font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-offset-2"
+            className="w-full px-4 py-2 mt-2 rounded-md bg-secondary hover:bg-secondary-dark text-white  transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-offset-2"
             disabled={isLoading}
           >
             {isLoading ? 'Загрузка...' : 'Войти'}

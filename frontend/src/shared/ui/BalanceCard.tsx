@@ -27,7 +27,7 @@ export const BalanceCard = ({
                     {subtitle && <p className="text-xs text-green-200">{subtitle}</p>}
                 </div>
             </div>
-            <p className="text-3xl font-semibold text-white">{formattedPrice}</p>
+            <p className="text-3xl  text-white">{formattedPrice}</p>
         </div>
     );
 };

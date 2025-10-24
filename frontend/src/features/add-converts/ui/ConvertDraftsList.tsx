@@ -12,7 +12,7 @@ export const ConvertDraftsList = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Черновики конвертов</h2>
+        <h2 className="text-xl ">Черновики конвертов</h2>
         <Button
           title="Очистить"
           bg="white"

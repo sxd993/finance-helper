@@ -62,7 +62,7 @@ export const Modal = ({
         {title != null && (
           <div className="relative flex items-center justify-center px-6 py-4 border-b border-gray-100">
             {typeof title === "string" ? (
-              <h2 className="text-lg font-semibold text-gray-900 text-center w-full">
+              <h2 className="text-lg  text-gray-900 text-center w-full">
                 {title}
               </h2>
             ) : (
