@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { ExpenseCard } from './ExpenseCard';
+import { ExpenseCard } from './ExpenseListCard';
 
 const meta = {
   component: ExpenseCard,

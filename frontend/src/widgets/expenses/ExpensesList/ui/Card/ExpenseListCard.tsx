@@ -2,7 +2,7 @@ import * as LucideIcons from "lucide-react";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import type { Expense } from "@/entities/expense";
 
-export const ExpenseCard = ({ expense }: { expense: Expense }) => {
+export const ExpenseListCard = ({ expense }: { expense: Expense }) => {
     const Icon = LucideIcons[expense.icon_name as keyof typeof LucideIcons];
     const convertLabel = expense.convert_title ?? expense.convert_type;
     return (
@@ -21,7 +21,7 @@ export const ExpenseCard = ({ expense }: { expense: Expense }) => {
                 </div>
             </div>
             <div className="flex flex-col">
-                <span className="text-red-500">-{formatPrice(expense.sum)}</span>
+                <span className="text-red-500 text-end">-{formatPrice(expense.sum)}</span>
                 <span className="text-gray-600 text-sm">{convertLabel}</span>
             </div>
         </div>

@@ -1,1 +1,1 @@
-export { ExpenseCard } from "./ui/Card/ExpenseCard";
+export { ExpensesList } from "./ui/ExpenseList";

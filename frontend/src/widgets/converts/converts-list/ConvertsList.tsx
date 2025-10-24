@@ -36,7 +36,15 @@ export const ConvertsList = () => {
                     />
                 </div>
             </div>
-
+            <h1> todo: Сделать переключатель по табам</h1>
+            <div>
+                <ul className="flex flex-row">
+                    <li>Необходимые категории</li>
+                    <li>Желания</li>
+                    <li>Инвестиции</li>
+                    <li>Накопления</li>
+                </ul>
+            </div>
             {/* Секции с конвертами по типам */}
             <div className="flex flex-col gap-10">
                 {convert_types.map((type) => {
