@@ -1,16 +1,27 @@
 export interface Convert {
   id: number;
-  type_code: string;
-  type: ConvertType | null;
   name: string;
+  type_code: string;
   is_active: boolean;
-  target_amount?: number;
-  initial_amount: number;
-  current_value?: number;
-  balance: number;
-  total_in: number;
-  total_out: number;
+
+  // Цели и суммы
+  target_amount: number | null;   // лимит накопления (может быть null)
+  initial_amount: number;         // стартовая сумма в конверте
+  total_in: number;               // сколько всего внесено (обычно = initial_amount)
+  total_out: number;              // сколько всего потрачено
+  balance: number;                // остаток = initial_amount - total_out
+  current_balance: number;          // alias для balance (удобно для UI)
+
+  // Информация о типе
+  type: {
+    code: string;
+    title: string;
+    description: string | null;
+    sort_order: number | null;
+    limit: number | null;
+  } | null;
 }
+
 
 export interface ConvertType {
   id: number | null;

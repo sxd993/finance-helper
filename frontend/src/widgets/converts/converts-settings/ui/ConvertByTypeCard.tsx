@@ -2,7 +2,7 @@ import type { Convert, ConvertInfo } from "@/entities/convert";
 import { Modal } from "@/shared/ui/Modal";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { Edit2, Trash } from "lucide-react";
-import { EditConvertModal } from "../../../features/edit-convert";
+import { EditConvertModal } from "../../../../features/edit-convert";
 import { useModal } from "@/shared/ui/Modal/model/useModal";
 import { DeleteConvertModal } from "@/features/delete-convert";
 

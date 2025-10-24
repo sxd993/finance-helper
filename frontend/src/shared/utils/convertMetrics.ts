@@ -23,7 +23,7 @@ export function computeConvertMetrics(convert: Convert): ConvertMetrics {
     return Number.isFinite(n) ? n : fallback;
   };
 
-  const balance = safeNum(convert.balance ?? convert.initial_amount);
+  const balance = safeNum(convert.current_balance ?? convert.initial_amount);
   const limit = safeNum(convert.target_amount, null);
   const totalOut = safeNum(convert.total_out);
   const spent = totalOut;

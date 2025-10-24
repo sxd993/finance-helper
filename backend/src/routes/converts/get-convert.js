@@ -14,18 +14,23 @@ router.get('/get-converts', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
 
-    // Получаем все конверты пользователя
-    const rows = await getUserConverts(userId);
-    // Получаем лимиты пользователя по типам
-    const typeLimits = await getTypeLimitsMap({ userId, user: req.user });
+    // Получаем конверты и лимиты
+    const [rows, typeLimits] = await Promise.all([
+      getUserConverts(userId),
+      getTypeLimitsMap({ userId, user: req.user }),
+    ]);
 
     const result = rows.map((convert) => {
       const code = convert.typeCode;
-      const balance = toNumberOrNull(convert.balance ?? 0);
-      const totalIn = toNumberOrNull(convert.total_in ?? 0);
       const totalOut = toNumberOrNull(convert.total_out ?? 0);
       const targetAmount = toNumberOrNull(convert.targetAmount);
       const initialAmount = toNumberOrNull(convert.initialAmount);
+
+      // 💡 Правильный текущий баланс
+      const currentBalance =
+        initialAmount != null && totalOut != null
+          ? Number((initialAmount - totalOut).toFixed(2))
+          : null;
 
       const typeData = convert.type
         ? {
@@ -43,11 +48,13 @@ router.get('/get-converts', requireAuth, async (req, res) => {
         type_code: code,
         is_active: Boolean(convert.isActive),
 
-        // Универсальные поля новой модели
-        target_amount: targetAmount,      // цель (лимит)
-        initial_amount: initialAmount,    // текущие деньги в конверте
+        // значения по конверту
+        target_amount: targetAmount,        // цель накоплений
+        initial_amount: initialAmount,      // стартовая сумма
+        total_out: totalOut,                // сколько потрачено
+        current_balance: currentBalance,    // актуальный остаток = initial - total_out
 
-        // Информация о типе
+        // тип
         type: typeData,
       };
     });
