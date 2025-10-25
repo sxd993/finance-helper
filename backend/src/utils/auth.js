@@ -1,6 +1,6 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { User } = require('../db');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { User } from '../db/index.js';
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key-here-change-in-production';
 const ACCESS_TOKEN_EXPIRE_HOURS = Number(process.env.ACCESS_TOKEN_EXPIRE_HOURS) || 1;
@@ -78,7 +78,7 @@ function setAuthCookie(res, token) {
   });
 }
 
-async function requireAuth(req, res, next) {
+export async function requireAuth(req, res, next) {
   try {
     const authHeader = req.headers.authorization || '';
     let token = null;
@@ -118,7 +118,7 @@ async function requireAuth(req, res, next) {
   }
 }
 
-module.exports = {
+export {
   findUserByLogin,
   toPublicUser,
   createToken,
@@ -126,5 +126,4 @@ module.exports = {
   hashPassword,
   verifyPassword,
   setAuthCookie,
-  requireAuth,
 };

@@ -13,6 +13,4 @@ const buildExpenseResponse = (expense, convertType) => ({
   icon_color: expense.iconColor,
 });
 
-module.exports = {
-  buildExpenseResponse,
-};
+export { buildExpenseResponse };

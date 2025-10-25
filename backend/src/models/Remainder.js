@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+const initRemainder = (sequelize, DataTypes) => {
   const Remainder = sequelize.define('Remainder', {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -51,3 +51,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Remainder;
 };
+
+export default initRemainder;

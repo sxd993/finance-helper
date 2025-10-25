@@ -1,8 +1,8 @@
-const express = require('express');
-const { requireAuth } = require('../../utils/auth');
-const { getConvertTypes } = require('./utils/get-convert-types');
-const { getUserConverts } = require('./utils/get-user-converts');
-const { getTypeLimitsMap } = require('./utils/type-limits');
+import express from 'express';
+import { requireAuth } from '../../utils/auth.js';
+import { getConvertTypes } from './utils/get-convert-types.js';
+import { getUserConverts } from './utils/get-user-converts.js';
+import { getTypeLimitsMap } from './utils/type-limits.js';
 
 const router = express.Router();
 
@@ -43,4 +43,4 @@ router.get('/types', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

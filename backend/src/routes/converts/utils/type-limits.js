@@ -1,9 +1,9 @@
-const { Op } = require('sequelize');
-const {
+import { Op } from 'sequelize';
+import {
   sequelize,
   Convert,
   ConvertTypeLimit,
-} = require('../../../db');
+} from '../../../db/index.js';
 
 const PERCENT_KEY_BY_TYPE = {
   important: 'percentImportant',
@@ -171,8 +171,7 @@ async function ensureWithinTypeLimit({
     required: amountToAllocate,
   };
 }
-
-module.exports = {
+export {
   calculateLimitValue,
   getTypeLimitsMap,
   ensureWithinTypeLimit,

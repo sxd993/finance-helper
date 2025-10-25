@@ -1,9 +1,9 @@
-const express = require('express');
-const { sequelize, Expense } = require('../../db');
-const { requireAuth } = require('../../utils/auth');
-const { parseExpensePayload, validateExpensePayload } = require('./utils/payload');
-const { resolveConvertAndType } = require('./utils/converts');
-const { buildExpenseResponse } = require('./utils/formatter');
+import express from 'express';
+import { sequelize, Expense } from '../../db/index.js';
+import { requireAuth } from '../../utils/auth.js';
+import { parseExpensePayload, validateExpensePayload } from './utils/payload.js';
+import { resolveConvertAndType } from './utils/converts.js';
+import { buildExpenseResponse } from './utils/formatter.js';
 
 const router = express.Router();
 
@@ -74,4 +74,4 @@ router.post('/add-expense', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

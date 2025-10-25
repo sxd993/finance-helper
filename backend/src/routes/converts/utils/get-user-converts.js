@@ -1,5 +1,5 @@
-const { Op, fn, col, literal } = require("sequelize");
-const { Convert, ConvertType, Expense, Cycle } = require("../../../db");
+import { Op, fn, col, literal } from 'sequelize';
+import { Convert, ConvertType, Expense, Cycle } from '../../../db/index.js';
 
 /**
  * Получает последний цикл пользователя (start_date / end_date)
@@ -142,4 +142,4 @@ async function getUserConverts(userId, { transaction } = {}) {
   });
 }
 
-module.exports = { getUserConverts, getTransactionsSummary };
+export { getUserConverts, getTransactionsSummary };

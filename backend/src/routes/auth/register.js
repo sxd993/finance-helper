@@ -1,13 +1,13 @@
-const express = require('express');
-const { User, ConvertType, Cycle, sequelize } = require('../../db');
-const {
+import express from 'express';
+import { User, ConvertType, Cycle, sequelize } from '../../db/index.js';
+import {
   findUserByLogin,
   toPublicUser,
   createToken,
   hashPassword,
   setAuthCookie,
-} = require('../../utils/auth');
-const { DEFAULT_DISTRIBUTION } = require('../../utils/constants');
+} from '../../utils/auth.js';
+import { DEFAULT_DISTRIBUTION } from '../../utils/constants.js';
 
 const router = express.Router();
 
@@ -115,4 +115,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

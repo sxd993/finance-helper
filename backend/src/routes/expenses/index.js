@@ -1,8 +1,8 @@
-const express = require('express');
-const getExpensesRouter = require('./get-expenses');
-const addExpenseRouter = require('./add-expense');
-const editExpenseRouter = require('./edit-expense');
-const deleteExpenseRouter = require('./delete-expense');
+import express from 'express';
+import getExpensesRouter from './get-expenses.js';
+import addExpenseRouter from './add-expense.js';
+import editExpenseRouter from './edit-expense.js';
+import deleteExpenseRouter from './delete-expense.js';
 
 const router = express.Router('');
 
@@ -11,4 +11,4 @@ router.use('', addExpenseRouter);
 router.use('', editExpenseRouter);
 router.use('', deleteExpenseRouter);
 
-module.exports = router;
+export default router;

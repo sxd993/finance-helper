@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+const initConvert = (sequelize, DataTypes) => {
   const Convert = sequelize.define('Convert', {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -66,3 +66,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Convert;
 };
+
+export default initConvert;

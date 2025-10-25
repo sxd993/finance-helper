@@ -64,7 +64,4 @@ const validateExpensePayload = (payload) => {
   return errors;
 };
 
-module.exports = {
-  parseExpensePayload,
-  validateExpensePayload,
-};
+export { parseExpensePayload, validateExpensePayload };

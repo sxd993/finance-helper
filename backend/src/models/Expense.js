@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+const initExpense = (sequelize, DataTypes) => {
   const Expense = sequelize.define('Expense', {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -77,3 +77,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Expense;
 };
+
+export default initExpense;

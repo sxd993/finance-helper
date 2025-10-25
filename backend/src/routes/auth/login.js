@@ -1,11 +1,11 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   findUserByLogin,
   toPublicUser,
   createToken,
   verifyPassword,
   setAuthCookie,
-} = require('../../utils/auth');
+} from '../../utils/auth.js';
 
 const router = express.Router();
 
@@ -40,4 +40,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

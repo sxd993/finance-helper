@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 
-const {
+import {
   Expense,
   Convert,
   ConvertType,
-} = require('../../db');
-const { requireAuth } = require('../../utils/auth');
+} from '../../db/index.js';
+import { requireAuth } from '../../utils/auth.js';
 
 const router = express.Router();
 
@@ -65,4 +65,4 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

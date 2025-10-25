@@ -1,11 +1,11 @@
-const DEFAULT_DISTRIBUTION = {
+export const DEFAULT_DISTRIBUTION = {
   important: 50,
   wishes: 30,
   saving: 10,
   investment: 10,
 };
 
-const MONTHS_RU = [
+export const MONTHS_RU = [
   'января',
   'февраля',
   'марта',
@@ -19,8 +19,3 @@ const MONTHS_RU = [
   'ноября',
   'декабря',
 ];
-
-module.exports = {
-  DEFAULT_DISTRIBUTION,
-  MONTHS_RU,
-};

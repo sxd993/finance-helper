@@ -1,6 +1,6 @@
-const express = require('express');
-const { sequelize, Expense, Convert } = require('../../db');
-const { requireAuth } = require('../../utils/auth');
+import express from 'express';
+import { sequelize, Expense, Convert } from '../../db/index.js';
+import { requireAuth } from '../../utils/auth.js';
 
 const router = express.Router();
 
@@ -47,4 +47,4 @@ router.delete('/delete-expense/:id', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

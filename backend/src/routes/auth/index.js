@@ -1,8 +1,8 @@
-const express = require('express');
-const loginRouter = require('./login');
-const registerRouter = require('./register');
-const checkRouter = require('./check');
-const logoutRouter = require('./logout');
+import express from 'express';
+import loginRouter from './login.js';
+import registerRouter from './register.js';
+import checkRouter from './check.js';
+import logoutRouter from './logout.js';
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router.use('/register', registerRouter);
 router.use('/check', checkRouter);
 router.use('/logout', logoutRouter);
 
-module.exports = router;
+export default router;

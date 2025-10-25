@@ -1,8 +1,8 @@
-require('dotenv').config();
-const listEndpoints = require('express-list-endpoints');
-const app = require('./app');
-const { sequelize } = require('./db');
-const { startCycleScheduler } = require('./features/cycles/cycle');
+import 'dotenv/config';
+import listEndpoints from 'express-list-endpoints';
+import app from './app.js';
+import { sequelize } from './db/index.js';
+import { startCycleScheduler } from './features/cycles/cycle.js';
 
 const PORT = process.env.PORT || 8000;
 

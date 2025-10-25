@@ -1,4 +1,4 @@
-const { ConvertType } = require('../../../db');
+import { ConvertType } from '../../../db/index.js';
 
 async function getConvertTypes() {
   const rows = await ConvertType.findAll({
@@ -9,4 +9,4 @@ async function getConvertTypes() {
   return rows.map((item) => item.toJSON());
 }
 
-module.exports = { getConvertTypes };
+export { getConvertTypes };

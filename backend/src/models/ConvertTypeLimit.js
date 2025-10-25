@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+const initConvertTypeLimit = (sequelize, DataTypes) => {
   const ConvertTypeLimit = sequelize.define('ConvertTypeLimit', {
     userId: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -41,3 +41,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return ConvertTypeLimit;
 };
+
+export default initConvertTypeLimit;

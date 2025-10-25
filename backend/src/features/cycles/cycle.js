@@ -1,18 +1,18 @@
-const cron = require('node-cron');
-const { Op } = require('sequelize');
-const {
+import cron from 'node-cron';
+import { Op } from 'sequelize';
+import {
   getTodayDateOnly,
   RESETTABLE_TYPES,
   shouldResetCycle,
-} = require('./utils');
-const {
+} from './utils.js';
+import {
   sequelize,
   User,
   Cycle,
   Convert,
   Remainder,
-} = require('../../db');
-const { getUserConverts } = require('../../routes/converts/utils/get-user-converts');
+} from '../../db/index.js';
+import { getUserConverts } from '../../routes/converts/utils/get-user-converts.js';
 
 /* 
 Функция закрытия предыдущего цикла
@@ -207,7 +207,7 @@ async function runCycleReset() {
 /* 
 Основная функция расписания
 */
-function startCycleScheduler() {
+export function startCycleScheduler() {
   cron.schedule('0 * * * *', () => {
     runCycleReset().catch((error) => {
       console.error('Сбой задачи сброса цикла:', error);
@@ -221,7 +221,4 @@ function startCycleScheduler() {
   console.log('Планировщик циклов запущен');
 }
 
-module.exports = {
-  startCycleScheduler,
-  runCycleReset,
-};
+export { runCycleReset };

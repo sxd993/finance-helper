@@ -1,10 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
-const authRoutes = require('./routes/auth');
-const convertsRoutes = require('./routes/converts/');
-const expensesRoutes = require('./routes/expenses/');
+import authRoutes from './routes/auth/index.js';
+import convertsRoutes from './routes/converts/index.js';
+import expensesRoutes from './routes/expenses/index.js';
 
 const app = express();
 
@@ -48,4 +48,4 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message, details });
 });
 
-module.exports = app;
+export default app;

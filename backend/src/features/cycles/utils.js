@@ -1,4 +1,4 @@
-const RESETTABLE_TYPES = ['important', 'wish'];
+export const RESETTABLE_TYPES = ['important', 'wish'];
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function getTodayDateOnly() {
@@ -57,8 +57,4 @@ function shouldResetCycle(user, cycleStartDate, currentDate) {
   return daysPassed >= cycleLength;
 }
 
-module.exports = {
-  RESETTABLE_TYPES,
-  getTodayDateOnly,
-  shouldResetCycle,
-};
+export { getTodayDateOnly, shouldResetCycle };

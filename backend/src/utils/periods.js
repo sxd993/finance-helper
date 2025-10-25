@@ -8,6 +8,4 @@ function getCurrentMonthPeriod(referenceDate = new Date()) {
   return { start, end };
 }
 
-module.exports = {
-  getCurrentMonthPeriod,
-};
+export { getCurrentMonthPeriod };

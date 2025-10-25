@@ -1,4 +1,4 @@
-const { Convert, ConvertType } = require('../../../db');
+import { Convert, ConvertType } from '../../../db/index.js';
 
 /**
  * Находит конверт пользователя по имени.
@@ -55,7 +55,7 @@ const resolveConvertAndType = async ({
   };
 };
 
-module.exports = {
+export {
   findUserConvertByName,
   findConvertTypeByCode,
   resolveConvertAndType,

@@ -1,4 +1,4 @@
-const { MONTHS_RU } = require('./constants');
+import { MONTHS_RU } from './constants.js';
 
 function formatRuDate(date) {
   if (!date) {
@@ -14,6 +14,4 @@ function formatRuDate(date) {
   return `${parsed.getDate()} ${monthName}`;
 }
 
-module.exports = {
-  formatRuDate,
-};
+export { formatRuDate };

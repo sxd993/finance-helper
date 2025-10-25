@@ -1,4 +1,12 @@
-const { Sequelize, DataTypes } = require('sequelize');
+import { Sequelize, DataTypes } from 'sequelize';
+
+import initUser from '../models/User.js';
+import initCycle from '../models/Cycle.js';
+import initConvertType from '../models/ConvertType.js';
+import initConvert from '../models/Convert.js';
+import initExpense from '../models/Expense.js';
+import initRemainder from '../models/Remainder.js';
+import initConvertTypeLimit from '../models/ConvertTypeLimit.js';
 
 const {
   MYSQL_HOST,
@@ -33,13 +41,13 @@ const sequelize = new Sequelize(MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD, {
   },
 });
 
-const User = require('../models/User')(sequelize, DataTypes);
-const Cycle = require('../models/Cycle')(sequelize, DataTypes);
-const ConvertType = require('../models/ConvertType')(sequelize, DataTypes);
-const Convert = require('../models/Convert')(sequelize, DataTypes);
-const Expense = require('../models/Expense')(sequelize, DataTypes);
-const Remainder = require('../models/Remainder')(sequelize, DataTypes);
-const ConvertTypeLimit = require('../models/ConvertTypeLimit')(sequelize, DataTypes);
+const User = initUser(sequelize, DataTypes);
+const Cycle = initCycle(sequelize, DataTypes);
+const ConvertType = initConvertType(sequelize, DataTypes);
+const Convert = initConvert(sequelize, DataTypes);
+const Expense = initExpense(sequelize, DataTypes);
+const Remainder = initRemainder(sequelize, DataTypes);
+const ConvertTypeLimit = initConvertTypeLimit(sequelize, DataTypes);
 
 const models = {
   User,
@@ -57,7 +65,20 @@ Object.values(models).forEach((model) => {
   }
 });
 
-module.exports = {
+export {
+  sequelize,
+  Sequelize,
+  models,
+  User,
+  Cycle,
+  ConvertType,
+  Convert,
+  Expense,
+  Remainder,
+  ConvertTypeLimit,
+};
+
+export default {
   sequelize,
   Sequelize,
   models,

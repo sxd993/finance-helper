@@ -11,6 +11,4 @@ function toNumber(value) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-module.exports = {
-  toNumber,
-};
+export { toNumber };

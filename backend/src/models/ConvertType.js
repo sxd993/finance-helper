@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+const initConvertType = (sequelize, DataTypes) => {
   const ConvertType = sequelize.define('ConvertType', {
     code: {
       type: DataTypes.STRING(50),
@@ -45,3 +45,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return ConvertType;
 };
+
+export default initConvertType;

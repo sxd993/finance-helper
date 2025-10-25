@@ -1,10 +1,10 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   sequelize,
   Convert,
-} = require('../../db');
-const { requireAuth } = require('../../utils/auth');
-const { getTransactionsSummary } = require('./utils/get-user-converts');
+} from '../../db/index.js';
+import { requireAuth } from '../../utils/auth.js';
+import { getTransactionsSummary } from './utils/get-user-converts.js';
 
 const router = express.Router();
 
@@ -72,4 +72,4 @@ router.patch('/:id/investment', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

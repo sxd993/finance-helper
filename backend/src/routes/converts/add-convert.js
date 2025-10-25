@@ -1,11 +1,11 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   sequelize,
   Convert,
   ConvertType,
-} = require('../../db');
-const { requireAuth } = require('../../utils/auth');
-const { ensureWithinTypeLimit } = require('./utils/type-limits');
+} from '../../db/index.js';
+import { requireAuth } from '../../utils/auth.js';
+import { ensureWithinTypeLimit } from './utils/type-limits.js';
 
 const router = express.Router();
 
@@ -143,4 +143,4 @@ router.post('/add-convert', requireAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

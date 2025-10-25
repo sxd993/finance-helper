@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+const initCycle = (sequelize, DataTypes) => {
   const Cycle = sequelize.define('Cycle', {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -54,3 +54,5 @@ module.exports = (sequelize, DataTypes) => {
 
   return Cycle;
 };
+
+export default initCycle;

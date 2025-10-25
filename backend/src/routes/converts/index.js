@@ -1,11 +1,11 @@
-const express = require('express');
-const typesRouter = require('./types');
-const addConvertRouter = require('./add-convert');
-const getConvertsRouter = require('./get-convert');
-const convertOverviewRouter = require('./converts-overview');
-const updateInvestmentRouter = require('./update-investment');
-const deleteConvertRouter = require('./delete-convert');
-const editConvertRouter = require('./edit-convert');
+import express from 'express';
+import typesRouter from './types.js';
+import addConvertRouter from './add-convert.js';
+import getConvertsRouter from './get-convert.js';
+import convertOverviewRouter from './converts-overview.js';
+import updateInvestmentRouter from './update-investment.js';
+import deleteConvertRouter from './delete-convert.js';
+import editConvertRouter from './edit-convert.js';
 
 const router = express.Router('');
 
@@ -17,4 +17,4 @@ router.use('', updateInvestmentRouter);
 router.use('', deleteConvertRouter);
 router.use('', editConvertRouter);
 
-module.exports = router;
+export default router;
