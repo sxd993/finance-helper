@@ -21,7 +21,7 @@ export const Header = ({ user }: HeaderProps) => {
 
   const showBackButton =
     location.pathname.startsWith("/converts/") ||
-    location.pathname.startsWith("/transactions/") ||
+    location.pathname.startsWith("/expenses/") ||
     location.pathname.startsWith("/settings/");
 
   const isEditConvertPage = location.pathname.startsWith("/converts/edit/");

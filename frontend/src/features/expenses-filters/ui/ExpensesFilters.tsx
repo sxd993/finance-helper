@@ -16,7 +16,7 @@ export const ExpensesFilters = () => {
     }
 
     return (
-        <div className="flex justify-center mt-4 mb-2">
+        <div className="flex justify-center">
             <Select
                 placeholder="Типы конвертов"
                 name="filters"
