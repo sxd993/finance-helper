@@ -12,8 +12,18 @@ const router = express.Router();
 router.get('/get-expenses', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
+    const convertTypeQuery = Array.isArray(req.query.convert_type)
+      ? req.query.convert_type[0]
+      : req.query.convert_type;
+    const convertTypeFilter =
+      typeof convertTypeQuery === 'string' ? convertTypeQuery.trim() : undefined;
+    const shouldFilterByType =
+      convertTypeFilter && convertTypeFilter.toLowerCase() !== 'all';
 
     const expenses = await Expense.findAll({
+      ...(shouldFilterByType
+        ? { where: { convertType: convertTypeFilter } }
+        : {}),
       include: [
         {
           model: Convert,
