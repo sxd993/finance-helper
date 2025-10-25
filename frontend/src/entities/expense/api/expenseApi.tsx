@@ -14,3 +14,8 @@ export const getUserExpenses = async (
 
     return response.data
 }
+
+export const addExpense = async (expense: Expense): Promise<Expense> => {
+    const response = await client.post<Expense>("/expenses/add-expense", expense)
+    return response.data
+}
