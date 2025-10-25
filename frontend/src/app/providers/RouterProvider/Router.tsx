@@ -66,6 +66,13 @@ export const Router = createBrowserRouter([
           return { Component: ExpensesPage };
         },
       },
+      {
+        path: 'add-expense',
+        lazy: async () => {
+          const { AddExpensesPage } = await import('@pages/expenses');
+          return { Component: AddExpensesPage };
+        },
+      },
     ],
   },
   {
