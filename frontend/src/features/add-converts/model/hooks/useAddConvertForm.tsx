@@ -10,7 +10,7 @@ export const useAddConvertForm = () => {
   const form = useForm<CreateConvertPayload>();
   const dispatch = useDispatch();
   const { onCreateConverts, isSuccess, isPending, error } = useAddConvert();
-  const drafts = useSelector((state: RootState) => state.converts_drafts)
+  const drafts = useSelector((state: RootState) => state.create_converts_drafts)
 
 
   const onClearDrafts = () => {

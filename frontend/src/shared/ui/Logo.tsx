@@ -4,9 +4,11 @@ export const Logo = () => {
   return (
     <img
       src={logo}
+      width={250}
+      height={250}
       alt="Finance Helper logo"
       loading="lazy"
-      className="w-auto h-auto max-w-full max-h-full object-contain"
+      className="object-contain"
     />
   );
 };

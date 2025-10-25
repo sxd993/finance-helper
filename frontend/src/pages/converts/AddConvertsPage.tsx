@@ -7,7 +7,7 @@ import { useScrollToTop } from "@/shared/hooks/useScrollToTop"
 
 export const AddConvertsPage = () => {
     useScrollToTop();
-    const drafts = useSelector((state: RootState) => state.converts_drafts)
+    const drafts = useSelector((state: RootState) => state.create_converts_drafts)
     const hasDrafts = drafts.length > 0
 
     return (

@@ -1,8 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import { modalReducer } from "@/shared/ui/Modal/model/modal.slice";
-import { createConvertDraftsReducer } from "@/features/add-converts/model/store/createConvertDraftsSlice";
+import { createConvertDraftsReducer } from "@/features/add-converts";
+import { ExpensesFiltersStoreReducer } from "@/features/expenses-filters";
 
 export const rootReducer = combineReducers({
     modal: modalReducer,
-    converts_drafts: createConvertDraftsReducer
+    create_converts_drafts: createConvertDraftsReducer,
+    expenses_filters: ExpensesFiltersStoreReducer,
 });

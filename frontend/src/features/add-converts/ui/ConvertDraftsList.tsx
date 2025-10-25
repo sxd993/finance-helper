@@ -5,7 +5,7 @@ import { formatTypeCode } from "../model/lib/formatTypeCode";
 import { Button } from "@/shared/ui/Button";
 
 export const ConvertDraftsList = () => {
-  const drafts = useSelector((state: RootState) => state.converts_drafts)
+  const drafts = useSelector((state: RootState) => state.create_converts_drafts)
   const { onCreate, onClearDrafts, isPending } = useAddConvertForm()
 
 
