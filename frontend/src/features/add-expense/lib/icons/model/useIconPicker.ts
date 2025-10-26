@@ -1,44 +1,40 @@
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store"
 import {
-    selectIconPickerState,
-    setIconColor,
-    setIconName,
+  selectIconPickerState,
+  setIconColor,
+  setIconName,
 } from "./iconPicker.slice"
-import { useMemo } from 'react'
-import { EXPENSE_ICON_OPTIONS } from "../const/registry"
+import { useMemo } from "react"
+import {
+  EXPENSE_ICON_OPTIONS,
+  EXPENSE_ICON_REGISTRY,
+} from "../const/registry"
 
 export const useIconPicker = () => {
+  const { iconName, iconColor } = useSelector(selectIconPickerState)
+  const dispatch = useDispatch<AppDispatch>()
 
-    // Состояния из редукса
-    const { iconName, iconColor } = useSelector(selectIconPickerState)
-    const dispatch = useDispatch<AppDispatch>()
+  const selectedIcon = useMemo(() => {
+    const found = EXPENSE_ICON_OPTIONS.find(({ value }) => {
+      const icon = EXPENSE_ICON_REGISTRY[value]
+      return icon?.displayName === iconName || icon?.name === iconName
+    })
+    return found
+  }, [iconName])
 
-    // Выбранная иконка
-    const selectedIcon = useMemo(
-        () => EXPENSE_ICON_OPTIONS.find((option) => option.value === iconName),
-        [iconName],
-    )
 
-    // Действия
-    const handleIconSelect = (value: string) => {
-        dispatch(setIconName(value))
+  const handleIconSelect = (value: string) => {
+    const icon = EXPENSE_ICON_REGISTRY[value as keyof typeof EXPENSE_ICON_REGISTRY]
+    if (icon) {
+      const lucideName = icon.displayName || icon.name || value
+      dispatch(setIconName(lucideName))
     }
+  }
 
-    const handleColorChange = (event) => {
-        dispatch(setIconColor(event.target.value))
-    }
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setIconColor(e.target.value))
+  }
 
-
-    return {
-        // Состояния
-        iconName,
-        iconColor,
-        selectedIcon,
-
-        // Действия
-        handleIconSelect,
-        handleColorChange,
-    }
-
+  return { iconName, iconColor, selectedIcon, handleIconSelect, handleColorChange }
 }

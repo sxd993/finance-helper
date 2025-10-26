@@ -2,29 +2,16 @@ import { Modal } from "@/shared/ui/Modal"
 import { ExpenseIcon } from "../components/ExpenseIcon"
 import { useIconPicker } from "../model/useIconPicker"
 import { useModal } from "@/shared/ui/Modal/model/useModal"
-import { EXPENSE_ICON_OPTIONS } from "../const/registry"
-
-
+import { EXPENSE_ICON_OPTIONS, EXPENSE_ICON_REGISTRY } from "../const/registry"
 
 export const IconPickerField = () => {
-
-  const {
-    isOpen,
-    open,
-    close
-  } = useModal("add-expense-icon-picker");
-
-  const {
-    iconName,
-    iconColor,
-    selectedIcon,
-    handleIconSelect,
-    handleColorChange,
-  } = useIconPicker();
+  const { isOpen, open, close } = useModal("add-expense-icon-picker")
+  const { iconName, iconColor, selectedIcon, handleIconSelect, handleColorChange } = useIconPicker()
 
   return (
     <div className="flex flex-col gap-3">
       <span className="text-sm font-medium text-slate-700">Иконка и цвет</span>
+
       <button
         type="button"
         onClick={open}
@@ -37,9 +24,12 @@ export const IconPickerField = () => {
             <ExpenseIcon name={iconName} color={iconColor} size={28} strokeWidth={1.6} />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-slate-800">{selectedIcon?.label ?? "Не выбрано"}</span>
+            <span className="text-sm font-semibold text-slate-800">
+              {selectedIcon?.label ?? "Не выбрано"}
+            </span>
           </div>
         </div>
+
         <span className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white shadow-inner">
           <span
             className="inline-flex h-5 w-5 rounded-full border border-slate-200/70"
@@ -48,8 +38,15 @@ export const IconPickerField = () => {
         </span>
       </button>
 
-      <Modal isOpen={isOpen} onClose={close} title="Выбор иконки" widthClassName="max-w-2xl" className="pb-2">
+      <Modal
+        isOpen={isOpen}
+        onClose={close}
+        title="Выбор иконки"
+        widthClassName="max-w-2xl"
+        className="pb-2"
+      >
         <div className="flex flex-col gap-6 pt-4">
+          {/* выбор цвета */}
           <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-slate-700">Цвет иконки</span>
@@ -68,10 +65,11 @@ export const IconPickerField = () => {
             </div>
           </div>
 
+          {/* сетка иконок */}
           <div className="grid grid-cols-4 gap-2">
             {EXPENSE_ICON_OPTIONS.map(({ value, label }) => {
-              const isActive = value === iconName
-
+              const isActive = value === selectedIcon?.value
+              const IconComponent = EXPENSE_ICON_REGISTRY[value]
               return (
                 <button
                   key={value}
@@ -79,12 +77,12 @@ export const IconPickerField = () => {
                   onClick={() => handleIconSelect(value)}
                   aria-pressed={isActive}
                   className={`flex flex-col items-center gap-2 rounded-xl border p-3 text-xs transition ${isActive
-                    ? "border-secondary bg-secondary/10 text-secondary"
-                    : "border-transparent bg-white text-slate-500 hover:border-secondary/40 hover:bg-secondary/5 hover:text-secondary"
+                      ? "border-secondary bg-secondary/10 text-secondary"
+                      : "border-transparent bg-white text-slate-500 hover:border-secondary/40 hover:bg-secondary/5 hover:text-secondary"
                     }`}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm">
-                    <ExpenseIcon name={value} color={iconColor} size={26} strokeWidth={1.6} />
+                    <IconComponent color={iconColor} size={26} strokeWidth={1.6} />
                   </div>
                   <span className="text-[11px] text-center leading-tight">{label}</span>
                 </button>
@@ -92,6 +90,7 @@ export const IconPickerField = () => {
             })}
           </div>
 
+          {/* кнопка готово */}
           <div className="flex justify-end">
             <button
               type="button"

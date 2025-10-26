@@ -1,52 +1,35 @@
+import * as Icons from "lucide-react"
 import { type LucideIcon } from "lucide-react"
-import {
-  Book,
-  Car,
-  Circle,
-  Dumbbell,
-  Gamepad2,
-  Gift,
-  Heart,
-  Home,
-  Palette,
-  PiggyBank,
-  Plane,
-  ShoppingCart,
-  Shirt,
-  UtensilsCrossed,
-  Wallet,
-} from "lucide-react"
 
 export const EXPENSE_ICON_REGISTRY = {
-  default: Circle,
-  "shopping-cart": ShoppingCart,
-  food: UtensilsCrossed,
-  home: Home,
-  transport: Car,
-  gifts: Gift,
-  savings: PiggyBank,
-  wallet: Wallet,
-  travel: Plane,
-  health: Heart,
-  sport: Dumbbell,
-  education: Book,
-  clothing: Shirt,
-  entertainment: Gamepad2,
-  hobby: Palette,
+  "shopping-cart": Icons.ShoppingCart,
+  food: Icons.UtensilsCrossed,
+  home: Icons.Home,
+  transport: Icons.Car,
+  gifts: Icons.Gift,
+  savings: Icons.PiggyBank,
+  wallet: Icons.Wallet,
+  travel: Icons.Plane,
+  health: Icons.Heart,
+  sport: Icons.Dumbbell,
+  education: Icons.Book,
+  clothing: Icons.Shirt,
+  entertainment: Icons.Gamepad2,
+  hobby: Icons.Palette,
 } satisfies Record<string, LucideIcon>
 
 export type ExpenseIconName = keyof typeof EXPENSE_ICON_REGISTRY
-
 export const DEFAULT_EXPENSE_ICON_NAME: ExpenseIconName = "shopping-cart"
 export const DEFAULT_EXPENSE_ICON_COLOR = "#6366f1"
 
-export const EXPENSE_ICON_LABELS: Record<Exclude<ExpenseIconName, "default">, string> = {
+export const EXPENSE_ICON_LABELS: Record<ExpenseIconName, string> = {
   "shopping-cart": "Покупки",
   food: "Питание",
   home: "Дом и коммуналка",
   transport: "Транспорт",
   gifts: "Подарки",
   savings: "Сбережения",
+  wallet: "Кошелёк",
   travel: "Путешествия",
   health: "Здоровье",
   sport: "Спорт и фитнес",
@@ -56,11 +39,7 @@ export const EXPENSE_ICON_LABELS: Record<Exclude<ExpenseIconName, "default">, st
   hobby: "Хобби и творчество",
 }
 
-export type ExpenseIconOption = {
-  value: keyof typeof EXPENSE_ICON_LABELS
-  label: string
-}
-
-export const EXPENSE_ICON_OPTIONS: ExpenseIconOption[] = Object.entries(EXPENSE_ICON_LABELS).map(
-  ([key, label]) => ({ value: key as keyof typeof EXPENSE_ICON_LABELS, label }),
-)
+export const EXPENSE_ICON_OPTIONS = Object.entries(EXPENSE_ICON_REGISTRY).map(([key]) => ({
+  value: key as ExpenseIconName,
+  label: EXPENSE_ICON_LABELS[key as ExpenseIconName],
+}))

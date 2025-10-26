@@ -1,4 +1,4 @@
-import { EXPENSE_ICON_REGISTRY } from "../const/registry"
+import * as Icons from "lucide-react"
 
 type ExpenseIconProps = {
   name?: string | null
@@ -15,7 +15,15 @@ export const ExpenseIcon = ({
   className,
   strokeWidth,
 }: ExpenseIconProps) => {
-  const Icon = EXPENSE_ICON_REGISTRY[name ?? "default"] ?? EXPENSE_ICON_REGISTRY.default
+  const LucideIcon =
+    (name && Icons[name as keyof typeof Icons]) || Icons.HelpCircle
 
-  return <Icon color={color} size={size} className={className} strokeWidth={strokeWidth} />
+  return (
+    <LucideIcon
+      color={color}
+      size={size}
+      className={className}
+      strokeWidth={strokeWidth}
+    />
+  )
 }
