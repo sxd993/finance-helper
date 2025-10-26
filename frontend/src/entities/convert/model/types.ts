@@ -42,11 +42,11 @@ export interface ConvertInfo {
   avaliable_limit: number | null;
 }
 
+
 export interface ConvertGroup {
-  currentSum: number;
-  totalSum: number | null;
-  targetAmount: number | null;
-  info: ConvertInfo | null;
+  code: string
+  currentSum: number
+  current_convert_limit: number | null
+  info: ConvertInfo
 }
 
-export type ConvertOverviewResponse = Record<string, ConvertGroup>;

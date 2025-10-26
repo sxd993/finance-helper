@@ -12,7 +12,7 @@ router.post('/add-expense', requireAuth, async (req, res) => {
 
   try {
     const userId = req.userId;
-    const payload = parseExpensePayload(req.body?.expense);
+    const payload = parseExpensePayload(req.body);
     const errors = validateExpensePayload(payload);
 
     if (errors.length > 0) {
@@ -49,13 +49,15 @@ router.post('/add-expense', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Указан неизвестный тип конверта' });
     }
 
+    const expenseDate = payload.date ?? Date.now();
+
     const createdExpense = await Expense.create(
       {
         name: payload.name,
         convertName: convertResolution.convert.name,
         convertType: convertResolution.convertTypeCode,
         sum: payload.sum,
-        date: payload.date,
+        date: expenseDate,
         iconName: payload.iconName,
         iconColor: payload.iconColor,
       },

@@ -16,15 +16,30 @@ const parseNumericField = (value) => {
  * Приводит входной payload к предсказуемому виду и возвращает
  * только те поля, которые используются при создании/редактировании трат.
  */
-const parseExpensePayload = (raw = {}) => ({
-  name: sanitizeString(raw.name),
-  convertName: sanitizeString(raw.convert_name),
-  convertType: sanitizeString(raw.convert_type) || undefined,
-  iconName: sanitizeString(raw.icon_name),
-  iconColor: sanitizeString(raw.icon_color),
-  sum: parseNumericField(raw.sum),
-  date: parseNumericField(raw.date),
-});
+const extractExpenseSource = (raw = {}) => {
+  if (raw && typeof raw === 'object' && raw.expense && typeof raw.expense === 'object') {
+    return raw.expense;
+  }
+
+  return raw || {};
+};
+
+const parseExpensePayload = (raw = {}) => {
+  const data = extractExpenseSource(raw);
+  const parsedDate = parseNumericField(data.date);
+  const normalizedConvertName = sanitizeString(data.convert_name);
+  const fallbackConvertName = sanitizeString(data.convert_title);
+
+  return {
+    name: sanitizeString(data.name),
+    convertName: normalizedConvertName || fallbackConvertName,
+    convertType: sanitizeString(data.convert_type) || undefined,
+    iconName: sanitizeString(data.icon_name),
+    iconColor: sanitizeString(data.icon_color),
+    sum: parseNumericField(data.sum),
+    date: Number.isFinite(parsedDate) && parsedDate > 0 ? parsedDate : undefined,
+  };
+};
 
 /**
  * Выполняет базовую валидацию нормализованного payload и
@@ -53,7 +68,10 @@ const validateExpensePayload = (payload) => {
     errors.push('Поле sum должно быть положительным числом');
   }
 
-  if (!Number.isFinite(payload.date) || payload.date <= 0) {
+  if (
+    payload.date !== undefined &&
+    (!Number.isFinite(payload.date) || payload.date <= 0)
+  ) {
     errors.push('Поле date должно содержать корректный unix timestamp');
   }
 

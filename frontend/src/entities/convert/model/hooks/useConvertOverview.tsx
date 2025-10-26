@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { getConvertOverview } from "@entities/convert/api";
-import type { ConvertOverviewResponse } from "@entities/convert/model/types"
+import type { ConvertGroup } from "@entities/convert/model/types"
 
 export const useConvertOverview = () => {
-  const { data, isLoading, error } = useQuery<ConvertOverviewResponse>({
+  const { data, isLoading, error } = useQuery<ConvertGroup[]>({
     queryKey: ['convert-overview'],
     queryFn: getConvertOverview,
     staleTime: 30 * 60 * 1000, // 30 минут
   });
 
   return {
-    convertOverview: data ? Object.entries(data) : null,
+    convertOverview: data || null,
     isLoading,
     error,
   };
