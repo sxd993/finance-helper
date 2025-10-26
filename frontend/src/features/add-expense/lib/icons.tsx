@@ -38,11 +38,31 @@ export const EXPENSE_ICON_REGISTRY: Record<string, LucideIcon> = {
 export const DEFAULT_EXPENSE_ICON_NAME = "shopping-cart"
 export const DEFAULT_EXPENSE_ICON_COLOR = "#6366f1"
 
-export const EXPENSE_ICON_OPTIONS = Object.keys(EXPENSE_ICON_REGISTRY)
+const EXPENSE_ICON_LABELS: Record<keyof typeof EXPENSE_ICON_REGISTRY, string> = {
+    default: "По умолчанию",
+    "shopping-cart": "Покупки",
+    food: "Питание",
+    home: "Дом и коммуналка",
+    transport: "Транспорт",
+    gifts: "Подарки и благотворительность",
+    savings: "Сбережения",
+    wallet: "Наличные и кошельки",
+    travel: "Путешествия",
+    health: "Здоровье",
+    sport: "Спорт и фитнес",
+    education: "Образование",
+    clothing: "Одежда и аксессуары",
+    entertainment: "Развлечения",
+    hobby: "Хобби и творчество",
+}
+
+export const EXPENSE_ICON_OPTIONS = (Object.keys(
+    EXPENSE_ICON_REGISTRY,
+) as Array<keyof typeof EXPENSE_ICON_REGISTRY>)
     .filter((key) => key !== "default")
     .map((key) => ({
         value: key,
-        label: key,
+        label: EXPENSE_ICON_LABELS[key] ?? key,
     }))
 
 interface ExpenseIconProps {

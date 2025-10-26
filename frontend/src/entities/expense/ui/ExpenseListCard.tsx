@@ -12,12 +12,12 @@ export const ExpenseListCard = ({ expense }: { expense: Expense }) => {
                     <div className="w-10 h-10 flex items-center justify-center text-gray-700">
                         <Icon
 
-                            className={`w-6 h-6 text-${expense.icon_color}-500`} />
+                            className={`w-6 h-6 text-[${expense.icon_color}]`} />
                     </div>
                 )}
                 <div className="flex flex-col justify-between">
                     <span>{expense.name}</span>
-                    <span className="text-gray-600 text-sm">{expense.convert_name}</span>
+                    <span className="text-gray-600 text-sm">{expense.convert_title}</span>
                 </div>
             </div>
             <div className="flex flex-col">
