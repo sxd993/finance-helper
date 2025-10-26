@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useAddExpenseMutation } from "./useAddExpenseMutation"
 import { useConvertOverview, useConverts } from "@/entities/convert"
@@ -6,6 +5,7 @@ import type { Expense } from "@/entities/expense"
 import {
   DEFAULT_EXPENSE_ICON_COLOR,
   DEFAULT_EXPENSE_ICON_NAME,
+  useIcons,
 } from "../../lib/icons"
 import { formatPrice } from "@/shared/utils/formatPrice"
 
@@ -28,20 +28,8 @@ export const useAddExpenseForm = () => {
   const { register, watch, handleSubmit } = form
 
   const convertType = watch("convert_type")
-  const iconName = watch("icon_name")
-  const iconColor = watch("icon_color")
-
-  // локальное состояние для меню иконок
-  const [isIconMenuOpen, setIsIconMenuOpen] = useState(false)
-
-  const toggleIconMenu = () => setIsIconMenuOpen((prev) => !prev)
-  const closeIconMenu = () => setIsIconMenuOpen(false)
-
-  const handleIconSelect = (value: string) => {
-    const event = { target: { name: "icon_name", value } } as any
-    register("icon_name").onChange(event)
-    closeIconMenu()
-  }
+  const { iconName, iconColor, iconOptions, isIconMenuOpen, toggleIconMenu, closeIconMenu, handleIconSelect } =
+    useIcons(form)
 
   // опции для селектов
   const convertTypeOptions =
@@ -65,13 +53,14 @@ export const useAddExpenseForm = () => {
   return {
     register,
     onSubmit,
-    convertType,
     iconName,
     iconColor,
+    iconOptions,
     convertTypeOptions,
     convertTitleOptions,
     isIconMenuOpen,
     toggleIconMenu,
+    closeIconMenu,
     handleIconSelect,
   }
 }
