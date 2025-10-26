@@ -6,6 +6,12 @@ export {
   EXPENSE_ICON_OPTIONS,
   type ExpenseIconName,
   type ExpenseIconOption,
-} from "./registry"
-export { ExpenseIcon } from "./ExpenseIcon"
-export { useIcons } from "./useIcons"
+} from "./const/registry"
+export { ExpenseIcon } from "./components/ExpenseIcon"
+export { IconPickerField } from "./ui/IconPickerField"
+export {
+  selectIconPickerState,
+  setIconName,
+  setIconColor,
+  resetIconPicker,
+} from "./model/iconPicker.slice"

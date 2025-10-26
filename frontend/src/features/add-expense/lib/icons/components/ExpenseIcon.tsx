@@ -1,4 +1,4 @@
-import { EXPENSE_ICON_REGISTRY } from "./registry"
+import { EXPENSE_ICON_REGISTRY } from "../const/registry"
 
 type ExpenseIconProps = {
   name?: string | null

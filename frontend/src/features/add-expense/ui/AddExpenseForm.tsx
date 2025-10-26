@@ -1,22 +1,10 @@
 import { ChevronDown } from "lucide-react"
 
 import { useAddExpenseForm } from "../models/hooks/useAddExpenseForm"
-import { IconPicker } from "./IconPicker"
+import { IconPickerField } from "../lib/icons"
 
 export const AddExpenseForm = () => {
-  const {
-    register,
-    onSubmit,
-    iconName,
-    iconColor,
-    iconOptions,
-    convertTypeOptions,
-    convertTitleOptions,
-    isIconMenuOpen,
-    toggleIconMenu,
-    closeIconMenu,
-    handleIconSelect,
-  } = useAddExpenseForm()
+  const { register, onSubmit, convertTypeOptions, convertTitleOptions } = useAddExpenseForm()
 
   return (
     <form
@@ -86,16 +74,7 @@ export const AddExpenseForm = () => {
         />
       </div>
 
-      <IconPicker
-        register={register}
-        iconName={iconName}
-        iconColor={iconColor}
-        iconOptions={iconOptions}
-        isOpen={isIconMenuOpen}
-        onToggle={toggleIconMenu}
-        onSelect={handleIconSelect}
-        onClose={closeIconMenu}
-      />
+      <IconPickerField />
 
       <button
         type="submit"
