@@ -12,9 +12,18 @@ export const createConvertDraftsSlice = createSlice({
         },
         clearDrafts: (state) => {
             state.length = 0;
+        },
+        removeDraftsByIndexes: (state, action: PayloadAction<number[]>) => {
+            const uniqueSorted = Array.from(new Set(action.payload)).sort((a, b) => b - a);
+
+            uniqueSorted.forEach((index) => {
+                if (index >= 0 && index < state.length) {
+                    state.splice(index, 1);
+                }
+            });
         }
     }
 });
 
-export const { addConvertInStore, clearDrafts } = createConvertDraftsSlice.actions;
+export const { addConvertInStore, clearDrafts, removeDraftsByIndexes } = createConvertDraftsSlice.actions;
 export const createConvertDraftsReducer = createConvertDraftsSlice.reducer;

@@ -7,7 +7,7 @@ export const AddConvertsForm = () => {
     watch,
     onSubmit,
     isPending,
-    error,
+    errorMessage,
   } = useAddConvertForm()
   const { convert_types } = useConvertTypes();
   const type = watch('type_code')
@@ -121,11 +121,9 @@ export const AddConvertsForm = () => {
       </button>
 
       {/* Ошибка */}
-      {(() => {
-        const anyErr: any = error
-        const msg = anyErr?.response?.data?.message || anyErr?.message
-        return msg ? <p className="text-red-500">{msg}</p> : null
-      })()}
+      {errorMessage && (
+        <p className="text-red-500 text-center w-full">{errorMessage}</p>
+      )}
     </form>
   )
 }

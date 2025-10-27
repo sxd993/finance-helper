@@ -1,16 +1,16 @@
 import type { RootState } from "@/app/providers";
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux";
-import { useAddConvert } from "./useAddConvert";
 import { addConvertInStore, clearDrafts } from "../store/createConvertDraftsSlice";
 import type { CreateConvertPayload } from "../types/addConvertPayload.type";
+import { useCreateConvertDrafts } from "./useCreateConvertDrafts";
 
 
 export const useAddConvertForm = () => {
   const form = useForm<CreateConvertPayload>();
   const dispatch = useDispatch();
-  const { onCreateConverts, isSuccess, isPending, error } = useAddConvert();
   const drafts = useSelector((state: RootState) => state.create_converts_drafts)
+  const { createDrafts, isCreating, lastErrorMessage } = useCreateConvertDrafts();
 
 
   const onClearDrafts = () => {
@@ -21,9 +21,7 @@ export const useAddConvertForm = () => {
   })
 
   const onCreate = async () => {
-    for (const draft of drafts) {
-      await onCreateConverts(draft)
-    }
+    await createDrafts({ drafts })
   }
 
   return {
@@ -31,9 +29,8 @@ export const useAddConvertForm = () => {
     onSubmit,
     onCreate,
     onClearDrafts,
-    isPending,
-    isSuccess,
-    error,
+    isPending: isCreating,
+    errorMessage: lastErrorMessage,
   }
 
 }
