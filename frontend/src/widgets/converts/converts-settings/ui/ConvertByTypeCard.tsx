@@ -29,14 +29,14 @@ export const ConvertByTypeCard = ({ convert, overviewInfo }: ConvertByTypeCardPr
                 <div className="flex flex-col items-start gap-1 ml-3">
                     <h1 className=" text-lg">{convert.name}</h1>
                     <div className="flex gap-1">
-                        <span className="text-md text-gray-600">{convert?.overall_limit ? "Лимит:" : "Цель:"}</span>
-                        <span>{formatPrice(convert?.overall_limit) || formatPrice(convert.target_amount)}</span>
+                        <span className="text-md text-gray-600">{convert?.initial_amount ? "Лимит:" : "Цель:"}</span>
+                        <span>{formatPrice(convert.target_amount)}</span>
                     </div>
                     <div className="flex gap-1">
                         <span className="text-md text-gray-600">
-                            {(convert?.initial_amount ?? convert?.initial_investment) ? "Инвестиции" : "Баланс"}:
+                            Баланс:
                         </span>
-                        <span>{formatPrice((convert?.initial_amount ?? convert?.initial_investment) || convert?.balance || convert?.current_amount)}</span>
+                        <span>{formatPrice(convert.current_balance)}</span>
                     </div>
                 </div>
                 <div className="flex flex-col justify-between items-center mr-3">

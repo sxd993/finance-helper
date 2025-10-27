@@ -1,29 +1,28 @@
 export interface Convert {
   id: number;
   name: string;
-  type_code: string;
+  type: string; // например: "important"
   is_active: boolean;
 
-  // Цели и суммы
-  target_amount: number | null;   // лимит накопления (может быть null)
-  initial_amount: number;         // стартовая сумма в конверте
-  total_in: number;               // сколько всего внесено (обычно = initial_amount)
-  total_out: number;              // сколько всего потрачено
-  balance: number;                // остаток = initial_amount - total_out
-  current_balance: number;          // alias для balance (удобно для UI)
+  // Финансовые поля
+  initial_amount: number;
+  target_amount: number;
+  current_balance: number;
+  total_out: number;
+  can_spend: boolean;
 
-  // Информация о типе
-  type: {
-    code: string;
-    title: string;
-    description: string | null;
-    is_reset: boolean;
-    has_limit: boolean;
-    can_spend: boolean;
-    sort_order: number | null;
-    limit: number | null;
-  } | null;
+  // Доп. инфо
+  code: string;
+  description: string;
+  has_limit: boolean;
+  is_reset: boolean;
+  limit: number;
+  sort_order: number;
+  title: string;
+
+  type_code: string;
 }
+
 
 
 export interface ConvertType {
@@ -49,6 +48,7 @@ export interface ConvertInfo {
   total_limit: number | null;
   used_limit: number | null;
   avaliable_limit: number | null;
+  convert_type_limit: number | null;
 }
 
 

@@ -4,7 +4,7 @@ import { ConvertByTypeCard } from "./ConvertByTypeCard";
 export const ConvertsByTypeList = () => {
     const { convert_group, convert_overview_group } = useConvertByTypes();
     const overviewInfo = convert_overview_group?.info ?? null;
-
+    console.log(convert_group)
     return (
         <>
             {convert_group?.map(convert => (
