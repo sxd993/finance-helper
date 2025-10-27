@@ -12,22 +12,33 @@ export const BalanceCard = ({
     title,
     sum,
     subtitle,
-    icon = <Wallet size={28} className="text-white/80" />,
+    icon = <Wallet size={24} className="text-slate-600" />,
 }: BalanceCardProps) => {
     const formattedPrice = formatPrice(sum);
 
     return (
-        <div className="flex flex-col justify-between gap-3 rounded-3xl bg-gradient-to-tl from-primary-dark to-secondary-dark px-4 py-5">
+        <div
+            className="
+                flex flex-col justify-between gap-3
+                rounded-2xl border border-slate-200
+                bg-white p-4
+                text-slate-800
+                hover:bg-slate-50
+                transition-colors duration-200
+            "
+        >
             <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
                     {icon}
                 </div>
                 <div className="flex flex-col">
-                    <p className="text-sm text-white">{title}</p>
-                    {subtitle && <p className="text-xs text-green-200">{subtitle}</p>}
+                    <p className="text-sm font-medium">{title}</p>
+                    {subtitle && (
+                        <p className="text-xs text-slate-500">{subtitle}</p>
+                    )}
                 </div>
             </div>
-            <p className="text-3xl  text-white">{formattedPrice}</p>
+            <p className="text-2xl font-semibold">{formattedPrice}</p>
         </div>
     );
 };

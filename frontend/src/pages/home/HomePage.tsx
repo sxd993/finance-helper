@@ -1,13 +1,13 @@
 import { ConvertOverview } from "@/widgets/home/user-convert-overview";
-import { HomeDashboard } from "@/widgets/home/home-dashboard";
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
+import { QuickActionGrids } from "@/widgets/home/quick-actions";
 
 export const HomePage = () => {
   useScrollToTop();
 
   return (
-    <div className="flex flex-col gap-10 max-w-3xl mx-auto pt-5 pb-20">
-      <HomeDashboard />
+    <div className="flex flex-col gap-5 max-w-3xl mx-auto pt-5 pb-20">
+      <QuickActionGrids />
       <ConvertOverview />
     </div>
   );

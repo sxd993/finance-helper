@@ -8,9 +8,6 @@ export const HomeDashboard = () => {
                 sum={120000}
                 subtitle="Ваши финансы в полном порядке!"
             />
-            <div className="flex justify-center">
-                // TODO сделать карточку быстрых действий
-            </div>
         </div>
     )
 }

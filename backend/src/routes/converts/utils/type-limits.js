@@ -37,8 +37,14 @@ const normalizeLimit = (value) => {
   return Number(num.toFixed(2));
 };
 
+const TYPES_WITHOUT_AUTO_LIMIT = new Set(['saving', 'investment']);
+
 function calculateLimitValue(user, typeCode) {
   if (!user) return null;
+
+  if (TYPES_WITHOUT_AUTO_LIMIT.has(typeCode)) {
+    return null;
+  }
 
   const percentKey = PERCENT_KEY_BY_TYPE[typeCode];
   if (!percentKey) return null;
@@ -83,6 +89,10 @@ async function findStoredTypeLimit(userId, typeCode, transaction) {
 }
 
 async function resolveTypeLimit({ userId, user, typeCode, transaction }) {
+  if (TYPES_WITHOUT_AUTO_LIMIT.has(typeCode)) {
+    return null;
+  }
+
   const stored = await findStoredTypeLimit(userId, typeCode, transaction);
   if (stored != null) {
     return stored;
