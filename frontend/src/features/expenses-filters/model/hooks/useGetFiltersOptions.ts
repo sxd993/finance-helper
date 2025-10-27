@@ -1,39 +1,18 @@
 import { useMemo } from "react";
-import { useConvertTypes } from "@/entities/convert";
-import { getDefaultConvertTypeFilter } from "../store/ExpensesFilterStore";
-import type { StylesConfig } from "react-select";
-import type { FilterOption } from "../types/type";
+import { useConvertTypes, useConverts } from "@/entities/convert";
+import { getFilterOptions } from "../../lib/getFilterOptions";
+import { getSelectStyles } from "../../lib/getSelectStyles";
 
 export const useGetFiltersOptions = () => {
   const { convert_types } = useConvertTypes();
+  const { converts } = useConverts();
 
-  const filterOptions = useMemo<FilterOption[]>(() => {
-    const defaultFilter = getDefaultConvertTypeFilter();
-    const seen = new Set<string>();
-
-    const typedOptions: FilterOption[] = convert_types
-      .filter(({ can_spend }) => can_spend)
-      .map(({ code, title }) => ({
-        value: code,
-        label: title ?? code,
-      }));
-
-    return [defaultFilter, ...typedOptions].filter(({ value }) => {
-      if (seen.has(value)) {
-        return false;
-      }
-      seen.add(value);
-      return true;
-    });
-  }, [convert_types]);
-
-  const selectStyles: StylesConfig<FilterOption, false> = useMemo(
-    () => ({
-      container: (base) => ({ ...base, minWidth: 260 }),
-      control: (base) => ({ ...base, minHeight: 44, paddingInline: 4 }),
-    }),
-    []
+  const filterOptions = useMemo(
+    () => getFilterOptions({ convert_types, converts }),
+    [convert_types, converts]
   );
+
+  const selectStyles = useMemo(() => getSelectStyles(), []);
 
   return { filterOptions, selectStyles };
 };

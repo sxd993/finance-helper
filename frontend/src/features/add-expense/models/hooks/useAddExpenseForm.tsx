@@ -1,26 +1,29 @@
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useAddExpenseMutation } from "./useAddExpenseMutation"
-import { useConvertOverview, useConverts } from "@/entities/convert"
-import type { Expense } from "@/entities/expense"
-import { DEFAULT_EXPENSE_ICON_COLOR, DEFAULT_EXPENSE_ICON_NAME } from "../../lib/icons"
-import { formatPrice } from "@/shared/utils/formatPrice"
+import { useAddExpenseMutation } from "./useAddExpenseMutation";
+import { useConvertOverview, useConverts } from "@/entities/convert";
+import type { Expense } from "@/entities/expense";
+import {
+  DEFAULT_EXPENSE_ICON_COLOR,
+  DEFAULT_EXPENSE_ICON_NAME,
+} from "../../lib/icons";
 import {
   selectIconPickerState,
   resetIconPicker,
-} from "../../lib/icons/model/iconPicker.slice"
-import type { AppDispatch } from "@/app/providers/StoreProvider/config/store"
+} from "../../lib/icons/model/iconPicker.slice";
+import { getConvertTypeOptions } from "../../lib/getConvertTypeOptions";
+import { getConvertTitleOptions } from "../../lib/getConvertTitleOptions";
+import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
 
 export const useAddExpenseForm = () => {
-  
-  const { onAddExpense } = useAddExpenseMutation()
-  const { convertOverview } = useConvertOverview()
-  const { converts } = useConverts()
+  const { onAddExpense } = useAddExpenseMutation();
+  const { convertOverview } = useConvertOverview();
+  const { converts } = useConverts();
 
-  const dispatch = useDispatch<AppDispatch>()
-  const { iconColor, iconName } = useSelector(selectIconPickerState)
+  const dispatch = useDispatch<AppDispatch>();
+  const { iconColor, iconName } = useSelector(selectIconPickerState);
 
   const form = useForm<Expense>({
     defaultValues: {
@@ -31,73 +34,60 @@ export const useAddExpenseForm = () => {
       icon_name: DEFAULT_EXPENSE_ICON_NAME,
       icon_color: DEFAULT_EXPENSE_ICON_COLOR,
     },
-  })
+  });
 
-  const { register, watch, handleSubmit, setValue, getValues } = form
+  const { register, watch, handleSubmit, setValue, getValues } = form;
 
+  // регистрация полей и инициализация
   useEffect(() => {
-    register("icon_name")
-    register("icon_color")
-  }, [register])
+    register("icon_name");
+    register("icon_color");
+  }, [register]);
 
   useEffect(() => {
     dispatch(
       resetIconPicker({
         iconName: DEFAULT_EXPENSE_ICON_NAME,
         iconColor: DEFAULT_EXPENSE_ICON_COLOR,
-      }),
-    )
+      })
+    );
 
     return () => {
-      dispatch(resetIconPicker(undefined))
-    }
-  }, [dispatch])
-
+      dispatch(resetIconPicker(undefined));
+    };
+  }, [dispatch]);
 
   useEffect(() => {
-    const current = getValues("icon_name")
+    const current = getValues("icon_name");
     if (current !== iconName) {
-      setValue("icon_name", iconName, { shouldDirty: current !== iconName, shouldTouch: true })
+      setValue("icon_name", iconName, {
+        shouldDirty: current !== iconName,
+        shouldTouch: true,
+      });
     }
-  }, [iconName, getValues, setValue])
+  }, [iconName, getValues, setValue]);
 
   useEffect(() => {
-    const current = getValues("icon_color")
+    const current = getValues("icon_color");
     if (current !== iconColor) {
-      setValue("icon_color", iconColor, { shouldDirty: current !== iconColor, shouldTouch: true })
+      setValue("icon_color", iconColor, {
+        shouldDirty: current !== iconColor,
+        shouldTouch: true,
+      });
     }
-  }, [iconColor, getValues, setValue])
+  }, [iconColor, getValues, setValue]);
 
-  const convertType = watch("convert_type")
+  const convertType = watch("convert_type");
 
-  // опции для селектов
-  const convertTypeOptions =
-    convertOverview
-      ?.filter((group) => group.info?.can_spend)
-      .map((convert) => ({
-        value: convert.info?.code ?? "",
-        label: convert.info?.title ?? convert.info?.code ?? "",
-      })) ?? []
+  const convertTypeOptions = getConvertTypeOptions(convertOverview);
+  const convertTitleOptions = getConvertTitleOptions(converts, convertType);
 
-  const convertTitleOptions =
-    converts
-      ?.filter(
-        (convert) =>
-          convert.type_code === convertType && convert.type?.can_spend
-      )
-      .map((convert) => ({
-        value: convert.name,
-        label: `${convert.name} (${formatPrice(convert.current_balance)})`,
-      })) ?? []
-
-  const onSubmit = handleSubmit((data) => {
-    onAddExpense(data)
-  })
+  const onSubmit = handleSubmit(onAddExpense);
 
   return {
     register,
     onSubmit,
     convertTypeOptions,
     convertTitleOptions,
-  }
-}
+  };
+};

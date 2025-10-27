@@ -13,7 +13,7 @@ export const useChangeFiltersOptions = () => {
     const handleChangeConvertTypeFilter = (selectedOption: FilterOption | null) => {
         dispatch(setConvertTypeFilter(selectedOption ?? defaultFilter));
         queryClient.invalidateQueries({ queryKey: ["expenses"] });
-        
+
     }
 
     return { handleChangeConvertTypeFilter }
