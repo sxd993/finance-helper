@@ -101,8 +101,13 @@ async function saveRemainders(userId, cycleId, convertSnapshots, transaction) {
 Функция сброса цикла
 */
 async function resetConverts(userId, transaction) {
-  const rows = await getUserConverts(userId)
-  const targetAmount = rows.map(convert => convert.targetAmount)
+  const rows = await getUserConverts(userId);
+  const targetAmountById = new Map(
+    rows.map((convert) => [
+      convert.id,
+      Number.parseFloat(convert.targetAmount ?? 0) || 0,
+    ])
+  );
 
   const converts = await Convert.findAll({
     where: {
@@ -125,6 +130,10 @@ async function resetConverts(userId, transaction) {
     if (amount > 0) {
       snapshots.push({ typeCode: convert.typeCode, amount });
     }
+
+    const targetAmount =
+      targetAmountById.get(convert.id) ??
+      (Number.parseFloat(convert.targetAmount ?? 0) || 0);
 
     await convert.update(
       {

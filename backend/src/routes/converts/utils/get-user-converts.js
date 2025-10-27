@@ -5,14 +5,28 @@ import { Convert, ConvertType, Expense, Cycle } from '../../../db/index.js';
  * Получает последний цикл пользователя (start_date / end_date)
  */
 async function getUserLastCycle(userId, { transaction } = {}) {
-  const lastCycle = await Cycle.findOne({
-    where: { userId },
-    order: [["end_date", "DESC"]],
+  const activeCycle = await Cycle.findOne({
+    where: { userId, isClosed: false },
+    order: [["start_date", "DESC"]],
     attributes: ["start_date", "end_date"],
     transaction,
   });
 
-  return lastCycle ? lastCycle.toJSON() : null;
+  if (activeCycle) {
+    return activeCycle.toJSON();
+  }
+
+  const lastClosedCycle = await Cycle.findOne({
+    where: { userId, isClosed: true },
+    order: [
+      ["end_date", "DESC"],
+      ["start_date", "DESC"],
+    ],
+    attributes: ["start_date", "end_date"],
+    transaction,
+  });
+
+  return lastClosedCycle ? lastClosedCycle.toJSON() : null;
 }
 
 /**
