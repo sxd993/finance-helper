@@ -104,7 +104,16 @@ async function getUserConverts(userId, { transaction } = {}) {
       {
         model: ConvertType,
         as: "type",
-        attributes: ["code", "title", "description", "sortOrder", "createdAt"],
+        attributes: [
+          "code",
+          "title",
+          "description",
+          "isReset",
+          "hasLimit",
+          "canSpend",
+          "sortOrder",
+          "createdAt",
+        ],
       },
     ],
     order: [

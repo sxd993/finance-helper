@@ -5,7 +5,7 @@ import {
   ConvertType,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { ensureWithinTypeLimit } from './utils/type-limits.js';
+import { ensureWithinTypeLimit, shouldApplyTypeLimit } from './utils/type-limits.js';
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     }
 
     // Проверка существующего типа
-    const convertType = await ConvertType.findOne({ where: { code: typeCode } });
+    const convertType = await ConvertType.findOne({ where: { code: typeCode }, transaction });
     if (!convertType) {
       await transaction.rollback();
       return res.status(400).json({ message: `Неизвестный тип конверта: ${typeCode}` });
@@ -57,6 +57,8 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     const targetAmount = toNumberOrNull(targetRaw);
     const initialAmount = toNumberOrNull(initialAmountRaw);
     const isActive = Boolean(isActiveRaw);
+    const canSpend = Boolean(convertType.canSpend);
+    const hasLimit = Boolean(convertType.hasLimit);
 
     // Основная запись
     const convertPayload = {
@@ -68,44 +70,30 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       initialAmount: null,
     };
 
-    // allocationAmount — сколько "запрашивается" из лимита
-    let allocationAmount = 0;
-
-    switch (typeCode) {
-      case 'important':
-      case 'wishes':
-        convertPayload.targetAmount = targetAmount ?? 0;
-        convertPayload.initialAmount = initialAmount ?? 0;
-        allocationAmount = convertPayload.targetAmount;
-        break;
-
-      case 'saving':
-        if (targetAmount == null) {
-          await transaction.rollback();
-          return res.status(400).json({ message: 'Для saving требуется target_amount' });
-        }
-        convertPayload.targetAmount = targetAmount;
-        convertPayload.initialAmount = initialAmount ?? 0;
-        allocationAmount = convertPayload.targetAmount;
-        break;
-
-      case 'investment':
-        convertPayload.initialAmount = initialAmount ?? 0;
-        allocationAmount = convertPayload.initialAmount;
-        break;
-
-      default:
+    if (hasLimit) {
+      if (!canSpend && targetAmount == null) {
         await transaction.rollback();
-        return res.status(400).json({ message: `Обработчик для типа ${typeCode} не найден` });
+        return res.status(400).json({ message: `Для типа ${typeCode} требуется target_amount` });
+      }
+
+      convertPayload.targetAmount = targetAmount ?? 0;
     }
+
+    convertPayload.initialAmount = initialAmount ?? 0;
+
+    // allocationAmount — сколько "запрашивается" из лимита
+    const allocationAmount = shouldApplyTypeLimit(convertType)
+      ? Number(convertPayload.targetAmount ?? 0)
+      : 0;
 
     // Проверяем лимиты пользователя
     const limitCheck = await ensureWithinTypeLimit({
       userId,
       user: req.user,
-      typeCode,
+      typeCode: convertType.code,
       amount: allocationAmount,
       transaction,
+      convertType,
     });
 
     if (!limitCheck.valid) {

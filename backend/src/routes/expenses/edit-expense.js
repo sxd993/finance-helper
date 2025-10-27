@@ -76,6 +76,14 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Указан неизвестный тип конверта' });
     }
 
+    if (!convertResolution.convertType?.canSpend) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: 'С этого типа конверта нельзя списывать средства',
+        code: 'TYPE_NOT_SPENDABLE',
+      });
+    }
+
     const expenseDate = payload.date ?? Number(expense.date);
 
     await expense.update(

@@ -5,7 +5,7 @@ import {
   ConvertType,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { ensureWithinTypeLimit } from './utils/type-limits.js';
+import { ensureWithinTypeLimit, shouldApplyTypeLimit } from './utils/type-limits.js';
 
 const router = express.Router();
 
@@ -69,6 +69,8 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
     const targetAmount = toNumberOrNull(targetRaw);
     const initialAmount = toNumberOrNull(initialAmountRaw);
     const isActive = isActiveRaw === undefined ? convert.isActive : Boolean(isActiveRaw);
+    const canSpend = Boolean(convertType.canSpend);
+    const hasLimit = Boolean(convertType.hasLimit);
 
     const convertUpdate = {
       name,
@@ -78,35 +80,22 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       initialAmount: null,
     };
 
-    let allocationAmount = 0;
-
-    // Унифицированная логика
-    switch (convertType.code) {
-      case 'important':
-      case 'wishes':
-      case 'saving': {
-        if (convertType.code === 'saving' && targetAmount == null) {
-          await transaction.rollback();
-          return res.status(400).json({ message: 'Для saving требуется target_amount' });
-        }
-
-        convertUpdate.targetAmount = targetAmount ?? 0;
-        convertUpdate.initialAmount = initialAmount ?? convert.initialAmount ?? 0;
-        allocationAmount = convertUpdate.targetAmount;
-        break;
-      }
-
-      case 'investment': {
-        convertUpdate.initialAmount = initialAmount ?? convert.initialAmount ?? 0;
-        allocationAmount = convertUpdate.initialAmount;
-        break;
-      }
-
-      default: {
+    if (hasLimit) {
+      if (!canSpend && targetAmount == null) {
         await transaction.rollback();
-        return res.status(400).json({ message: `Обработчик для типа ${convertType.code} не найден` });
+        return res.status(400).json({ message: `Для типа ${convertType.code} требуется target_amount` });
       }
+
+      convertUpdate.targetAmount =
+        targetAmount ??
+        (canSpend ? 0 : convert.targetAmount ?? 0);
     }
+
+    convertUpdate.initialAmount = initialAmount ?? convert.initialAmount ?? 0;
+
+    const allocationAmount = shouldApplyTypeLimit(convertType)
+      ? Number(convertUpdate.targetAmount ?? 0)
+      : 0;
 
     // Проверка лимита
     const limitCheck = await ensureWithinTypeLimit({
@@ -116,6 +105,7 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
       amount: allocationAmount,
       transaction,
       excludeConvertId: id,
+      convertType,
     });
 
     if (!limitCheck.valid) {

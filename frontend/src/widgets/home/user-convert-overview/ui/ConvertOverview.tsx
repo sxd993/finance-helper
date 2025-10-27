@@ -9,26 +9,27 @@ export const ConvertOverview = () => {
 
   if (isLoading) return <p>Загрузка...</p>
 
-  if (!convertOverview || convertOverview.length === 0) {
-    return <ConvertOverviewEmpty />
-  }
+  const isEmpty = !convertOverview || convertOverview.length === 0
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-5">
         <SectionTitle
-          title="Общая информация"
+          title="Общая сводка о конвертах"
           icon={<Info className="w-6 h-6 text-primary" />}
         />
-
-        {convertOverview.map((convert) => (
-          <ConvertCard
-            key={convert.code}
-            type={convert.info?.title ?? convert.code}
-            currentSum={convert.currentSum}
-            code={convert.code}
-          />
-        ))}
+        {isEmpty ? (
+          <ConvertOverviewEmpty />
+        ) : (
+          convertOverview.map((convert) => (
+            <ConvertCard
+              key={convert.code}
+              type={convert.info?.title ?? convert.code}
+              currentSum={convert.currentSum}
+              code={convert.code}
+            />
+          ))
+        )}
       </div>
     </div>
   )

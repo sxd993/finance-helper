@@ -72,14 +72,19 @@ export const useAddExpenseForm = () => {
 
   // опции для селектов
   const convertTypeOptions =
-    convertOverview?.map((convert) => ({
-      value: convert.info?.code ?? "",
-      label: convert.info?.title ?? convert.info?.code ?? "",
-    })) ?? []
+    convertOverview
+      ?.filter((group) => group.info?.can_spend)
+      .map((convert) => ({
+        value: convert.info?.code ?? "",
+        label: convert.info?.title ?? convert.info?.code ?? "",
+      })) ?? []
 
   const convertTitleOptions =
     converts
-      ?.filter((c) => c.type_code === convertType)
+      ?.filter(
+        (convert) =>
+          convert.type_code === convertType && convert.type?.can_spend
+      )
       .map((convert) => ({
         value: convert.name,
         label: `${convert.name} (${formatPrice(convert.current_balance)})`,

@@ -30,6 +30,9 @@ router.get('/types', requireAuth, async (req, res) => {
       code: type.code,
       title: type.title,
       description: type.description ?? null,
+      is_reset: Boolean(type.isReset),
+      has_limit: Boolean(type.hasLimit),
+      can_spend: Boolean(type.canSpend),
       limit: limits[type.code] != null ? Number(limits[type.code]) : null,
       current_type_amount: Object.prototype.hasOwnProperty.call(totalsByType, type.code)
         ? Number(totalsByType[type.code].toFixed(2))

@@ -9,8 +9,8 @@ export const QuickActionCard = ({ action }: QuickActionCardProps) => {
         <button
             onClick={action.action_func}
             className="
-                w-full max-w-[120px] h-[100px]
-                flex flex-col items-center justify-center gap-2
+                w-full max-w-[140px] h-[100px]
+                flex flex-col items-center justify-center gap-1
                 rounded-xl border border-slate-200
                 bg-white text-slate-800
                 transition-colors duration-200

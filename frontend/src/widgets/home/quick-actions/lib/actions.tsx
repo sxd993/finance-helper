@@ -1,4 +1,4 @@
-import { Plus, FolderPlus, Settings } from "lucide-react";
+import { Plus, MailPlus, Settings } from "lucide-react";
 import type { QuickAction } from "../model/type";
 
 export const actions: QuickAction[] = [
@@ -9,7 +9,7 @@ export const actions: QuickAction[] = [
     },
     {
         title: "Добавить конверт",
-        logo: <FolderPlus className="text-blue-500" />,
+        logo: <MailPlus className="text-blue-500" />,
         action_func: () => console.log("add envelope"),
     },
     {

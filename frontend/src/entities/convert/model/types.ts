@@ -17,6 +17,9 @@ export interface Convert {
     code: string;
     title: string;
     description: string | null;
+    is_reset: boolean;
+    has_limit: boolean;
+    can_spend: boolean;
     sort_order: number | null;
     limit: number | null;
   } | null;
@@ -28,6 +31,9 @@ export interface ConvertType {
   code: string;
   title: string;
   description?: string | null;
+  is_reset: boolean;
+  has_limit: boolean;
+  can_spend: boolean;
   sort_order?: number | null;
   limit: number | null;
   current_type_amount: number | null;
@@ -37,6 +43,9 @@ export interface ConvertInfo {
   code: string;
   title: string;
   type_id: number | null;
+  is_reset: boolean;
+  has_limit: boolean;
+  can_spend: boolean;
   total_limit: number | null;
   used_limit: number | null;
   avaliable_limit: number | null;
@@ -49,4 +58,3 @@ export interface ConvertGroup {
   current_convert_limit: number | null
   info: ConvertInfo
 }
-

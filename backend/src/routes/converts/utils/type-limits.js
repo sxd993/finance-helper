@@ -2,14 +2,13 @@ import { Op } from 'sequelize';
 import {
   sequelize,
   Convert,
+  ConvertType,
   ConvertTypeLimit,
 } from '../../../db/index.js';
 
 const PERCENT_KEY_BY_TYPE = {
   important: 'percentImportant',
   wishes: 'percentWishes',
-  saving: 'percentSaving',
-  investment: 'percentInvestment',
 };
 
 const LIMIT_COLUMN_BY_TYPE = {
@@ -37,12 +36,13 @@ const normalizeLimit = (value) => {
   return Number(num.toFixed(2));
 };
 
-const TYPES_WITHOUT_AUTO_LIMIT = new Set(['saving', 'investment']);
+const shouldApplyTypeLimit = (convertType) =>
+  Boolean(convertType?.isReset && convertType?.hasLimit && convertType?.canSpend);
 
-function calculateLimitValue(user, typeCode) {
+function calculateLimitValue(user, typeCode, convertType) {
   if (!user) return null;
 
-  if (TYPES_WITHOUT_AUTO_LIMIT.has(typeCode)) {
+  if (!shouldApplyTypeLimit(convertType)) {
     return null;
   }
 
@@ -88,8 +88,16 @@ async function findStoredTypeLimit(userId, typeCode, transaction) {
   return toNumberOrNull(row.limitAmount);
 }
 
-async function resolveTypeLimit({ userId, user, typeCode, transaction }) {
-  if (TYPES_WITHOUT_AUTO_LIMIT.has(typeCode)) {
+async function resolveTypeLimit({ userId, user, typeCode, transaction, convertType }) {
+  const typeInstance =
+    convertType ||
+    (await ConvertType.findOne({
+      where: { code: typeCode },
+      attributes: ['code', 'isReset', 'hasLimit', 'canSpend'],
+      transaction,
+    }));
+
+  if (!shouldApplyTypeLimit(typeInstance)) {
     return null;
   }
 
@@ -98,7 +106,7 @@ async function resolveTypeLimit({ userId, user, typeCode, transaction }) {
     return stored;
   }
 
-  const computed = calculateLimitValue(user, typeCode);
+  const computed = calculateLimitValue(user, typeCode, typeInstance);
   if (computed == null) {
     return null;
   }
@@ -108,10 +116,22 @@ async function resolveTypeLimit({ userId, user, typeCode, transaction }) {
 }
 
 async function getTypeLimitsMap({ userId, user, transaction }) {
+  const types = await ConvertType.findAll({
+    attributes: ['code', 'isReset', 'hasLimit', 'canSpend'],
+    transaction,
+  });
+
   const entries = await Promise.all(
-    Object.keys(PERCENT_KEY_BY_TYPE).map(async (code) => {
-      const limit = await resolveTypeLimit({ userId, user, typeCode: code, transaction });
-      return [code, limit != null ? Number(limit) : null];
+    types.map(async (type) => {
+      const limit = await resolveTypeLimit({
+        userId,
+        user,
+        typeCode: type.code,
+        transaction,
+        convertType: type,
+      });
+
+      return [type.code, limit != null ? Number(limit) : null];
     }),
   );
 
@@ -155,8 +175,15 @@ async function ensureWithinTypeLimit({
   amount,
   transaction,
   excludeConvertId,
+  convertType,
 }) {
-  const limit = await resolveTypeLimit({ userId, user, typeCode, transaction });
+  const limit = await resolveTypeLimit({
+    userId,
+    user,
+    typeCode,
+    transaction,
+    convertType,
+  });
 
   if (limit == null) {
     return {
@@ -185,4 +212,5 @@ export {
   calculateLimitValue,
   getTypeLimitsMap,
   ensureWithinTypeLimit,
+  shouldApplyTypeLimit,
 };

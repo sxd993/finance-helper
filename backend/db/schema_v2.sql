@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS convert_types (
   code VARCHAR(50) PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   description TEXT DEFAULT NULL,
+  is_reset BOOLEAN NOT NULL DEFAULT FALSE,
+  has_limit BOOLEAN NOT NULL DEFAULT FALSE,
+  can_spend BOOLEAN NOT NULL DEFAULT FALSE,
   sort_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
@@ -121,13 +124,16 @@ CREATE TABLE IF NOT EXISTS remainders (
 -- НАЧАЛЬНЫЕ ДАННЫЕ
 -- ============================================================================
 
-INSERT INTO convert_types (code, title, description, sort_order)
+INSERT INTO convert_types (code, title, description, is_reset, has_limit, can_spend, sort_order)
 VALUES
-  ('important',   'Необходимые расходы', 'Обязательные траты: аренда, продукты, коммуналка', 1),
-  ('wishes',      'Желания', 'Необязательные покупки и развлечения', 2),
-  ('saving',      'Накопления', 'Целевые накопления с заданной суммой', 3),
-  ('investment',  'Инвестиции', 'Долгосрочные инвестиции', 4)
+  ('important',   'Необходимое', 'Обязательные траты: аренда, продукты, коммуналка', TRUE, TRUE, TRUE, 1),
+  ('wishes',      'Желания', 'Необязательные покупки и развлечения', TRUE, TRUE, TRUE, 2),
+  ('saving',      'Накопления', 'Целевые накопления с заданной суммой', FALSE, TRUE, FALSE, 3),
+  ('investment',  'Инвестиции', 'Долгосрочные инвестиции', FALSE, FALSE, FALSE, 4)
 ON DUPLICATE KEY UPDATE
   title = VALUES(title),
   description = VALUES(description),
+  is_reset = VALUES(is_reset),
+  has_limit = VALUES(has_limit),
+  can_spend = VALUES(can_spend),
   sort_order = VALUES(sort_order);

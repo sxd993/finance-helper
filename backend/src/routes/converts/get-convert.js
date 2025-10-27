@@ -37,6 +37,9 @@ router.get('/get-converts', requireAuth, async (req, res) => {
             code: convert.type.code,
             title: convert.type.title,
             description: convert.type.description ?? null,
+            is_reset: Boolean(convert.type.isReset),
+            has_limit: Boolean(convert.type.hasLimit),
+            can_spend: Boolean(convert.type.canSpend),
             sort_order: convert.type.sortOrder ?? null,
             limit: typeLimits[code] != null ? Number(typeLimits[code]) : null,
           }

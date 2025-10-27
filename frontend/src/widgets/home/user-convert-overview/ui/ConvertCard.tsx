@@ -21,7 +21,8 @@ export const ConvertCard = ({
                         {RenderConvertIcon(code)}
                         <h3>{type}</h3>
                     </div>
-                    <div className="flex">
+                    <div className="flex flex-col justify-end items-end text-end">
+                        // TODO сделать красивый отстаток
                         <p className="font-medium">Остаток: {formatPrice(currentSum)}</p>
                     </div>
                 </div>

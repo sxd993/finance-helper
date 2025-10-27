@@ -10,7 +10,7 @@ export const QuickActionGrids = () => {
                 title="Быстрые действия"
                 icon={<Zap className="w-6 h-6 text-primary" />}
             />
-            <div className="grid grid-cols-3 justify-items-center gap-4 w-full">
+            <div className="grid grid-cols-3 justify-items-center gap-5 w-full max-w-2xl mx-auto">
                 {actions.map(action => (
                     <QuickActionCard key={action.title} action={action} />
                 ))}

@@ -11,13 +11,20 @@ export const useGetFiltersOptions = () => {
     const defaultFilter = getDefaultConvertTypeFilter();
     const seen = new Set<string>();
 
-    return [
-      defaultFilter,
-      ...convert_types.map(({ code, title }) => ({
+    const typedOptions: FilterOption[] = convert_types
+      .filter(({ can_spend }) => can_spend)
+      .map(({ code, title }) => ({
         value: code,
         label: title ?? code,
-      })),
-    ].filter(({ value }) => !seen.has(value) && seen.add(value));
+      }));
+
+    return [defaultFilter, ...typedOptions].filter(({ value }) => {
+      if (seen.has(value)) {
+        return false;
+      }
+      seen.add(value);
+      return true;
+    });
   }, [convert_types]);
 
   const selectStyles: StylesConfig<FilterOption, false> = useMemo(

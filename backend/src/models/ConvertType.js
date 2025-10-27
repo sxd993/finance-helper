@@ -12,6 +12,24 @@ const initConvertType = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    isReset: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'is_reset',
+    },
+    hasLimit: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'has_limit',
+    },
+    canSpend: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'can_spend',
+    },
     sortOrder: {
       type: DataTypes.INTEGER,
       allowNull: false,
