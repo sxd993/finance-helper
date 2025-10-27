@@ -6,7 +6,7 @@ export const formatTypeCode = (code: string) => {
             return 'Желания'
         case 'saving':
             return 'Накопления'
-        case 'investements':
+        case 'investment':
             return 'Инвестиции'
     }
 }

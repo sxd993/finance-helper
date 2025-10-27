@@ -39,12 +39,12 @@ export const Header = ({ user }: HeaderProps) => {
               <ArrowLeft size={24} />
             </button>
             {isEditConvertPage && (
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-baseline gap-2">
                 <h1 className="text-base sm:text-lg  text-slate-900">Настройка категории</h1>
                 {type_code && (
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <div className="flex items-center gap-1.5 text-md text-slate-800">
                     {RenderConvertIcon(type_code)}
-                    <span className="text-sm">{formatTypeCode(type_code)}</span>
+                    <span>{formatTypeCode(type_code)}</span>
                   </div>
                 )}
               </div>
