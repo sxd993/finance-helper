@@ -9,6 +9,8 @@ import {
 const PERCENT_KEY_BY_TYPE = {
   important: 'percentImportant',
   wishes: 'percentWishes',
+  saving: 'percentSaving',
+  investment: 'percentInvestment',
 };
 
 const LIMIT_COLUMN_BY_TYPE = {
@@ -168,6 +170,69 @@ async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transact
   return toNumberOrZero(result?.total);
 }
 
+async function getUserTypeLimitsOverview({ userId, user, transaction }) {
+  const [limitsMap, convertTypes, convertRows] = await Promise.all([
+    getTypeLimitsMap({ userId, user, transaction }),
+    ConvertType.findAll({
+      attributes: ['code', 'title', 'description', 'isReset', 'hasLimit', 'canSpend', 'sortOrder'],
+      order: [['sortOrder', 'ASC']],
+      transaction,
+    }),
+    Convert.findAll({
+      where: { userId },
+      attributes: ['typeCode', 'targetAmount', 'initialAmount'],
+      raw: true,
+      transaction,
+    }),
+  ]);
+
+  const usedByType = {};
+  const convertsCountByType = {};
+
+  for (const convert of convertRows) {
+    const code = convert.typeCode;
+    if (!code) {
+      continue;
+    }
+
+    const column = LIMIT_COLUMN_BY_TYPE[code];
+    const amount = column ? toNumberOrZero(convert[column]) : 0;
+
+    usedByType[code] = (usedByType[code] ?? 0) + amount;
+    convertsCountByType[code] = (convertsCountByType[code] ?? 0) + 1;
+  }
+
+  return convertTypes.map((type) => {
+    const code = type.code;
+    const rawLimit = limitsMap[code];
+    const normalizedLimit = rawLimit != null ? Number(Number(rawLimit).toFixed(2)) : null;
+    const used = usedByType[code] ?? 0;
+    const normalizedUsed = Number(used.toFixed(2));
+
+    const available =
+      normalizedLimit != null
+        ? Number(Math.max(normalizedLimit - normalizedUsed, 0).toFixed(2))
+        : null;
+
+    const percentKey = PERCENT_KEY_BY_TYPE[code];
+    const percent = percentKey && user ? toNumberOrNull(user[percentKey]) : null;
+
+    return {
+      code,
+      title: type.title,
+      description: type.description ?? null,
+      is_reset: Boolean(type.isReset),
+      has_limit: Boolean(type.hasLimit),
+      can_spend: Boolean(type.canSpend),
+      limit: normalizedLimit,
+      used: normalizedUsed,
+      available,
+      converts_count: convertsCountByType[code] ?? 0,
+      percent,
+    };
+  });
+}
+
 async function ensureWithinTypeLimit({
   userId,
   user,
@@ -211,6 +276,7 @@ async function ensureWithinTypeLimit({
 export {
   calculateLimitValue,
   getTypeLimitsMap,
+  getUserTypeLimitsOverview,
   ensureWithinTypeLimit,
   shouldApplyTypeLimit,
 };

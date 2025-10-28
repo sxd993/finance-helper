@@ -6,6 +6,7 @@ import convertOverviewRouter from './converts-overview.js';
 import updateInvestmentRouter from './update-investment.js';
 import deleteConvertRouter from './delete-convert.js';
 import editConvertRouter from './edit-convert.js';
+import typeLimitsRouter from './type-limits.js';
 
 const router = express.Router('');
 
@@ -16,5 +17,6 @@ router.use('', convertOverviewRouter);
 router.use('', updateInvestmentRouter);
 router.use('', deleteConvertRouter);
 router.use('', editConvertRouter);
+router.use('', typeLimitsRouter);
 
 export default router;

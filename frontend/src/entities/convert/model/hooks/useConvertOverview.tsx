@@ -10,7 +10,7 @@ export const useConvertOverview = () => {
   });
 
   return {
-    convertOverview: data || null,
+    convertOverview: data,
     isLoading,
     error,
   };

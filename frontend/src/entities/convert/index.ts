@@ -3,20 +3,25 @@ export type {
   Convert,
   ConvertType,
   ConvertInfo,
+  ConvertGroup,
+  ConvertTypeLimitSummary,
+  ConvertTypeLimitsResponse,
 } from './model/types';
 
 // Hooks
 export {
   useConverts,
   useConvertTypes,
-  useConvertOverview
+  useConvertOverview,
+  useConvertTypeLimits,
 } from './model/hooks';
 
 // API
 export {
   getConvertOverview,
   getConverts,
-  getConvertTypes
+  getConvertTypes,
+  getConvertTypeLimits,
 } from './api';
 
 

@@ -1,24 +1,24 @@
-import { useConvertTypes } from "@/entities/convert"
+import { useConvertTypeLimits, useConvertTypes } from "@/entities/convert"
 import { useAddConvertForm } from "../model/hooks/useAddConvertForm"
+import { SavingFields } from "./fields/SavingFields"
+import { ImportantFields } from "./fields/ImportantFields"
+import { WishesFields } from "./fields/WishesFields"
+import { InvestmentFields } from "./fields/InvestmentFields"
 
 export const AddConvertsForm = () => {
-  const {
-    register,
-    watch,
-    onSubmit,
-    isPending,
-    errorMessage,
-  } = useAddConvertForm()
-  const { convert_types } = useConvertTypes();
-  const type = watch('type_code')
-  const canSubmit = Boolean(watch('name')) && Boolean(type)
+  const { register, watch, onSubmit, isPending, errorMessage } = useAddConvertForm()
+  const { convert_types } = useConvertTypes()
+  const { convertTypeLimits } = useConvertTypeLimits()
+  const type = watch("type_code")
+  const canSubmit = Boolean(watch("name")) && Boolean(type)
+
+  const selectedConvertType = convertTypeLimits?.limits.find((convert) => convert.code === type)
 
   return (
     <form
       onSubmit={onSubmit}
       className="bg-white px-6 py-8 flex flex-col items-center gap-4 rounded-lg w-full border border-slate-200 shadow-lg"
     >
-      {/* Название */}
       <div className="flex flex-col gap-2 w-full">
         <h2>Название конверта</h2>
         <input
@@ -29,7 +29,6 @@ export const AddConvertsForm = () => {
         />
       </div>
 
-      {/* Тип */}
       <div className="flex flex-col gap-2 w-full">
         <h2>Тип конверта</h2>
         <select
@@ -45,71 +44,11 @@ export const AddConvertsForm = () => {
         </select>
       </div>
 
-      {/* Поля по типу */}
-      {type === "saving" && (
-        <div className="flex flex-col gap-2 w-full">
-          <h2>Сколько вы хотите накопить?</h2>
-          <input
-            {...register("target_amount", { valueAsNumber: true })}
-            type="number"
-            min={0}
-            placeholder="Введите сумму цели"
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-          />
-          <h2>Сколько у вас уже накоплено?</h2>
-          <input
-            {...register("initial_amount", { valueAsNumber: true })}
-            type="number"
-            min={0}
-            placeholder="Введите сумму цели"
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-          />
-        </div>
-      )}
+      {type === "important" && <ImportantFields register={register} convertType={selectedConvertType} />}
+      {type === "saving" && <SavingFields register={register} convertType={selectedConvertType} />}
+      {type === "wishes" && <WishesFields register={register} convertType={selectedConvertType} />}
+      {type === "investment" && <InvestmentFields register={register} convertType={selectedConvertType} />}
 
-      {(type === "important" || type === "wishes") && (
-        <div className="flex flex-col gap-2 w-full">
-          <h2>Месячный лимит (опционально)</h2>
-          <input
-            {...register("target_amount", { valueAsNumber: true })}
-            type="number"
-            min={0}
-            placeholder="Лимит на месяц"
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-          />
-          <h2>Начальная сумма (опционально)</h2>
-          <input
-            {...register("initial_amount", { valueAsNumber: true })}
-            type="number"
-            min={0}
-            placeholder="Текущая сумма"
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-          />
-        </div>
-      )}
-
-      {type === "investment" && (
-        <div className="flex flex-col gap-2 w-full">
-          <h2>Стартовая сумма (вложено)</h2>
-          <input
-            {...register("initial_amount", { valueAsNumber: true })}
-            type="number"
-            min={0}
-            placeholder="Вложено"
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-          />
-          <h2>Текущая рыночная стоимость</h2>
-          <input
-            {...register("current_value", { valueAsNumber: true })}
-            type="number"
-            min={0}
-            placeholder="Текущая стоимость"
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-          />
-        </div>
-      )}
-
-      {/* Кнопка */}
       <button
         type="submit"
         disabled={isPending || !canSubmit}
@@ -120,10 +59,7 @@ export const AddConvertsForm = () => {
         {isPending ? "Добавление..." : "Добавить в черновик"}
       </button>
 
-      {/* Ошибка */}
-      {errorMessage && (
-        <p className="text-red-500 text-center w-full">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="text-red-500 text-center w-full">{errorMessage}</p>}
     </form>
   )
 }

@@ -58,3 +58,29 @@ export interface ConvertGroup {
   current_convert_limit: number | null
   info: ConvertInfo
 }
+
+export interface ConvertTypeLimitSummary {
+  code: string
+  title: string
+  description: string | null
+  is_reset: boolean
+  has_limit: boolean
+  can_spend: boolean
+  limit: number | null
+  used: number
+  available: number | null
+  converts_count: number
+  percent: number | null
+}
+
+export interface ConvertTypeLimitsResponse {
+  user: {
+    monthly_income: number | null
+    distribution_mode: string | null
+    percent_important: number | null
+    percent_wishes: number | null
+    percent_saving: number | null
+    percent_investment: number | null
+  }
+  limits: ConvertTypeLimitSummary[]
+}
