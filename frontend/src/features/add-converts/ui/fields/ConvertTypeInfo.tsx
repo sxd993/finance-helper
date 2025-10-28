@@ -3,6 +3,8 @@ import { formatPrice } from "@/shared/utils/formatPrice"
 
 interface Props {
   convertType?: ConvertTypeLimitSummary
+  fallbackTitle?: string
+  fallbackDescription?: string
 }
 
 const formatNumber = (value: number | null) => {
@@ -13,12 +15,21 @@ const formatNumber = (value: number | null) => {
   return formatPrice(value) ?? value.toLocaleString("ru-RU")
 }
 
-export const ConvertTypeInfo = ({ convertType }: Props) => {
+export const ConvertTypeInfo = ({
+  convertType,
+  fallbackTitle = "Информация о типе",
+  fallbackDescription = "Выберите тип конверта, чтобы увидеть доступные лимиты и рекомендации.",
+}: Props) => {
   if (!convertType) {
-    return null
+    return (
+      <div className="w-full rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-left shadow-sm">
+        <h2 className="text-base font-semibold text-slate-900">{fallbackTitle}</h2>
+        {fallbackDescription && <p className="mt-1 text-sm text-slate-600">{fallbackDescription}</p>}
+      </div>
+    )
   }
 
-  const { title, description, limit, used, available, percent, has_limit } = convertType
+  const { title, description, limit, used, available, has_limit } = convertType
 
   const infoItems = [
     limit != null
@@ -32,18 +43,15 @@ export const ConvertTypeInfo = ({ convertType }: Props) => {
       : has_limit
         ? { label: "Доступно", value: "—" }
         : null,
-    percent != null
-      ? { label: "Процент от дохода", value: `${percent}%` }
-      : null,
   ].filter(Boolean) as { label: string; value: string | number }[]
 
   return (
     <div className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 shadow-sm">
-      <div className="text-sm font-semibold text-slate-900">{title}</div>
+      <h2 className="text-base font-semibold text-slate-900">{title}</h2>
       {description && <p className="mt-1 text-sm text-slate-600">{description}</p>}
 
       {infoItems.length > 0 && (
-        <dl className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
           {infoItems.map(({ label, value }) => (
             <div key={label} className="flex flex-col">
               <dt className="text-slate-500">{label}</dt>

@@ -1,17 +1,11 @@
-import type { ConvertTypeLimitSummary } from "@/entities/convert/model/types"
 import type { UseFormRegister } from "react-hook-form"
-
-import { ConvertTypeInfo } from "./ConvertTypeInfo"
 
 interface Props {
   register: UseFormRegister<any>
-  convertType?: ConvertTypeLimitSummary
 }
 
-export const ImportantFields = ({ register, convertType }: Props) => (
+export const ImportantFields = ({ register }: Props) => (
   <div className="flex flex-col gap-4 w-full">
-    <ConvertTypeInfo convertType={convertType} />
-
     <div className="flex flex-col gap-2">
       <h2>Месячный лимит</h2>
       <input

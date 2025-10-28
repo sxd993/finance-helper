@@ -4,6 +4,7 @@ import { SavingFields } from "./fields/SavingFields"
 import { ImportantFields } from "./fields/ImportantFields"
 import { WishesFields } from "./fields/WishesFields"
 import { InvestmentFields } from "./fields/InvestmentFields"
+import { ConvertTypeInfo } from "./fields/ConvertTypeInfo"
 
 export const AddConvertsForm = () => {
   const { register, watch, onSubmit, isPending, errorMessage } = useAddConvertForm()
@@ -13,6 +14,10 @@ export const AddConvertsForm = () => {
   const canSubmit = Boolean(watch("name")) && Boolean(type)
 
   const selectedConvertType = convertTypeLimits?.limits.find((convert) => convert.code === type)
+  const selectedTypeMeta = convert_types?.find((convert) => convert.code === type)
+  const infoTitle = selectedTypeMeta?.title ?? "Описание конверта"
+  const infoDescription =
+    selectedTypeMeta?.description ?? "Выберите тип конверта, чтобы увидеть лимиты и детали."
 
   return (
     <form
@@ -44,10 +49,16 @@ export const AddConvertsForm = () => {
         </select>
       </div>
 
-      {type === "important" && <ImportantFields register={register} convertType={selectedConvertType} />}
-      {type === "saving" && <SavingFields register={register} convertType={selectedConvertType} />}
-      {type === "wishes" && <WishesFields register={register} convertType={selectedConvertType} />}
-      {type === "investment" && <InvestmentFields register={register} convertType={selectedConvertType} />}
+      <ConvertTypeInfo
+        convertType={selectedConvertType}
+        fallbackTitle={infoTitle}
+        fallbackDescription={infoDescription}
+      />
+
+      {type === "important" && <ImportantFields register={register} />}
+      {type === "saving" && <SavingFields register={register} />}
+      {type === "wishes" && <WishesFields register={register} />}
+      {type === "investment" && <InvestmentFields register={register} />}
 
       <button
         type="submit"
