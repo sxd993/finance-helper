@@ -1,4 +1,4 @@
-import { useConvertTypeLimits, useConvertTypes } from "@/entities/convert"
+import { useConvertOverview, useConvertTypeLimits, useConvertTypes } from "@/entities/convert"
 import { useAddConvertForm } from "../model/hooks/useAddConvertForm"
 import { SavingFields } from "./fields/SavingFields"
 import { ImportantFields } from "./fields/ImportantFields"
@@ -10,11 +10,13 @@ export const AddConvertsForm = () => {
   const { register, watch, onSubmit, isPending, errorMessage } = useAddConvertForm()
   const { convert_types } = useConvertTypes()
   const { convertTypeLimits } = useConvertTypeLimits()
+  const { convertOverview } = useConvertOverview()
   const type = watch("type_code")
   const canSubmit = Boolean(watch("name")) && Boolean(type)
 
   const selectedConvertType = convertTypeLimits?.limits.find((convert) => convert.code === type)
   const selectedTypeMeta = convert_types?.find((convert) => convert.code === type)
+  const selectedOverview = convertOverview?.find((convert) => convert.code === type)
   const infoTitle = selectedTypeMeta?.title ?? "Описание конверта"
   const infoDescription =
     selectedTypeMeta?.description ?? "Выберите тип конверта, чтобы увидеть лимиты и детали."
@@ -51,6 +53,7 @@ export const AddConvertsForm = () => {
 
       <ConvertTypeInfo
         convertType={selectedConvertType}
+        overview={selectedOverview}
         fallbackTitle={infoTitle}
         fallbackDescription={infoDescription}
       />

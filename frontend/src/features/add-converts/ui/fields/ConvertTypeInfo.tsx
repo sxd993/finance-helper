@@ -1,13 +1,14 @@
-import type { ConvertTypeLimitSummary } from "@/entities/convert/model/types"
+import type { ConvertGroup, ConvertTypeLimitSummary } from "@/entities/convert/model/types"
 import { formatPrice } from "@/shared/utils/formatPrice"
 
 interface Props {
   convertType?: ConvertTypeLimitSummary
+  overview?: ConvertGroup
   fallbackTitle?: string
   fallbackDescription?: string
 }
 
-const formatNumber = (value: number | null) => {
+const formatNumber = (value: number | null | undefined) => {
   if (value == null) {
     return null
   }
@@ -17,10 +18,11 @@ const formatNumber = (value: number | null) => {
 
 export const ConvertTypeInfo = ({
   convertType,
+  overview,
   fallbackTitle = "Информация о типе",
   fallbackDescription = "Выберите тип конверта, чтобы увидеть доступные лимиты и рекомендации.",
 }: Props) => {
-  if (!convertType) {
+  if (!convertType && !overview) {
     return (
       <div className="w-full rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-left shadow-sm">
         <h2 className="text-base font-semibold text-slate-900">{fallbackTitle}</h2>
@@ -29,7 +31,12 @@ export const ConvertTypeInfo = ({
     )
   }
 
-  const { code, title, description, limit, used, available, has_limit } = convertType
+  const overviewInfo = overview?.info
+
+  const code = convertType?.code ?? overview?.code ?? ""
+  const title = convertType?.title ?? overviewInfo?.title ?? fallbackTitle
+  const description = convertType?.description ?? null
+  const hasLimit = convertType?.has_limit ?? Boolean(overviewInfo?.convert_type_limit != null)
 
   if (code === "saving") {
     return (
@@ -42,8 +49,14 @@ export const ConvertTypeInfo = ({
 
   if (code === "investment") {
     const infoItems = [
-      { label: "Вложено", value: formatNumber(convertType.initial_total) ?? "—" },
-      { label: "Текущая стоимость", value: formatNumber(convertType.current_total) ?? "—" },
+      {
+        label: "Вложено",
+        value: formatNumber(convertType?.initial_total ?? overviewInfo?.total_limit) ?? "—",
+      },
+      {
+        label: "Текущая стоимость",
+        value: formatNumber(convertType?.current_total ?? overview?.currentSum) ?? "—",
+      },
     ]
 
     return (
@@ -63,15 +76,36 @@ export const ConvertTypeInfo = ({
     )
   }
 
+  const limitValue =
+    convertType?.limit ??
+    overviewInfo?.convert_type_limit ??
+    overviewInfo?.total_limit ??
+    null
+
+  const usedValue =
+    convertType?.used ??
+    overviewInfo?.used_limit ??
+    null
+
+  const availableValue =
+    convertType?.available ??
+    overviewInfo?.avaliable_limit ??
+    null
+
   const infoItems = [
-    limit != null
-      ? { label: "Лимит по типу", value: formatNumber(limit) }
+    limitValue != null
+      ? { label: "Лимит по типу", value: formatNumber(limitValue) }
       : has_limit
         ? { label: "Лимит по типу", value: "Не задан" }
         : null,
-    { label: "Уже распределено", value: formatNumber(used) ?? "0" },
-    available != null
-      ? { label: "Доступно", value: formatNumber(available) }
+    usedValue != null
+      ? {
+          label: "Уже распределено",
+          value: formatNumber(usedValue) ?? "0",
+        }
+      : null,
+    availableValue != null
+      ? { label: "Доступно", value: formatNumber(availableValue) }
       : has_limit
         ? { label: "Доступно", value: "—" }
         : null,

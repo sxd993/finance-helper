@@ -1,5 +1,5 @@
 import type { Convert } from '../model/types';
-import { computeConvertMetrics } from '@/shared/utils/convertMetrics';
+import { getConvertMetrics } from '@/entities/convert/lib/getConvertMetrics';
 import { ImportantConvertCard } from './cards/ImportantConvertCard';
 import { WishesConvertCard } from './cards/WishesConvertCard';
 import { SavingConvertCard } from './cards/SavingConvertCard';
@@ -11,21 +11,16 @@ type ConvertCardProps = {
 
 
 export const ConvertCard = ({ convert }: ConvertCardProps) => {
-  const metrics = computeConvertMetrics(convert);
+  const metrics = getConvertMetrics(convert);
   const {
     balance,
     limit,
     spent,
     percentage,
-    goal_percentage,
-    remaining_to_goal,
-    returnPercentage,
-    absoluteReturn,
-    isProfit,
-    isLoss
+    goalPercentage,
+    remainingToGoal,
+    investment,
   } = metrics;
-
-  const percentValue = percentage();
   const typeCode = convert.type?.code ?? convert.type_code;
 
   switch (typeCode) {
@@ -36,7 +31,7 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
           balance={balance}
           limit={limit}
           spent={spent}
-          percentage={percentValue}
+          percentage={percentage}
         />
       );
 
@@ -47,7 +42,7 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
           balance={balance}
           limit={limit}
           spent={spent}
-          percentage={percentValue}
+          percentage={percentage}
         />
       );
 
@@ -56,8 +51,8 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
         <SavingConvertCard
           convert={convert}
           balance={balance}
-          goal_percentage={goal_percentage}
-          remaining_to_goal={remaining_to_goal}
+          goal_percentage={goalPercentage}
+          remaining_to_goal={remainingToGoal}
         />
       );
 
@@ -65,11 +60,12 @@ export const ConvertCard = ({ convert }: ConvertCardProps) => {
       return (
         <InvestmentConvertCard
           convert={convert}
-          balance={balance}
-          returnPercentage={returnPercentage}
-          absoluteReturn={absoluteReturn}
-          isProfit={isProfit}
-          isLoss={isLoss}
+          currentValue={investment.currentValue}
+          initialValue={investment.initialValue}
+          returnPercentage={investment.returnPercentage}
+          absoluteReturn={investment.absoluteReturn}
+          isProfit={investment.isProfit}
+          isLoss={investment.isLoss}
         />
       );
   }

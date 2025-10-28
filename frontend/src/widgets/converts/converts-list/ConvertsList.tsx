@@ -39,7 +39,9 @@ export const ConvertsList = () => {
             {/* Секции с конвертами по типам */}
             <div className="flex flex-col gap-10">
                 {convert_types.map((type) => {
-                    const typedConverts = converts.filter(c => c.type?.code === type.code);
+                    const typedConverts = converts.filter(
+                        (c) => (c.type?.code ?? c.type_code ?? c.code) === type.code
+                    );
                     if (typedConverts.length === 0) return null;
 
                     return (

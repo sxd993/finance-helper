@@ -8,6 +8,8 @@ export interface Convert {
   initial_amount: number;
   target_amount: number;
   current_balance: number;
+  balance?: number;
+  current_value?: number | null;
   total_out: number;
   can_spend: boolean;
 
