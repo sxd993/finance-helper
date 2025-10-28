@@ -71,6 +71,8 @@ export interface ConvertTypeLimitSummary {
   available: number | null
   converts_count: number
   percent: number | null
+  initial_total: number | null
+  current_total: number | null
 }
 
 export interface ConvertTypeLimitsResponse {

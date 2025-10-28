@@ -38,6 +38,8 @@ const normalizeLimit = (value) => {
   return Number(num.toFixed(2));
 };
 
+const snakeToCamel = (key) => key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+
 const shouldApplyTypeLimit = (convertType) =>
   Boolean(convertType?.isReset && convertType?.hasLimit && convertType?.canSpend);
 
@@ -188,6 +190,7 @@ async function getUserTypeLimitsOverview({ userId, user, transaction }) {
 
   const usedByType = {};
   const convertsCountByType = {};
+  const investmentTotals = {};
 
   for (const convert of convertRows) {
     const code = convert.typeCode;
@@ -196,10 +199,22 @@ async function getUserTypeLimitsOverview({ userId, user, transaction }) {
     }
 
     const column = LIMIT_COLUMN_BY_TYPE[code];
-    const amount = column ? toNumberOrZero(convert[column]) : 0;
+    const amount = column ? toNumberOrZero(convert[column] ?? convert[snakeToCamel(column)]) : 0;
 
     usedByType[code] = (usedByType[code] ?? 0) + amount;
     convertsCountByType[code] = (convertsCountByType[code] ?? 0) + 1;
+
+    if (code === 'investment') {
+      const initial = toNumberOrZero(convert.initial_amount ?? convert.initialAmount);
+      const current = toNumberOrZero(convert.target_amount ?? convert.targetAmount);
+
+      if (!investmentTotals[code]) {
+        investmentTotals[code] = { initial: 0, current: 0 };
+      }
+
+      investmentTotals[code].initial += initial;
+      investmentTotals[code].current += current;
+    }
   }
 
   return convertTypes.map((type) => {
@@ -217,6 +232,10 @@ async function getUserTypeLimitsOverview({ userId, user, transaction }) {
     const percentKey = PERCENT_KEY_BY_TYPE[code];
     const percent = percentKey && user ? toNumberOrNull(user[percentKey]) : null;
 
+    const investmentTotalsEntry = investmentTotals[code] ?? null;
+    const initialTotal = investmentTotalsEntry != null ? normalizeLimit(investmentTotalsEntry.initial) : null;
+    const currentTotal = investmentTotalsEntry != null ? normalizeLimit(investmentTotalsEntry.current) : null;
+
     return {
       code,
       title: type.title,
@@ -229,6 +248,8 @@ async function getUserTypeLimitsOverview({ userId, user, transaction }) {
       available,
       converts_count: convertsCountByType[code] ?? 0,
       percent,
+      initial_total: initialTotal,
+      current_total: currentTotal,
     };
   });
 }
