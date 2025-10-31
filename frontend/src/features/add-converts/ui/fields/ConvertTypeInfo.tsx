@@ -36,7 +36,7 @@ export const ConvertTypeInfo = ({
   const code = convertType?.code ?? overview?.code ?? ""
   const title = convertType?.title ?? overviewInfo?.title ?? fallbackTitle
   const description = convertType?.description ?? null
-  const hasLimit = convertType?.has_limit ?? Boolean(overviewInfo?.convert_type_limit != null)
+  const has_limit = convertType?.has_limit ?? null
 
   if (code === "saving") {
     return (
@@ -76,12 +76,6 @@ export const ConvertTypeInfo = ({
     )
   }
 
-  const limitValue =
-    convertType?.limit ??
-    overviewInfo?.convert_type_limit ??
-    overviewInfo?.total_limit ??
-    null
-
   const usedValue =
     convertType?.used ??
     overviewInfo?.used_limit ??
@@ -93,22 +87,17 @@ export const ConvertTypeInfo = ({
     null
 
   const infoItems = [
-    limitValue != null
-      ? { label: "Лимит по типу", value: formatNumber(limitValue) }
-      : has_limit
-        ? { label: "Лимит по типу", value: "Не задан" }
-        : null,
-    usedValue != null
-      ? {
-          label: "Уже распределено",
-          value: formatNumber(usedValue) ?? "0",
-        }
-      : null,
     availableValue != null
       ? { label: "Доступно", value: formatNumber(availableValue) }
       : has_limit
         ? { label: "Доступно", value: "—" }
         : null,
+    usedValue != null
+      ? {
+        label: "Распределено",
+        value: formatNumber(usedValue) ?? "0",
+      }
+      : null,
   ].filter(Boolean) as { label: string; value: string | number }[]
 
   return (

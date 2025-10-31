@@ -11,7 +11,7 @@ export const ExpensesPage = () => {
     return (
         <div className="flex flex-col max-w-3xl mx-auto pt-5 pb-20 px-4">
             <ExpensesOverview />
-            <div className="flex justify-between items-center mt-4 mb-4 p-4">
+            <div className="flex flex-col md:flex-row justify-between items-center mt-4 mb-4 p-4">
                 <ExpensesFilters />
                 <NavLink to={"add-expense"}>
                     <Button

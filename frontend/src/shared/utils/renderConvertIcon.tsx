@@ -1,6 +1,6 @@
 import { Heart, Star, Target, HandCoins } from 'lucide-react';
 
-export const RenderConvertIcon = (code?: string) => {
+export const renderConvertIcon = (code?: string) => {
     if (!code) return null;
     switch (code) {
         case 'important':

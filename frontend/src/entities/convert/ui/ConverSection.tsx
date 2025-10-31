@@ -1,4 +1,4 @@
-import { RenderConvertIcon } from "@/shared/ui/RenderConvertIcon";
+import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 import { Settings } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -21,7 +21,7 @@ export const ConvertSection: React.FC<ConvertSectionProps> = ({
       <div className="flex items-center justify-between">
         <div className="text-base  text-slate-900 flex items-start flex-col">
           <div className="flex flex-row justify-center items-center gap-1">
-            {RenderConvertIcon(section_code)}
+            {renderConvertIcon(section_code)}
             <h2 className='text-lg'>{section_title}</h2>
           </div>
 

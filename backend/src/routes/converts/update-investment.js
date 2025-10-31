@@ -4,7 +4,6 @@ import {
   Convert,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { getTransactionsSummary } from './utils/get-user-converts.js';
 
 const router = express.Router();
 
@@ -40,30 +39,30 @@ router.patch('/:id/investment', requireAuth, async (req, res) => {
     const body = req.body || {};
     const desiredInitial = toNumberOrNull(body.initial_amount ?? body.initial_investment);
     const desiredValue = toNumberOrNull(body.current_value);
+    const desiredTarget = toNumberOrNull(body.target_amount);
 
     const updates = {};
     if (desiredInitial != null) {
       updates.initialAmount = desiredInitial;
     }
     if (desiredValue != null) {
-      updates.initialAmount = desiredValue;
+      updates.currentAmount = desiredValue;
+    }
+    if (desiredTarget != null) {
+      updates.targetAmount = desiredTarget;
     }
 
     if (Object.keys(updates).length > 0) {
       await convert.update(updates, { transaction });
     }
 
-    const summaryAfter = await getTransactionsSummary([convert.id], { transaction });
-    const metrics = summaryAfter.get(convert.id) || { balance: 0, totalIn: 0, totalOut: 0 };
-
     await transaction.commit();
 
     return res.json({
       id: convert.id,
       initial_amount: convert.initialAmount,
-      balance: metrics.balance,
-      total_in: metrics.totalIn,
-      total_out: metrics.totalOut,
+      current_amount: convert.currentAmount,
+      target_amount: convert.targetAmount,
     });
   } catch (error) {
     await transaction.rollback();

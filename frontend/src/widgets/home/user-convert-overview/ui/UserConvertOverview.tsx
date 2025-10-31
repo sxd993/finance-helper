@@ -1,10 +1,10 @@
-import { ConvertCard } from "./ConvertCard"
+import { UserConvertCard } from "./UserConvertCard"
 import { useConvertOverview } from "@/entities/convert"
-import { ConvertOverviewEmpty } from "./ConvertOverviewEmpty"
+import { ConvertOverviewEmpty } from "./UserConvertOverviewEmpty"
 import { SectionTitle } from "@/shared/ui/SectionTItle"
 import { Info } from "lucide-react"
 
-export const ConvertOverview = () => {
+export const UserConvertOverview = () => {
   const { convertOverview, isLoading } = useConvertOverview()
 
   if (isLoading) return <p>Загрузка...</p>
@@ -22,11 +22,9 @@ export const ConvertOverview = () => {
           <ConvertOverviewEmpty />
         ) : (
           convertOverview.map((convert) => (
-            <ConvertCard
+            <UserConvertCard
               key={convert.code}
-              type={convert.info?.title ?? convert.code}
-              currentSum={convert.currentSum}
-              code={convert.code}
+              convert={convert}
             />
           ))
         )}

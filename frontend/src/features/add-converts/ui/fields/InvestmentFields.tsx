@@ -8,7 +8,7 @@ export const InvestmentFields = ({ register }: Props) => (
   <div className="flex flex-col gap-4 w-full">
 
     <div className="flex flex-col gap-2">
-      <h2>Стартовая сумма (вложено)</h2>
+      <h2>Начальная рыночная стоимость</h2>
       <input
         {...register("initial_amount", { valueAsNumber: true })}
         type="number"

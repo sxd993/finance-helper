@@ -4,7 +4,7 @@ import type { User } from "@/entities/user";
 import { currentDay, currentDate } from "../model/const";
 import { useParams } from "react-router-dom";
 import { formatTypeCode } from "@/features/add-converts/model/lib/formatTypeCode";
-import { RenderConvertIcon } from "@/shared/ui/RenderConvertIcon";
+import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 import { useLogout } from "@/features/auth";
 
 interface HeaderProps {
@@ -43,7 +43,7 @@ export const Header = ({ user }: HeaderProps) => {
                 <h1 className="text-base sm:text-lg  text-slate-900">Настройка категории</h1>
                 {type_code && (
                   <div className="flex items-center gap-1.5 text-md text-slate-800">
-                    {RenderConvertIcon(type_code)}
+                    {renderConvertIcon(type_code)}
                     <span>{formatTypeCode(type_code)}</span>
                   </div>
                 )}

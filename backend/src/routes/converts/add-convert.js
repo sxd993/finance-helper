@@ -50,15 +50,21 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     // Преобразование числовых значений
     const toNumberOrNull = (val) => {
+      if (val === null || val === undefined || val === '') return null;
       const num = Number(val);
       return Number.isFinite(num) ? num : null;
     };
 
     const targetAmount = toNumberOrNull(targetRaw);
-    const initialAmount = toNumberOrNull(initialAmountRaw);
+    let initialAmount = toNumberOrNull(initialAmountRaw);
     const isActive = Boolean(isActiveRaw);
     const canSpend = Boolean(convertType.canSpend);
     const hasLimit = Boolean(convertType.hasLimit);
+
+    // Если тип important или wishes — ставим initial = target
+    if (['important', 'wishes'].includes(typeCode)) {
+      initialAmount = targetAmount ?? 0;
+    }
 
     // Основная запись
     const convertPayload = {
@@ -67,7 +73,6 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       name,
       isActive,
       targetAmount: null,
-      initialAmount: null,
     };
 
     if (hasLimit) {
@@ -75,11 +80,12 @@ router.post('/add-convert', requireAuth, async (req, res) => {
         await transaction.rollback();
         return res.status(400).json({ message: `Для типа ${typeCode} требуется target_amount` });
       }
-
       convertPayload.targetAmount = targetAmount ?? 0;
     }
 
-    convertPayload.initialAmount = initialAmount ?? 0;
+    if (initialAmount != null) {
+      convertPayload.initialAmount = initialAmount;
+    }
 
     // allocationAmount — сколько "запрашивается" из лимита
     const allocationAmount = shouldApplyTypeLimit(convertType)
@@ -115,13 +121,16 @@ router.post('/add-convert', requireAuth, async (req, res) => {
 
     console.log('[add-convert] created convert:', created.toJSON());
 
+    const responseInitialAmount =
+      created.initialAmount != null ? Number(created.initialAmount) : null;
+
     return res.status(201).json({
       id: created.id,
       name: created.name,
       type_code: typeCode,
       is_active: created.isActive,
       target_amount: convertPayload.targetAmount,
-      initial_amount: convertPayload.initialAmount,
+      initial_amount: responseInitialAmount,
     });
 
   } catch (error) {
