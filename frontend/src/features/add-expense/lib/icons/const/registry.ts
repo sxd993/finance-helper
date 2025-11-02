@@ -20,7 +20,7 @@ export const EXPENSE_ICON_REGISTRY = {
 
 export type ExpenseIconName = keyof typeof EXPENSE_ICON_REGISTRY
 export const DEFAULT_EXPENSE_ICON_NAME: ExpenseIconName = "shopping-cart"
-export const DEFAULT_EXPENSE_ICON_COLOR = "#6366f1"
+export const DEFAULT_EXPENSE_ICON_COLOR = "#000"
 
 export const EXPENSE_ICON_LABELS: Record<ExpenseIconName, string> = {
   "shopping-cart": "Покупки",

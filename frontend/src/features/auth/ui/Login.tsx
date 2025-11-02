@@ -27,14 +27,6 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
             Авторизация
           </h2>
 
-          {/* Ошибка от сервера */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-2 w-full">
-              <p className="text-red-600 text-xs text-center leading-tight">
-                {error.message || 'Произошла ошибка'}
-              </p>
-            </div>
-          )}
 
           {/* Поле логина */}
           <div className="flex flex-col gap-1 w-full">
@@ -85,7 +77,14 @@ export const Login = ({ onSwitchToRegister }: LoginProps) => {
               </p>
             )}
           </div>
-
+          {/* Ошибка от сервера */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-2 w-full">
+              <p className="text-red-600 text-xs text-center leading-tight">
+                {error.message || 'Произошла ошибка'}
+              </p>
+            </div>
+          )}
           {/* Кнопка входа */}
           <button
             type="submit"

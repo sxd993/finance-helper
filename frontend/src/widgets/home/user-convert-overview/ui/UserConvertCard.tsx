@@ -2,7 +2,7 @@ import type { ConvertGroup } from "@/entities/convert"
 import { ImportantCardOverview } from "./cards/ImportantCardOverview";
 import { WishesCardOverview } from "./cards/WishesCardOverview";
 import { SavingCardOverview } from "./cards/SavingCardOverview";
-import { InvestmentCardOverview } from "./cards/investmentCardOverview";
+import { InvestmentCardOverview } from "./cards/InvestmentCardOverview";
 
 interface Props {
     convert: ConvertGroup;

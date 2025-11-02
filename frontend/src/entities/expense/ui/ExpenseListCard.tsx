@@ -8,10 +8,10 @@ export const ExpenseListCard = ({ expense }: { expense: Expense }) => {
         <div className="flex justify-between items-center w-full p-4 max-w-3xl">
             <div className="flex items-center gap-3">
                 {Icon && (
-                    <div className="w-10 h-10 flex items-center justify-center text-gray-700">
+                    <div className="w-10 h-10 flex items-center justify-center">
                         <Icon
-
-                            className={`w-6 h-6 text-[${expense.icon_color}]`} />
+                            className="w-6 h-6"
+                            style={{ color: expense.icon_color }} />
                     </div>
                 )}
                 <div className="flex flex-col justify-between">
