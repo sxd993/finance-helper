@@ -1,6 +1,7 @@
 import type { ConvertGroup } from "@/entities/convert";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { getCardVariant } from "../../model/convertCardVariants";
+import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 
 interface Props {
     convert: ConvertGroup;
@@ -9,15 +10,6 @@ interface Props {
 
 export const InvestmentCardOverview = ({ convert }: Props) => {
     const styles = getCardVariant("investment");
-    const balance = convert.currentSum ?? 0;
-    const limit =
-        convert.info.convert_type_limit ??
-        convert.current_convert_limit ??
-        null;
-
-    const formattedBalance = formatPrice(balance) ?? "—";
-    const formattedLimit = limit != null ? formatPrice(limit) ?? "—" : "—";
-
     const Icon = styles.Icon;
 
     return (
@@ -27,41 +19,14 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div
-                                className={`w-12 h-12 rounded-xl ${styles.iconBg} flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
                             >
-                                <Icon className={`w-6 h-6 ${styles.iconColor}`} />
+                                {renderConvertIcon(convert.code)}
                             </div>
-                            <span className="text-gray-900 font-semibold">
+                            <span className="text-gray-900 text-lg">
                                 {convert.info.title}
                             </span>
                         </div>
-                        <div className="flex flex-col items-end text-right">
-                            <span className="text-sm text-gray-500">Портфель</span>
-                            <span className="text-2xl font-semibold text-gray-900">
-                                {formattedBalance}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-end justify-between">
-                        <div>
-                            <p className="text-xs text-gray-500 mb-1">Цель</p>
-                            <p className="text-gray-700">{formattedLimit}</p>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-xs text-gray-500 mb-1">
-                                Режим средств
-                            </p>
-                            <p className="text-gray-700">
-                                {convert.info.can_spend
-                                    ? "Можно выводить"
-                                    : "Накапливаем"}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="text-xs text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md inline-flex">
-                        Инвестируйте регулярно, чтобы достичь цели быстрее
                     </div>
                 </div>
             </div>

@@ -1,28 +1,16 @@
 export interface Convert {
   id: number;
   name: string;
-  type: string; // например: "important"
+  type_code: string;
+  type: ConvertType;
   is_active: boolean;
 
+
   // Финансовые поля
+  current_balance: number;
   initial_amount: number;
   target_amount: number;
-  current_balance: number;
-  balance?: number;
-  current_value?: number | null;
   total_out: number;
-  can_spend: boolean;
-
-  // Доп. инфо
-  code: string;
-  description: string;
-  has_limit: boolean;
-  is_reset: boolean;
-  limit: number;
-  sort_order: number;
-  title: string;
-
-  type_code: string;
 }
 
 
