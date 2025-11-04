@@ -21,19 +21,11 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
       convertTypeFilter && convertTypeFilter.toLowerCase() !== 'all';
 
     const expenses = await Expense.findAll({
-      ...(shouldFilterByType
-        ? { where: { convertType: convertTypeFilter } }
-        : {}),
+      where: {
+        userId,
+        ...(shouldFilterByType ? { convertType: convertTypeFilter } : {}),
+      },
       include: [
-        {
-          model: Convert,
-          as: 'convert',
-          attributes: [],
-          where: {
-            userId,
-          },
-          required: true,
-        },
         {
           model: ConvertType,
           as: 'type',

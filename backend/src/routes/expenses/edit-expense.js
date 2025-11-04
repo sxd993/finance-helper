@@ -20,16 +20,7 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
     }
 
     const expense = await Expense.findOne({
-      where: { id: expenseId },
-      include: [
-        {
-          model: Convert,
-          as: 'convert',
-          attributes: ['userId', 'name', 'typeCode'],
-          where: { userId },
-          required: true,
-        },
-      ],
+      where: { id: expenseId, userId },
       transaction,
       lock: transaction.LOCK.UPDATE,
     });

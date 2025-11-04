@@ -1,5 +1,10 @@
 const initExpense = (sequelize, DataTypes) => {
   const Expense = sequelize.define('Expense', {
+    userId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      field: 'user_id',
+    },
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,

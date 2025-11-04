@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS converts (
 
 CREATE TABLE IF NOT EXISTS expenses (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
   convert_name VARCHAR(255) NOT NULL,
   convert_type VARCHAR(50) NOT NULL,
@@ -84,9 +85,11 @@ CREATE TABLE IF NOT EXISTS expenses (
   icon_name VARCHAR(100) NOT NULL,
   icon_color VARCHAR(32) NOT NULL,
   
+  CONSTRAINT fk_expenses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_expenses_convert_type FOREIGN KEY (convert_type) REFERENCES convert_types(code) ON DELETE RESTRICT,
   CONSTRAINT chk_expenses_sum_positive CHECK (sum > 0),
   
+  INDEX idx_expenses_user (user_id),
   INDEX idx_expenses_convert_type (convert_type),
   INDEX idx_expenses_date (date)
 ) ENGINE=InnoDB;

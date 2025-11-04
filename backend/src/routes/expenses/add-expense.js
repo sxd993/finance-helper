@@ -93,6 +93,7 @@ router.post('/add-expense', requireAuth, async (req, res) => {
 
     const createdExpense = await Expense.create(
       {
+        userId,
         name: payload.name,
         convertName: convert.name,
         convertType: convertResolution.convertTypeCode,
