@@ -13,6 +13,7 @@ import {
   Remainder,
 } from '../../db/index.js';
 import { getUserConverts } from '../../routes/converts/utils/get-user-converts.js';
+import { recalcUserTypeLimitsAndResetDistributed } from '../../routes/converts/utils/type-limits.js';
 
 /* 
 Функция закрытия предыдущего цикла
@@ -191,6 +192,9 @@ async function processUser(user, { dateOnly }) {
       convertSnapshots,
       transaction
     );
+
+    // Recompute type limits and reset distributed to 0 for new cycle
+    await recalcUserTypeLimitsAndResetDistributed(user, { transaction });
 
     return true;
   });

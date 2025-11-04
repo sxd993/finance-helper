@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS convert_type_limits (
   user_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
   limit_amount DECIMAL(12,2) NOT NULL,
+  distributed_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   PRIMARY KEY (user_id, type_code),

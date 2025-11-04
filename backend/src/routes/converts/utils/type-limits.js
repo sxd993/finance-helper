@@ -172,8 +172,48 @@ async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transact
   return toNumberOrZero(result?.total);
 }
 
+async function updateDistributedAmount(userId, typeCode, { transaction, value } = {}) {
+  const distributed = value != null
+    ? normalizeLimit(value)
+    : await getAllocatedAmount(userId, typeCode, { transaction });
+
+  if (distributed == null) return;
+
+  await ConvertTypeLimit.upsert(
+    { userId, typeCode, distributedAmount: distributed },
+    { transaction }
+  );
+}
+
+async function recalcUserTypeLimitsAndResetDistributed(user, { transaction } = {}) {
+  const userId = user.id;
+  const types = await ConvertType.findAll({
+    attributes: ['code', 'isReset', 'hasLimit', 'canSpend'],
+    transaction,
+  });
+
+  for (const type of types) {
+    if (!shouldApplyTypeLimit(type)) {
+      continue;
+    }
+    const newLimit = calculateLimitValue(user, type.code, type);
+    if (newLimit == null) continue;
+
+    // reset distributed to 0 on new cycle
+    await ConvertTypeLimit.upsert(
+      {
+        userId,
+        typeCode: type.code,
+        limitAmount: normalizeLimit(newLimit) ?? 0,
+        distributedAmount: 0,
+      },
+      { transaction }
+    );
+  }
+}
+
 async function getUserTypeLimitsOverview({ userId, user, transaction }) {
-  const [limitsMap, convertTypes, convertRows] = await Promise.all([
+  const [limitsMap, convertTypes, convertRows, storedLimits] = await Promise.all([
     getTypeLimitsMap({ userId, user, transaction }),
     ConvertType.findAll({
       attributes: ['code', 'title', 'description', 'isReset', 'hasLimit', 'canSpend', 'sortOrder'],
@@ -186,11 +226,21 @@ async function getUserTypeLimitsOverview({ userId, user, transaction }) {
       raw: true,
       transaction,
     }),
+    ConvertTypeLimit.findAll({
+      where: { userId },
+      attributes: ['typeCode', 'distributedAmount'],
+      raw: true,
+      transaction,
+    }),
   ]);
 
   const usedByType = {};
   const convertsCountByType = {};
   const investmentTotals = {};
+
+  const storedDistributedMap = new Map(
+    storedLimits.map((r) => [r.typeCode, toNumberOrZero(r.distributedAmount)])
+  );
 
   for (const convert of convertRows) {
     const code = convert.typeCode;
@@ -221,7 +271,11 @@ async function getUserTypeLimitsOverview({ userId, user, transaction }) {
     const code = type.code;
     const rawLimit = limitsMap[code];
     const normalizedLimit = rawLimit != null ? Number(Number(rawLimit).toFixed(2)) : null;
-    const used = usedByType[code] ?? 0;
+    // keep dynamic calc for backward-compat; stored column exists and is updated elsewhere
+    // Prefer stored distributed if available; fallback to dynamic calc
+    const used = storedDistributedMap.has(code)
+      ? storedDistributedMap.get(code)
+      : (usedByType[code] ?? 0);
     const normalizedUsed = Number(used.toFixed(2));
 
     const available =
@@ -300,4 +354,6 @@ export {
   getUserTypeLimitsOverview,
   ensureWithinTypeLimit,
   shouldApplyTypeLimit,
+  updateDistributedAmount,
+  recalcUserTypeLimitsAndResetDistributed,
 };

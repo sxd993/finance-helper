@@ -5,7 +5,7 @@ import {
   ConvertType,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { ensureWithinTypeLimit, shouldApplyTypeLimit } from './utils/type-limits.js';
+import { ensureWithinTypeLimit, shouldApplyTypeLimit, updateDistributedAmount } from './utils/type-limits.js';
 
 const router = express.Router();
 
@@ -137,6 +137,10 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
 
     // Обновление данных
     await convert.update(convertUpdate, { transaction });
+
+    if (shouldApplyTypeLimit(convertType)) {
+      await updateDistributedAmount(userId, convertType.code, { transaction });
+    }
     await transaction.commit();
 
     return res.json({
