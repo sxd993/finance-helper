@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import { useConverts, useConvertTypes, ConvertSection, ConvertCard } from "@entities/convert"
-import { ConvertsListEmpty } from "./ConvertsListEmpy";
 import { Wallet } from "lucide-react";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { Button } from "@/shared/ui/Button";
+import { EmptyConverts } from "@/shared/ui/states";
 
 export const ConvertsList = () => {
     const navigate = useNavigate()
@@ -11,7 +11,7 @@ export const ConvertsList = () => {
     const { convert_types } = useConvertTypes();
 
     if (!converts?.length) {
-        return <ConvertsListEmpty />
+        return <EmptyConverts />
     }
 
     return (
