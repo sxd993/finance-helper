@@ -24,6 +24,7 @@ export const ConvertSection: React.FC<ConvertSectionProps> = ({
             {renderConvertIcon(section_code)}
             <h2 className='text-lg'>{section_title}</h2>
           </div>
+          TODO: добавить аналитику: сколько не распределено от общего заработка, братb из хука useUser и все такое....
 
         </div>
         <NavLink to={`/converts/edit/${section_code}`}>
