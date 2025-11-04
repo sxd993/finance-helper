@@ -2,6 +2,7 @@ import { Error, Loading } from "@/shared/ui/states"
 import { useExpensesList } from "../model/hooks/useExpensesList"
 import { ExpenseListCard } from "@entities/expense"
 import { ExpensesListEmpty } from "./states/ExpenseListEmpty"
+import { ExpensesFilters } from "@/features/expenses-filters"
 
 export const ExpensesList = () => {
     const { expenses, expenseGroups, error, isLoading } = useExpensesList()
@@ -12,6 +13,7 @@ export const ExpensesList = () => {
 
     return (
         <div className="flex flex-col gap-3 mt-1">
+            <ExpensesFilters />
             {expenseGroups.map(({ label, items }) => (
                 <div key={label} className="flex flex-col gap-2 rounded-2xl  overflow-hidden">
                     <div className="text-black text-lg text-start">{label}</div>

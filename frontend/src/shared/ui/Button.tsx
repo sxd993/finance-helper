@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ButtonProps {
-  title: string;
+  title?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   bg?: string;
   text?: string;
@@ -44,7 +44,7 @@ export const Button = ({
       disabled={disabled}
       className={`${sizeClass} ${textClass} font-medium transition-colors duration-200 ${bgClass} ${disabled ? "opacity-60 cursor-not-allowed" : ""} ${className}`}
     >
-      {leftIcon && <span className="inline-flex items-center mr-2">{leftIcon}</span>}
+      {leftIcon && <span className="inline-flex items-center">{leftIcon}</span>}
       <span>{title}</span>
     </button>
   );
