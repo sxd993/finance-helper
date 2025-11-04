@@ -13,9 +13,9 @@ export const ExpensesList = () => {
     return (
         <div className="flex flex-col gap-3 mt-1">
             {expenseGroups.map(({ label, items }) => (
-                <div key={label} className="flex flex-col gap-2 rounded-2xl bg-white overflow-hidden">
+                <div key={label} className="flex flex-col gap-2 rounded-2xl  overflow-hidden">
                     <div className="text-black text-lg text-start">{label}</div>
-                    <div className="flex flex-col border border-slate-200 rounded-2xl">
+                    <div className="flex flex-col border border-slate-200 rounded-2xl bg-white">
                         {items.map((expense) => (
                             <ExpenseListCard
                                 key={`${expense.name}-${expense.date}`}

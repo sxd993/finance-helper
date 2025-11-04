@@ -80,14 +80,22 @@ async function saveRemainders(userId, cycleId, convertSnapshots, transaction) {
     return;
   }
 
-  const remainderPayloads = convertSnapshots
-    .filter(({ amount }) => amount > 0)
-    .map(({ typeCode, amount }) => ({
+  // Group snapshots by typeCode to respect unique (cycle_id, type_code)
+  const grouped = new Map();
+  for (const { typeCode, amount } of convertSnapshots) {
+    const numericAmount = Number(amount || 0);
+    if (numericAmount <= 0) continue;
+    grouped.set(typeCode, (grouped.get(typeCode) || 0) + numericAmount);
+  }
+
+  const remainderPayloads = Array.from(grouped.entries()).map(
+    ([typeCode, amount]) => ({
       userId,
       cycleId,
       typeCode,
       amount,
-    }));
+    })
+  );
 
   if (!remainderPayloads.length) {
     return;

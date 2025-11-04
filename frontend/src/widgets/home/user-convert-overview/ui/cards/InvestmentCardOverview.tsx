@@ -9,9 +9,6 @@ interface Props {
 
 
 export const InvestmentCardOverview = ({ convert }: Props) => {
-    const styles = getCardVariant("investment");
-    const Icon = styles.Icon;
-
     return (
         <div className="group">
             <div className="rounded-2xl border border-slate-200 bg-white transition-shadow duration-300 group-hover:shadow-md">
