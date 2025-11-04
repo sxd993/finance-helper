@@ -91,7 +91,22 @@ router.patch('/edit-convert/:id', requireAuth, async (req, res) => {
         (canSpend ? 0 : convert.targetAmount ?? 0);
     }
 
-    convertUpdate.initialAmount = initialAmount ?? convert.initialAmount ?? 0;
+    // Базовое значение initialAmount до корректировки
+    const baseInitialAmount = initialAmount ?? convert.initialAmount ?? 0;
+
+    // Правило: если целевой объём меньше initial, то уменьшаем initial до целевого,
+    // иначе оставляем initial без изменений. Применяем только когда есть лимит и
+    // targetAmount определён числом.
+    if (
+      hasLimit &&
+      convertUpdate.targetAmount != null &&
+      Number.isFinite(Number(convertUpdate.targetAmount)) &&
+      Number(convertUpdate.targetAmount) < Number(baseInitialAmount)
+    ) {
+      convertUpdate.initialAmount = Number(convertUpdate.targetAmount);
+    } else {
+      convertUpdate.initialAmount = baseInitialAmount;
+    }
 
     const allocationAmount = shouldApplyTypeLimit(convertType)
       ? Number(convertUpdate.targetAmount ?? 0)

@@ -17,7 +17,7 @@ export const ConvertsList = () => {
     return (
         <div className="flex flex-col gap-10">
             {/* Заголовок секции */}
-            <div className="flex xs:justify-between justify-center xs:flex-row flex-col gap-5 items-end">
+            <div className="flex xs:justify-between justify-center xs:flex-row flex-col gap-5 items-center bg-white shadow-md p-4 rounded-xl">
                 <SectionTitle
                     title="Ваши конверты"
                     subtitle="Управляйте своими финансовыми целями"
@@ -37,10 +37,10 @@ export const ConvertsList = () => {
                 </div>
             </div>
             {/* Секции с конвертами по типам */}
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-5 ">
                 {convert_types.map((type) => {
                     const typedConverts = converts.filter(
-                        (c) => (c.type?.code ?? c.type_code ?? c.code) === type.code
+                        (c) => c.type_code === type.code
                     );
                     if (typedConverts.length === 0) return null;
 

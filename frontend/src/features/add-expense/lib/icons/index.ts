@@ -8,6 +8,8 @@ export {
 } from "./const/registry"
 export { ExpenseIcon } from "./components/ExpenseIcon"
 export { IconPickerField } from "./ui/IconPickerField"
+export { IconColorField } from "./ui/IconColorField"
+export { IconSelectField } from "./ui/IconSelectField"
 export {
   selectIconPickerState,
   setIconName,

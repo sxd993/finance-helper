@@ -17,7 +17,7 @@ export const ConvertSection: React.FC<ConvertSectionProps> = ({
 }) => {
 
   return (
-    <section className="flex flex-col gap-5 bg-white ">
+    <section className="flex flex-col gap-5 bg-white border-1 border-slate-200 p-4 rounded-2xl">
       <div className="flex items-center justify-between">
         <div className="text-base  text-slate-900 flex items-start flex-col">
           <div className="flex flex-row justify-center items-center gap-1">
@@ -27,8 +27,8 @@ export const ConvertSection: React.FC<ConvertSectionProps> = ({
 
         </div>
         <NavLink to={`/converts/edit/${section_code}`}>
-          <div className="flex">
-            <Settings width={22} height={22} />
+          <div className="flex shadow-2xl border-1 border-slate-300 rounded-2xl p-2">
+            <Settings width={22} height={22} className="text-gray-900" />
           </div>
         </NavLink>
       </div>
