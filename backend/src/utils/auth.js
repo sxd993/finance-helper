@@ -40,7 +40,7 @@ function toPublicUser(user) {
     percentWishes: normalizeNumber(data.percentWishes ?? data.percent_wishes),
     percentSaving: normalizeNumber(data.percentSaving ?? data.percent_saving),
     percentInvestment: normalizeNumber(data.percentInvestment ?? data.percent_investment),
-    cycleType: data.cycleType || data.cycle_type || 'weekly',
+    cycleType: data.cycleType || data.cycle_type || 'monthly',
   };
 }
 

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(255) NOT NULL,
   distribution_mode ENUM('baseline', 'flex') NOT NULL DEFAULT 'baseline',
   monthly_income DECIMAL(12,2) DEFAULT NULL,
-  cycle_type ENUM('weekly', 'monthly') NOT NULL DEFAULT 'weekly',
+  cycle_type ENUM('monthly') NOT NULL DEFAULT 'monthly',
   percent_important DECIMAL(5,2) NOT NULL DEFAULT 50.0,
   percent_wishes DECIMAL(5,2) NOT NULL DEFAULT 30.0,
   percent_saving DECIMAL(5,2) NOT NULL DEFAULT 10.0,

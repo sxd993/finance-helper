@@ -34,17 +34,11 @@ function parseDateOnly(value) {
 }
 
 function shouldResetCycle(user, cycleStartDate, currentDate) {
-  let cycleLength = null;
-
-  if (user.cycleType === 'weekly') {
-    cycleLength = 7;
-  } else if (user.cycleType === 'monthly') {
-    cycleLength = 30;
-  }
-
-  if (!cycleLength) {
+  if (!user) {
     return false;
   }
+
+  const cycleLength = 30;
 
   const start = parseDateOnly(cycleStartDate);
   const current = parseDateOnly(currentDate);

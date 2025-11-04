@@ -28,7 +28,7 @@ export const useRegisterForm = () => {
       name: '',
       password: '',
       distributionMode: 'baseline',
-      cycle_type: 'weekly',
+      cycle_type: 'monthly',
     },
   });
 
