@@ -16,16 +16,6 @@ type Props = {
   isLoss: boolean;
 };
 
-const formatSignedPrice = (value: number) => {
-  const formatted = formatPrice(Math.abs(value)) ?? '0 ₽';
-  if (value === 0) {
-    return formatted;
-  }
-
-  const sign = value > 0 ? '+' : '-';
-  return `${sign}${formatted}`;
-};
-
 export const InvestmentConvertCard = ({
   convert,
   currentValue,
@@ -37,9 +27,7 @@ export const InvestmentConvertCard = ({
 }: Props) => {
   const { isOpen, open, close } = useModal(`invest-card-${convert.id}`);
   const colorClass = isProfit ? 'text-emerald-600' : isLoss ? 'text-rose-600' : 'text-slate-600';
-  const percentValue = returnPercentage === 0 ? '0%' : `${returnPercentage > 0 ? '+' : ''}${Math.abs(returnPercentage).toFixed(2)}%`;
-  const signedAmount = formatSignedPrice(absoluteReturn);
-
+  const percentage = returnPercentage.toFixed(2)
   return (
     <div className='flex justify-between items-center py-3 px-4 border border-slate-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow'>
 
@@ -65,9 +53,9 @@ export const InvestmentConvertCard = ({
       {/* Правая часть*/}
       <div className='flex flex-col gap-2'>
         <div className='flex justify-center'>
-          <span className={colorClass}>{signedAmount}</span>
+          <span className={colorClass}>{formatPrice(absoluteReturn)}</span>
           <span className='text-slate-300 px-1'>•</span>
-          <span className={colorClass}>{percentValue}</span>
+          <span className={colorClass}>{percentage}%</span>
         </div>
         <Button
           title='Изменить'

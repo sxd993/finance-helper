@@ -22,9 +22,6 @@ export const WishesConvertCard = ({ convert, balance, limit, spent, percentage }
           <p className='text-sm xs:text-md text-slate-400'>/ {formatPrice(limit)}</p>
         )}
       </div>
-      {limit > 0 && (
-        <p className='text-slate-600'><span className='text-sm text-slate-500'>Потрачено: </span><span className='text-base'>{formatPrice(spent)}</span></p>
-      )}
     </div>
     <div className='ml-1 flex items-center justify-center'>
       <MiniCircularProgress percentage={percentage} />

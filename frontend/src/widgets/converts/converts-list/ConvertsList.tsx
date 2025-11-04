@@ -15,9 +15,9 @@ export const ConvertsList = () => {
     }
 
     return (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col space-y-5">
             {/* Заголовок секции */}
-            <div className="flex xs:justify-between justify-center xs:flex-row flex-col gap-5 items-center bg-white shadow-md p-4 rounded-xl">
+            <div className="flex xs:justify-between justify-center xs:flex-row flex-col gap-5 items-center p-2">
                 <SectionTitle
                     title="Ваши конверты"
                     subtitle="Управляйте своими финансовыми целями"
