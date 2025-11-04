@@ -17,6 +17,9 @@ export const SavingConvertCard = ({ convert, balance, goal_percentage }: Props) 
 
   return (
     <div className='py-3 px-4 border border-slate-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow'>
+      захожу сюда и должна быть плашка сколько доступно средств для распределения
+
+      берется из converts_types и можно между разными накоплениями распределять общий пулл денег
       <div className='flex flex-col gap-2'>
         <div>
           <div className="flex items-center gap-2">

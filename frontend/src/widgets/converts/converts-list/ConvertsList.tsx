@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useConverts, useConvertTypes, ConvertSection, ConvertCard } from "@entities/convert"
-import { Wallet } from "lucide-react";
+import { PlusIcon, Wallet } from "lucide-react";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { Button } from "@/shared/ui/Button";
 import { EmptyConverts } from "@/shared/ui/states";
@@ -17,22 +17,20 @@ export const ConvertsList = () => {
     return (
         <div className="flex flex-col space-y-5">
             {/* Заголовок секции */}
-            <div className="flex xs:justify-between justify-center xs:flex-row flex-col gap-5 items-center p-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 p-2">
                 <SectionTitle
                     title="Ваши конверты"
                     subtitle="Управляйте своими финансовыми целями"
                     icon={<Wallet className="w-6 h-6 text-primary" />}
                 />
-                <div className="flex xs:justify-between justify-center">
+                <div className="w-full sm:w-auto">
                     <Button
                         title="Добавить конверт"
-                        onClick={
-                            () => {
-                                navigate('/converts/add-converts')
-                            }
-                        }
+                        onClick={() => { navigate('/converts/add-converts') }}
                         size='md'
                         bg="primary"
+                        leftIcon={<PlusIcon/>}
+                        className="w-full md:w-auto justify-center items-center flex"
                     />
                 </div>
             </div>

@@ -30,7 +30,9 @@ export const InvestmentConvertCard = ({
   const percentage = returnPercentage.toFixed(2)
   return (
     <div className='flex justify-between items-center py-3 px-4 border border-slate-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow'>
+      захожу сюда и должна быть плашка сколько доступно средств для распределения
 
+      берется из converts_types
       {/* Левая часть*/}
       <div className='h-full flex flex-col justify-between flex-1'>
         <div className="flex items-center gap-2">

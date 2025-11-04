@@ -1,5 +1,5 @@
 import express from 'express';
-import { User, ConvertType, Cycle, sequelize } from '../../db/index.js';
+import { User, ConvertType, Cycle, ConvertTypeLimit, sequelize } from '../../db/index.js';
 import {
   findUserByLogin,
   toPublicUser,
@@ -82,7 +82,33 @@ router.post('/', async (req, res) => {
       { transaction }
     );
 
-    // Типы конвертов остаются для справочника; лимиты по типам более не создаются
+    // Создаём лимиты по типам для saving/investment исходя из процентов (если задан доход)
+    try {
+      const monthlyIncomeNum = Number(user.monthlyIncome) || 0;
+      if (monthlyIncomeNum > 0) {
+        const savingPercent = Number(user.percentSaving) || 0;
+        const investmentPercent = Number(user.percentInvestment) || 0;
+
+        const savingLimit = Number(((monthlyIncomeNum * savingPercent) / 100).toFixed(2));
+        const investmentLimit = Number(((monthlyIncomeNum * investmentPercent) / 100).toFixed(2));
+
+        // Вставляем/обновляем строки для saving и investment
+        await Promise.all([
+          ConvertTypeLimit.upsert(
+            { userId: user.id, typeCode: 'saving', limitAmount: savingLimit },
+            { transaction }
+          ),
+          ConvertTypeLimit.upsert(
+            { userId: user.id, typeCode: 'investment', limitAmount: investmentLimit },
+            { transaction }
+          ),
+        ]);
+      }
+    } catch (e) {
+      console.warn('Failed to create initial type limits for user', e);
+    }
+
+    // Инициализируем справочник типов (ленивое использование в других местах)
     await ConvertType.findAll({ transaction });
 
     await transaction.commit();
