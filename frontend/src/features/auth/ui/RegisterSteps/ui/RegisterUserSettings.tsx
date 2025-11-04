@@ -46,14 +46,10 @@ export const RegisterUserSettings = ({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Время сброса конвертов
         </label>
-        <select
-          {...register('cycle_type', { required: 'Выберите период' })}
-          disabled={isLoading}
-          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none transition-all"
-        >
-          <option value="weekly">Еженедельно</option>
-          <option value="monthly">Ежемесячно</option>
-        </select>
+        <input type="hidden" value="monthly" {...register('cycle_type', { required: true })} />
+        <div className="w-full px-3 py-2 border rounded-lg bg-gray-50 text-gray-600">
+          Конверты автоматически обновляются раз в месяц.
+        </div>
       </div>
 
       {/* Режим */}

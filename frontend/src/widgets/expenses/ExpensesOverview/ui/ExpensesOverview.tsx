@@ -8,7 +8,7 @@ export const ExpensesOverview = () => {
                     <Banknote className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="text-base font-medium text-gray-700">
-                    Расход за текущую неделю
+                    Расход за текущий месяц
                 </h3>
             </div>
             <div className="text-3xl font-semibold text-gray-900 leading-tight">

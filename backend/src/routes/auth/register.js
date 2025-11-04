@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
     password,
     distributionMode,
     monthly_income,
-    cycle_type,
+    cycle_type: _cycleType,
   } = req.body || {};
 
   if (!login || !name || !email || !password) {
@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
       investment: DEFAULT_DISTRIBUTION.investment,
     };
 
-    const cycleType = cycle_type === 'monthly' ? 'monthly' : 'weekly';
+    const cycleType = 'monthly';
 
     // Создаём пользователя
     const user = await User.create(

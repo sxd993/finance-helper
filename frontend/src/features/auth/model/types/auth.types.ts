@@ -7,7 +7,7 @@ export interface RegisterFormData {
     password: string;
     distributionMode: 'baseline' | 'flex';
     monthly_income: number;
-    cycle_type: 'monthly' | 'weekly';
+    cycle_type: 'monthly';
 }
 
 export interface LoginFormData {

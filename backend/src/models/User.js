@@ -60,9 +60,9 @@ const initUser = (sequelize, DataTypes) => {
       field: 'percent_investment',
     },
     cycleType: {
-      type: DataTypes.ENUM('weekly', 'monthly'),
+      type: DataTypes.ENUM('monthly'),
       allowNull: false,
-      defaultValue: 'weekly',
+      defaultValue: 'monthly',
       field: 'cycle_type',
     },
   }, {
