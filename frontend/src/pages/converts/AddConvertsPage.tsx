@@ -1,8 +1,7 @@
-import { AddConvertsForm } from "@/features/converts/add-convert"
+import { AddConvertsForm, ConvertDraftsList } from "@/features/converts/add-convert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/providers"
 import { ConvertDraftsEmpty } from "@/features/converts/add-convert/ui/states/ConvertDraftsEmpty"
-import { ConvertDraftsList } from "@/features/add-converts/ui/ConvertDraftsList"
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop"
 
 export const AddConvertsPage = () => {

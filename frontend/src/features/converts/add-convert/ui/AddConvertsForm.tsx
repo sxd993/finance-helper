@@ -5,22 +5,24 @@ import { SavingFields } from "./fields/SavingFields"
 import { ImportantFields } from "./fields/ImportantFields"
 import { WishesFields } from "./fields/WishesFields"
 import { InvestmentFields } from "./fields/InvestmentFields"
-import { ConvertTypeInfo } from "./fields/ConvertTypeInfo"
+import { ConvertTypeInfo } from "./ConvertTypeInfo/ConvertTypeInfo"
 
 //Hooks
 import { useConvertTypes } from '@features/converts/get-convert-types'
-import { useConvertOverview } from "../../get-converts/model/hooks/useConvertOverview"
+import { useUserConvertsLimits } from "../../get-user-converts-limits/model/useUserConvertsLimits"
+
 
 
 export const AddConvertsForm = () => {
   const { register, watch, onSubmit, isPending, errorMessage } = useCreateConvertForm()
   const { convert_types } = useConvertTypes()
-  const { convertOverview } = useConvertOverview()
+  const { userConvertsLimits } = useUserConvertsLimits()
+  console.log(userConvertsLimits)
   const type = watch("type_code")
   const canSubmit = Boolean(watch("name")) && Boolean(type)
 
+  const selectedOverview = userConvertsLimits?.filter(c => c.typeCode === type)
   const selectedTypeMeta = convert_types?.find((convert) => convert.code === type)
-  const selectedOverview = convertOverview?.find((convert) => convert.code === type)
   const infoTitle = selectedTypeMeta?.title ?? "Описание конверта"
   const infoDescription =
     selectedTypeMeta?.description ?? "Выберите тип конверта, чтобы увидеть лимиты и детали."
@@ -56,7 +58,7 @@ export const AddConvertsForm = () => {
       </div>
 
       <ConvertTypeInfo
-        overview={selectedOverview}
+        data={selectedOverview}
         fallbackTitle={infoTitle}
         fallbackDescription={infoDescription}
       />

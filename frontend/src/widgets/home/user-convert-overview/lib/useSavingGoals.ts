@@ -1,7 +1,7 @@
 import type { Convert } from "@/entities/convert/model/types";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { computePercent } from "./computeProgress";
-import { useUserConverts } from "@/features/converts/get-user-converts-limits/model/useConverts";
+import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
 
 export interface SavingGoalItem {
   id: number;

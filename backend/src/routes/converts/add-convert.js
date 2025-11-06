@@ -3,9 +3,10 @@ import {
   sequelize,
   Convert,
   ConvertType,
+  ConvertTypeLimit,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { ensureWithinTypeLimit, shouldApplyTypeLimit, updateDistributedAmount } from './utils/type-limits.js';
+import { ensureWithinTypeLimit, shouldApplyTypeLimit, getAllocatedAmount, normalizeLimit } from './utils/type-limits.js';
 
 const router = express.Router();
 
@@ -117,9 +118,21 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     // Создаём конверт
     const created = await Convert.create(convertPayload, { transaction });
 
-    // Обновляем распределённую сумму для типа
+    // === Встроенная логика updateDistributedAmount ===
     if (shouldApplyTypeLimit(convertType)) {
-      await updateDistributedAmount(userId, convertType.code, { transaction });
+      const distributed = await getAllocatedAmount(userId, convertType.code, { transaction });
+      if (distributed != null) {
+        const normalized = normalizeLimit(distributed);
+        await ConvertTypeLimit.upsert(
+          {
+            userId,
+            typeCode: convertType.code,
+            distributedAmount: normalized,
+            limitAmount: 0, // чтобы не было ER_NO_DEFAULT_FOR_FIELD
+          },
+          { transaction }
+        );
+      }
     }
 
     await transaction.commit();
@@ -127,7 +140,7 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     console.log('[add-convert] created convert:', created.toJSON());
 
     const responseInitialAmount =
-      created.initialAmount != null ? Number(created.initialAmount) : null;
+      created.initialAmount != null ? Number(created.initialAmount) : convertPayload.targetAmount;
 
     return res.status(201).json({
       id: created.id,

@@ -356,4 +356,6 @@ export {
   shouldApplyTypeLimit,
   updateDistributedAmount,
   recalcUserTypeLimitsAndResetDistributed,
+  getAllocatedAmount,
+  normalizeLimit
 };

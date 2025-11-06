@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom"
-import { useConverts, useConvertTypes, ConvertSection, ConvertCard } from "@entities/convert"
+import { ConvertSection, ConvertCard } from "@entities/convert"
 import { PlusIcon, Mail } from "lucide-react";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { Button } from "@/shared/ui/Button";
 import { EmptyConverts } from "@/shared/ui/states";
+import { useConvertTypes } from "@/features/converts/get-convert-types";
+import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
 
 export const ConvertsList = () => {
     const navigate = useNavigate()
-    const { converts } = useConverts();
+    const { converts } = useUserConverts();
     const { convert_types } = useConvertTypes();
 
     if (!converts?.length) {

@@ -4,7 +4,7 @@ import { requireAuth } from '../../utils/auth.js';
 
 const router = express.Router();
 
-router.post('/get-user-converts-type-limits', requireAuth, async (req, res) => {
+router.get('/get-user-converts-type-limits', requireAuth, async (req, res) => {
     try {
         const user_id = req.userId;
 

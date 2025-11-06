@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useAddExpenseMutation } from "./useAddExpenseMutation";
-import { useUserConverts } from "@/features/converts/get-user-converts-limits/model/useConverts";
+import { useUserConverts } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits";
 import { useConvertOverview } from "@/entities/convert/model/hooks/useConvertOverview";
 import type { Expense } from "@/entities/expense";
 import {
