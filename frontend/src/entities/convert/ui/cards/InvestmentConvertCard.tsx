@@ -2,7 +2,7 @@ import { formatPrice } from '@/shared/utils/formatPrice';
 import type { Convert } from '../../model/types';
 import { Edit3 } from 'lucide-react';
 import { Modal } from '@/shared/ui/Modal';
-import { UpdateInvestementsForm } from '@/features/update-convert-investements/ui/UpdateInvestementsForm';
+import { UpdateInvestementsForm } from '@/features/converts/update-convert-investment/ui/UpdateInvestementsForm';
 import { Button } from '@/shared/ui/Button';
 import { useModal } from '@/shared/ui/Modal/model/useModal';
 
@@ -32,7 +32,7 @@ export const InvestmentConvertCard = ({
     <div className='flex justify-between items-center py-3 px-4 border border-slate-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow'>
       {/* Левая часть*/}
       <div className='h-full flex flex-col justify-between flex-1'>
-        1. подфиксить создание 
+        1. подфиксить создание
         2. сделать распределение из общего пула
         3. показать какую то сводку для каждого типа
         <div className="flex items-center gap-2">

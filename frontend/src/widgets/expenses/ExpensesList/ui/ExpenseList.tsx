@@ -2,7 +2,7 @@ import { Error, Loading } from "@/shared/ui/states"
 import { useExpensesList } from "../model/hooks/useExpensesList"
 import { ExpenseListCard } from "@entities/expense"
 import { ExpensesListEmpty } from "./states/ExpenseListEmpty"
-import { ExpensesFilters } from "@/features/expenses-filters"
+import { ExpensesFilters } from "@/features/expenses/expenses-filters"
 
 export const ExpensesList = () => {
     const { expenses, expenseGroups, error, isLoading } = useExpensesList()

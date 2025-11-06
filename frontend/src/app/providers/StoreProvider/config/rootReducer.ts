@@ -1,7 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import { modalReducer } from "@/shared/ui/Modal/model/modal.slice";
-import { createConvertDraftsReducer } from "@/features/add-converts";
-import { ExpensesFiltersStoreReducer } from "@/features/expenses-filters";
+import { createConvertDraftsReducer } from "@/features/converts/add-convert";
+import { ExpensesFiltersStoreReducer } from "@/features/expenses/expenses-filters";
 import { iconPickerReducer } from "@/features/add-expense/lib/icons/model/iconPicker.slice";
 
 export const rootReducer = combineReducers({

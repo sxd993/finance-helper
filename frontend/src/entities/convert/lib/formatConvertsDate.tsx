@@ -1,8 +1,8 @@
 export const formatConvertsDate = (date: string) => {
-  if (!date) return ""; // на случай пустой строки
+  if (!date) return "";
 
   const [year, month, day] = date.split("-");
-  if (!year || !month || !day) return date; // если формат странный — возвращаем как есть
+  if (!year || !month || !day) return date; 
 
   return `${day}.${month}.${year}`;
 };
