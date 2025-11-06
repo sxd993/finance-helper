@@ -31,7 +31,8 @@ export const ConvertTypeInfo = ({
         <div className="space-y-4">
             {data.map((item) => {
                 const { typeCode } = item
-                const description = convert_types.filter(c => c.code === typeCode)
+                const typeInfo = convert_types.find(c => c.code === typeCode)
+                const description = typeInfo?.description
 
                 switch (typeCode) {
                     case "important":
@@ -44,6 +45,7 @@ export const ConvertTypeInfo = ({
                             <TypeCard
                                 key={typeCode}
                                 title={typeCode === "important" ? "Важные расходы" : "Желания"}
+                                description={description}
                                 items={[
                                     { label: "Лимит", value: formatPrice(limitAmount) },
                                     { label: "Распределено", value: formatPrice(distributedAmount) },
@@ -58,6 +60,7 @@ export const ConvertTypeInfo = ({
                             <TypeCard
                                 key={typeCode}
                                 title="Сбережения"
+                                description={description}
                                 items={[]}
                             />
                         )
@@ -67,6 +70,7 @@ export const ConvertTypeInfo = ({
                             <TypeCard
                                 key={typeCode}
                                 title="Инвестиции"
+                                description={description}
                                 items={[]}
                             />
                         )
@@ -76,6 +80,7 @@ export const ConvertTypeInfo = ({
                             <TypeCard
                                 key={typeCode}
                                 title={`Тип: ${typeCode}`}
+                                description={description}
                                 items={[]}
                             />
                         )
