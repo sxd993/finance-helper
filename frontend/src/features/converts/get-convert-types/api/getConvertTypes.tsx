@@ -1,7 +1,6 @@
 import { client } from '@/shared/api/client';
-import type { ConvertType } from '../model/types.ts';
 
-export const getConvertTypes = async (): Promise<ConvertType[]> => {
-    const response = await client.get<ConvertType[]>('/converts/types');
+export const GetConvertTypes = async () => {
+    const response = await client.get('/converts/types');
     return response.data
 };

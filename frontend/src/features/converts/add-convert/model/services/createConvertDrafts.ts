@@ -1,7 +1,5 @@
-import type { CreateConvertPayload } from "../types/addConvertPayload.type";
-import type { CreateConvertResponse } from "../types/addConvertResponse.type";
-import type { ConvertRequestError } from "../types/convertRequestError.type";
-import { parseConvertRequestError } from "../../../converts/add-convert/model/lib/parseConvertRequestError";
+import { parseConvertRequestError } from "../lib/parseConvertRequestError";
+import type { CreateConvertPayload, CreateConvertResponse, ConvertRequestError } from "../types";
 
 interface DraftSuccess {
   index: number;

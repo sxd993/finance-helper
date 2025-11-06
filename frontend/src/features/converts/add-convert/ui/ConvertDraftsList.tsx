@@ -1,12 +1,12 @@
 import type { RootState } from "@/app/providers";
 import { useSelector } from "react-redux";
-import { useAddConvertForm } from "../../converts/add-convert/model/hooks/useAddConvertForm";
-import { formatTypeCode } from "../../converts/add-convert/model/lib/formatTypeCode";
 import { Button } from "@/shared/ui/Button";
+import { useCreateConvertForm } from "../model/hooks/useCreateConvertForm";
+import { formatTypeCode } from "../model/lib/formatTypeCode";
 
 export const ConvertDraftsList = () => {
   const drafts = useSelector((state: RootState) => state.create_converts_drafts)
-  const { onCreate, onClearDrafts, isPending } = useAddConvertForm()
+  const { onCreate, onClearDrafts, isPending } = useCreateConvertForm()
 
 
   return (

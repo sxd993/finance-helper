@@ -13,7 +13,7 @@ router.get('/get-convert-types', requireAuth, async (req, res) => {
 
   catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Ошибка при получении конвертов пользователя' });
+    res.status(500).json({ error: 'Ошибка при получении типов конверта' });
   }
   
 })

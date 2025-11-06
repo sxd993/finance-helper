@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getConverts } from '@entities/convert/api'
+import { GetUserConverts } from '../api/GetUserConverts'
 import type { Convert } from '@entities/convert/model/types'
 
-export const useConverts = () => {
+export const useUserConverts = () => {
   const { data, isLoading, error } = useQuery<Convert[]>({
     queryKey: ['converts'],
-    queryFn: getConverts,
+    queryFn: GetUserConverts,
     staleTime: 30 * 60 * 1000,
   })
 

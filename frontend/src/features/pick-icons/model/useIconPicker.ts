@@ -9,7 +9,7 @@ import { useMemo } from "react"
 import {
   EXPENSE_ICON_OPTIONS,
   EXPENSE_ICON_REGISTRY,
-} from "../../../../pick-icons/const/registry"
+} from "../const/registry"
 
 export const useIconPicker = () => {
   const { iconName, iconColor } = useSelector(selectIconPickerState)

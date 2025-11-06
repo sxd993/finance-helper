@@ -1,5 +1,5 @@
 import type { EditConvertPayload } from "./type"
-import { editConvert } from "@/features/converts/edit-convert/api/editConvert"
+import { EditConvert } from "../api/editConvert"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from 'sonner'
 
@@ -8,7 +8,7 @@ export const useEditConvert = () => {
 
     const mutation = useMutation({
         mutationKey: ['update-investment'],
-        mutationFn: editConvert,
+        mutationFn: EditConvert,
         onSuccess: () => {
             queryClient.invalidateQueries();
             toast.success('Конверт успешно изменен')

@@ -1,20 +1,24 @@
-import { useConvertOverview, useConvertTypeLimits, useConvertTypes } from "@/entities/convert"
-import { useAddConvertForm } from "../../model/hooks/useAddConvertForm"
-import { SavingFields } from "./SavingFields"
-import { ImportantFields } from "./ImportantFields"
-import { WishesFields } from "./WishesFields"
-import { InvestmentFields } from "./InvestmentFields"
-import { ConvertTypeInfo } from "./ConvertTypeInfo"
+
+//UI
+import { useCreateConvertForm } from "../model/hooks/useCreateConvertForm"
+import { SavingFields } from "./fields/SavingFields"
+import { ImportantFields } from "./fields/ImportantFields"
+import { WishesFields } from "./fields/WishesFields"
+import { InvestmentFields } from "./fields/InvestmentFields"
+import { ConvertTypeInfo } from "./fields/ConvertTypeInfo"
+
+//Hooks
+import { useConvertTypes } from '@features/converts/get-convert-types'
+import { useConvertOverview } from "../../get-converts/model/hooks/useConvertOverview"
+
 
 export const AddConvertsForm = () => {
-  const { register, watch, onSubmit, isPending, errorMessage } = useAddConvertForm()
+  const { register, watch, onSubmit, isPending, errorMessage } = useCreateConvertForm()
   const { convert_types } = useConvertTypes()
-  const { convertTypeLimits } = useConvertTypeLimits()
   const { convertOverview } = useConvertOverview()
   const type = watch("type_code")
   const canSubmit = Boolean(watch("name")) && Boolean(type)
 
-  const selectedConvertType = convertTypeLimits?.limits.find((convert) => convert.code === type)
   const selectedTypeMeta = convert_types?.find((convert) => convert.code === type)
   const selectedOverview = convertOverview?.find((convert) => convert.code === type)
   const infoTitle = selectedTypeMeta?.title ?? "Описание конверта"
@@ -52,7 +56,6 @@ export const AddConvertsForm = () => {
       </div>
 
       <ConvertTypeInfo
-        convertType={selectedConvertType}
         overview={selectedOverview}
         fallbackTitle={infoTitle}
         fallbackDescription={infoDescription}

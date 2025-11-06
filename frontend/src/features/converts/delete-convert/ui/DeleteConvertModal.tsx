@@ -1,6 +1,6 @@
 import { Button } from "@/shared/ui/Button";
-import { useDeleteConvert } from "../../converts/delete-convert/model/useDeleteConvert";
 import { AlertTriangle } from "lucide-react";
+import { useDeleteConvert } from "../model/useDeleteConvert";
 
 interface DeleteConvertModalProps {
     id: number;

@@ -1,5 +1,5 @@
+import { useConvertOverview } from "@/features/converts/get-converts/model/hooks/useConvertOverview"
 import { UserConvertCard } from "./UserConvertCard"
-import { useConvertOverview } from "@/entities/convert"
 import { SectionTitle } from "@/shared/ui/SectionTItle"
 import { EmptyConverts } from "@/shared/ui/states"
 import { Info } from "lucide-react"

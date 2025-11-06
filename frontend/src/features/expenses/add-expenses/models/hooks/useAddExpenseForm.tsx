@@ -3,16 +3,14 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useAddExpenseMutation } from "./useAddExpenseMutation";
-import { useConvertOverview, useConverts } from "@/entities/convert";
+import { useUserConverts } from "@/features/converts/get-user-converts-limits/model/useConverts";
+import { useConvertOverview } from "@/entities/convert/model/hooks/useConvertOverview";
 import type { Expense } from "@/entities/expense";
 import {
   DEFAULT_EXPENSE_ICON_COLOR,
   DEFAULT_EXPENSE_ICON_NAME,
 } from "../../../../pick-icons";
-import {
-  selectIconPickerState,
-  resetIconPicker,
-} from "../../lib/icons/model/iconPicker.slice";
+import { selectIconPickerState, resetIconPicker } from "../../../../pick-icons";
 import { getConvertTypeOptions } from "../../lib/getConvertTypeOptions";
 import { getConvertTitleOptions } from "../../lib/getConvertTitleOptions";
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
@@ -20,7 +18,7 @@ import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
 export const useAddExpenseForm = () => {
   const { onAddExpense } = useAddExpenseMutation();
   const { convertOverview } = useConvertOverview();
-  const { converts } = useConverts();
+  const { converts } = useUserConverts();
 
   const dispatch = useDispatch<AppDispatch>();
   const { iconColor, iconName } = useSelector(selectIconPickerState);

@@ -1,5 +1,5 @@
-import type { CreateConvertPayload } from "../types/addConvertPayload.type";
-import type { ConvertRequestError } from "../types/convertRequestError.type";
+import type { CreateConvertPayload } from "../types";
+import type { ConvertRequestError } from "../types";
 
 export const formatConvertErrorMessage = (
   draft: CreateConvertPayload,

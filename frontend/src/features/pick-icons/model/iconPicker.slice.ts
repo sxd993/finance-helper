@@ -5,7 +5,7 @@ import type { RootState } from "@/app/providers/StoreProvider/config/store"
 import {
   DEFAULT_EXPENSE_ICON_COLOR,
   DEFAULT_EXPENSE_ICON_NAME,
-} from "../../../../pick-icons/const/registry"
+} from "../const/registry"
 
 type IconPickerState = {
   iconName: string

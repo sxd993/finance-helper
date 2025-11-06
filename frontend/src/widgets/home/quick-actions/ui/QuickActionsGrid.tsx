@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom"
 import { QuickActionCard } from "./QuickActionCard"
 import { SectionTitle } from "@/shared/ui/SectionTItle"
 import { Zap } from "lucide-react"
-import { useConvertOverview } from "@/entities/convert"
 import { buildQuickActions } from "../lib"
 import { buildOverviewSummary } from "@/widgets/home/user-convert-overview/lib/buildOverviewSummary"
+import { useConvertOverview } from "@/features/converts/get-converts/model/hooks/useConvertOverview"
 
 export const QuickActionGrids = () => {
     const navigate = useNavigate()

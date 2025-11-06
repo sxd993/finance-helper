@@ -1,5 +1,5 @@
 import type { Convert } from "@/entities/convert";
-import { useEditConvertForm } from "../../converts/edit-convert/model/useEditConvertForm";
+import { useEditConvertForm } from "../model/useEditConvertForm";
 import { Button } from "@/shared/ui/Button";
 import { formatPrice } from "@/shared/utils/formatPrice";
 

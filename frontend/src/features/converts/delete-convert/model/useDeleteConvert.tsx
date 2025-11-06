@@ -1,18 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { deleteConvert } from "@/features/converts/delete-convert/api/DeleteConvert";
+import { DeleteConvert } from "../api/DeleteConvert";
 
 export const useDeleteConvert = () => {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
         mutationKey: ["delete-convert"],
-        mutationFn: deleteConvert,
+        mutationFn: DeleteConvert,
         onSuccess: () => {
             queryClient.invalidateQueries();
             toast.success("Конверт успешно удален");
         },
-        onError:  () => {
+        onError: () => {
             toast.error('Конверт не был создан')
         }
     });

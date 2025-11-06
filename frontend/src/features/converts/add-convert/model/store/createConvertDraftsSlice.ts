@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { CreateConvertPayload } from "@/features/converts/add-convert/model/types/addConvertPayload.type";
+import type { CreateConvertPayload } from "../types";
 
 const initialState: CreateConvertPayload[] = [];
 

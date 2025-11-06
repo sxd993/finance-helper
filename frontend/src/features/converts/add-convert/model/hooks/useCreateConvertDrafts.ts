@@ -2,11 +2,11 @@ import { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
-import { createConvertDrafts } from "../../../../add-converts/model/services/createConvertDrafts";
-import type { CreateConvertPayload } from "../types/addConvertPayload.type";
+import type { CreateConvertPayload } from "../types";
 import { formatConvertErrorMessage } from "../lib/formatConvertErrorMessage";
-import { useAddConvert } from "./useAddConvert";
+import { useCreateConvert } from "./useCreateConvert";
 import { removeDraftsByIndexes } from "../store/createConvertDraftsSlice";
+import { createConvertDrafts } from "../services/createConvertDrafts";
 
 interface CreateDraftsOptions {
   drafts: CreateConvertPayload[];
@@ -14,7 +14,7 @@ interface CreateDraftsOptions {
 
 export const useCreateConvertDrafts = () => {
   const dispatch = useDispatch();
-  const { onCreateConverts, invalidateQueries } = useAddConvert();
+  const { onCreateConverts, invalidateQueries } = useCreateConvert();
   const [isCreating, setIsCreating] = useState(false);
   const [lastErrorMessage, setLastErrorMessage] = useState<string | null>(null);
 

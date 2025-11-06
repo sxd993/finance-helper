@@ -1,7 +1,7 @@
-import { useConverts } from "@/entities/convert";
 import type { Convert } from "@/entities/convert/model/types";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { computePercent } from "./computeProgress";
+import { useUserConverts } from "@/features/converts/get-user-converts-limits/model/useConverts";
 
 export interface SavingGoalItem {
   id: number;
@@ -14,7 +14,7 @@ export interface SavingGoalItem {
 }
 
 export const useSavingGoals = () => {
-  const { converts, isLoading, error } = useConverts();
+  const { converts, isLoading, error } = useUserConverts();
 
   const goals: SavingGoalItem[] = (converts || [])
     .filter((c: Convert) => c.type_code === "saving")

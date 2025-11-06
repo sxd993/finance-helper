@@ -1,7 +1,7 @@
 import { client } from '@/shared/api/client';
-import type { Convert } from '../model/types';
+import type { Convert } from '@/entities/convert';
 
-export const getConverts = async (): Promise<Convert[]> => {
+export const GetUserConverts = async (): Promise<Convert[]> => {
     const response = await client.get('/converts/get-converts');
     return response.data;
 };

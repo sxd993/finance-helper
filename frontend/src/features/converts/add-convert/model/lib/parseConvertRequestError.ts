@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
 
-import type { ConvertErrorResponse } from "../types/convertErrorResponse.type";
-import type { ConvertRequestError } from "../types/convertRequestError.type";
+import type { ConvertErrorResponse } from "../types";
+import type { ConvertRequestError } from "../types";
 
 const fallbackError: ConvertRequestError = {
   message: "Не удалось создать конверт",

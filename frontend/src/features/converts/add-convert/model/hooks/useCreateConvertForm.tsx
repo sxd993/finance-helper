@@ -2,11 +2,11 @@ import type { RootState } from "@/app/providers";
 import { useForm } from "react-hook-form"
 import { useDispatch, useSelector } from "react-redux";
 import { addConvertInStore, clearDrafts } from "../store/createConvertDraftsSlice";
-import type { CreateConvertPayload } from "../types/addConvertPayload.type";
+import type { CreateConvertPayload } from "../types";
 import { useCreateConvertDrafts } from "./useCreateConvertDrafts";
 
 
-export const useAddConvertForm = () => {
+export const useCreateConvertForm = () => {
   const form = useForm<CreateConvertPayload>();
   const dispatch = useDispatch();
   const drafts = useSelector((state: RootState) => state.create_converts_drafts)
