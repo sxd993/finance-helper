@@ -43,7 +43,7 @@ export const ConvertsList = () => {
 
                     return (
                         <ConvertSection
-                            key={type.code}
+                            key={type.description}
                             section_title={type.title}
                             section_code={type.code}
                             section_limit={type.limit}

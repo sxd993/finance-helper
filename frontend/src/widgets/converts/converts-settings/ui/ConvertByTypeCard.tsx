@@ -62,8 +62,6 @@ export const ConvertByTypeCard = ({ convert, overviewInfo }: ConvertByTypeCardPr
                 <EditConvertModal
                     id={convert.id}
                     name={convert.name}
-                    overall_limit={convert.overall_limit}
-                    current_amount={convert.current_amount}
                     target_amount={convert.target_amount}
                     convert_type_limit={convert.type?.limit ?? overviewInfo?.total_limit ?? null}
                     convert_type_used={overviewInfo?.used_limit ?? null}

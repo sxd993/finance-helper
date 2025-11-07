@@ -21,7 +21,10 @@ export const UserConvertOverview = () => {
         ) : (
           <>
             {userConvertsLimits.map((convert) => (
-              <UserConvertCard key={convert.typeCode} convert={convert} />
+              <UserConvertCard
+                key={`${convert.typeCode}-${convert.updatedAt}`}
+                convert={convert}
+              />
             ))}
           </>
         )}

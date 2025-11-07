@@ -1,14 +1,11 @@
 import { MailPlus, Plus, Settings } from "lucide-react";
-import { formatPrice } from "@/shared/utils/formatPrice";
-import type { QuickAction } from "../model/type";
+import type { QuickAction } from "./type";
 
-interface BuildQuickActionsParams {
+interface useQuickActionsParams {
   navigate: (path: string) => void;
-  availableBudget: number;
 }
 
-export const buildQuickActions = ({ navigate, availableBudget }: BuildQuickActionsParams): QuickAction[] => {
-  const formattedAvailable = formatPrice(availableBudget) ?? "0 ₽";
+export const useQuickActions = ({ navigate }: useQuickActionsParams): QuickAction[] => {
 
   return [
     {
@@ -18,8 +15,8 @@ export const buildQuickActions = ({ navigate, availableBudget }: BuildQuickActio
       action_func: () => navigate('/expenses/add-expense'),
     },
     {
-      title: availableBudget > 0 ? "Распределить остаток" : "Создать конверт",
-      subtitle: availableBudget > 0 ? `${formattedAvailable} свободно` : "Настройте новый конверт",
+      title: "Создать конверт",
+      subtitle: "Настройте новый конверт",
       logo: <MailPlus className="text-blue-500" />,
       action_func: () => navigate('/converts/add-converts'),
     },
