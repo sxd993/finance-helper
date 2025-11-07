@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
-
 import { formatPrice } from '@/shared/utils/formatPrice'
-import type { UseUserConvertsLimitsResult } from '@/features/converts/get-user-converts-limits/model/types'
 import { useConvertTypes } from '@/features/converts/get-convert-types'
+import type { UseUserConvertsLimitsResult } from '@/features/converts/get-user-converts-limits/model/types'
 
 type ConvertLimits = UseUserConvertsLimitsResult['userConvertsLimits']
 
@@ -13,44 +12,39 @@ const ORDER_MAP: Record<string, number> = {
   investment: 3,
 }
 
+const DEFAULT_TITLES: Record<string, string> = {
+  important: 'Важные расходы',
+  wishes: 'Желания',
+  saving: 'Сбережения',
+  investment: 'Инвестиции',
+}
+
 export const useConvertTypeInfoData = (data?: ConvertLimits) => {
   const { convert_types } = useConvertTypes()
 
   const cards = useMemo(() => {
     if (!data?.length) return []
 
-    const sorted = [...data].sort((a, b) => {
-      const orderA = ORDER_MAP[a.typeCode] ?? Number.MAX_SAFE_INTEGER
-      const orderB = ORDER_MAP[b.typeCode] ?? Number.MAX_SAFE_INTEGER
-      return orderA - orderB
-    })
-
-    return sorted.map((item) => {
-      const { typeCode, limitAmount = 0, distributedAmount = 0, remainderAmount = 0 } = item
-      const typeInfo = convert_types.find((convertType) => convertType.code === typeCode)
-
-      const defaultTitleMap: Record<string, string> = {
-        important: 'Важные расходы',
-        wishes: 'Желания',
-        saving: 'Сбережения',
-        investment: 'Инвестиции',
-      }
-
-      return {
-        key: typeCode,
-        title: typeInfo?.title ?? defaultTitleMap[typeCode] ?? `Тип: ${typeCode}`,
-        description: typeInfo?.description ?? null,
-        items: [
-          { label: 'Лимит', value: formatPrice(limitAmount) },
-          { label: 'Распределено', value: formatPrice(distributedAmount) },
-          { label: 'Остаток', value: formatPrice(remainderAmount) },
-        ],
-      }
-    })
+    return [...data]
+      .sort(
+        (a, b) =>
+          (ORDER_MAP[a.typeCode] ?? Number.MAX_SAFE_INTEGER) -
+          (ORDER_MAP[b.typeCode] ?? Number.MAX_SAFE_INTEGER)
+      )
+      .map(({ typeCode, limitAmount = 0, distributedAmount = 0, remainderAmount = 0 }) => {
+        const typeInfo = convert_types.find((t) => t.code === typeCode)
+        return {
+          key: typeCode,
+          title: typeInfo?.title ?? DEFAULT_TITLES[typeCode] ?? `Тип: ${typeCode}`,
+          description: typeInfo?.description ?? null,
+          items: [
+            { label: 'Лимит', value: formatPrice(limitAmount) },
+            { label: 'Распределено', value: formatPrice(distributedAmount) },
+            { label: 'Остаток', value: formatPrice(remainderAmount) },
+          ],
+        }
+      })
   }, [data, convert_types])
 
-  return {
-    cards,
-    hasData: cards.length > 0,
-  }
+  return { cards, hasData: !!cards.length }
 }
