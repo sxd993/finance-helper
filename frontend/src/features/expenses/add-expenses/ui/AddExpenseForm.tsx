@@ -4,7 +4,7 @@ import { useAddExpenseForm } from "../models/hooks/useAddExpenseForm"
 import { IconColorField, IconSelectField } from "../../../pick-icons"
 
 export const AddExpenseForm = () => {
-  const { register, onSubmit, convertTypeOptions, convertTitleOptions } = useAddExpenseForm()
+  const { register, onSubmit, userConvertsLimits, convertTitleOptions } = useAddExpenseForm()
 
   return (
     <form
@@ -32,7 +32,7 @@ export const AddExpenseForm = () => {
             <option value="" disabled>
               Выберите тип
             </option>
-            {convertTypeOptions.map((opt) => (
+            {userConvertsLimits.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>

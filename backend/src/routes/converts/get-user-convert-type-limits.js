@@ -12,14 +12,27 @@ router.get('/get-user-converts-type-limits', requireAuth, async (req, res) => {
             where: { user_id: userId },
         });
 
-        const result = userConverts.map(({ userId, typeCode, limitAmount = 0, distributedAmount = 0, updatedAt }) => ({
-            userId,
-            typeCode,
-            limitAmount,
-            distributedAmount,
-            remainderAmount: limitAmount - distributedAmount,
-            updatedAt,
-        }));
+        const orderMap = {
+            important: 0,
+            wishes: 1,
+            saving: 2,
+            investment: 3,
+        };
+
+        const result = userConverts
+            .map(({ userId, typeCode, limitAmount = 0, distributedAmount = 0, updatedAt }) => ({
+                userId,
+                typeCode,
+                limitAmount,
+                distributedAmount,
+                remainderAmount: limitAmount - distributedAmount,
+                updatedAt,
+            }))
+            .sort((a, b) => {
+                const orderA = orderMap[a.typeCode] ?? Number.MAX_SAFE_INTEGER;
+                const orderB = orderMap[b.typeCode] ?? Number.MAX_SAFE_INTEGER;
+                return orderA - orderB;
+            });
 
         res.json(result);
     } catch (error) {

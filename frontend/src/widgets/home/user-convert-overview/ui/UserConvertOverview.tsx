@@ -3,8 +3,10 @@ import { SectionTitle } from "@/shared/ui/SectionTItle"
 import { EmptyConverts } from "@/shared/ui/states"
 import { Info } from "lucide-react"
 import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits"
+import { usePrefetchConvertsData } from "@/features/converts/get-user-converts-limits/model/usePrefetchConvertsData"
 
 export const UserConvertOverview = () => {
+  usePrefetchConvertsData()
   const { userConvertsLimits } = useUserConvertsLimits();
   const isEmpty = !userConvertsLimits || userConvertsLimits.length === 0
 

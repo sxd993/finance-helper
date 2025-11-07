@@ -8,10 +8,10 @@ import {
   DEFAULT_EXPENSE_ICON_NAME,
 } from "../../../../pick-icons";
 import { selectIconPickerState, resetIconPicker } from "../../../../pick-icons";
-import { getConvertTypeOptions } from "../../lib/getConvertTypeOptions";
 import { getConvertTitleOptions } from "../../lib/getConvertTitleOptions";
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
 import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
+import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits";
 
 export const useAddExpenseForm = () => {
   const { onAddExpense } = useAddExpenseMutation();
@@ -74,6 +74,7 @@ export const useAddExpenseForm = () => {
 
   const convertType = watch("convert_type");
 
+  const { userConvertsLimits } = useUserConvertsLimits();
   const convertTitleOptions = getConvertTitleOptions(converts, convertType);
 
   const onSubmit = handleSubmit(onAddExpense);
@@ -82,5 +83,6 @@ export const useAddExpenseForm = () => {
     register,
     onSubmit,
     convertTitleOptions,
+    userConvertsLimits
   };
 };

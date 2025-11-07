@@ -1,13 +1,9 @@
 import type { FilterOption } from "@/features/expenses/expenses-filters/model/types/type";
 import type { ConvertGroup } from "@/entities/convert/model/types";
+import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
 
-export const getConvertTypeOptions = (convertOverview: ConvertGroup[] | null): FilterOption[] => {
-    if (!convertOverview) return [];
+export const getConvertTypeOptions = (convert_limits: UserConvertLimit | null): FilterOption[] => {
+    if (!convert_limits) return [];
 
-    return convertOverview
-        .filter((group) => group.info?.can_spend)
-        .map((convert) => ({
-            value: convert.info?.code ?? "",
-            label: convert.info?.title ?? convert.info?.code ?? "",
-        }));
+    return c
 };

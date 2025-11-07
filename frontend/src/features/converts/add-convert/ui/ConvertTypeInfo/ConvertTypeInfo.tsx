@@ -1,7 +1,6 @@
-import { formatPrice } from "@/shared/utils/formatPrice"
 import type { UseUserConvertsLimitsResult } from "@/features/converts/get-user-converts-limits/model/types"
 import { TypeCard } from "./TypeCard"
-import { useConvertTypes } from "@/features/converts/get-convert-types"
+import { useConvertTypeInfoData } from "@/features/converts/add-convert/model/hooks/useConvertTypeInfoData"
 
 interface Props {
     data?: UseUserConvertsLimitsResult["userConvertsLimits"]
@@ -14,9 +13,9 @@ export const ConvertTypeInfo = ({
     fallbackTitle = "Информация о типе",
     fallbackDescription = "Выберите тип конверта, чтобы увидеть доступные лимиты и рекомендации.",
 }: Props) => {
-    const { convert_types } = useConvertTypes();
+    const { cards, hasData } = useConvertTypeInfoData(data)
 
-    if (!data || data.length === 0) {
+    if (!hasData) {
         return (
             <div className="w-full rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-left shadow-sm">
                 <h2 className="text-base font-semibold text-slate-900">{fallbackTitle}</h2>
@@ -29,63 +28,14 @@ export const ConvertTypeInfo = ({
 
     return (
         <div className="space-y-4">
-            {data.map((item) => {
-                const { typeCode } = item
-                const typeInfo = convert_types.find(c => c.code === typeCode)
-                const description = typeInfo?.description
-
-                switch (typeCode) {
-                    case "important":
-                    case "wishes": {
-                        const limitAmount = item.limitAmount
-                        const distributedAmount = item.distributedAmount
-                        const remainderAmount = item.remainderAmount
-
-                        return (
-                            <TypeCard
-                                key={typeCode}
-                                title={typeCode === "important" ? "Важные расходы" : "Желания"}
-                                description={description}
-                                items={[
-                                    { label: "Лимит", value: formatPrice(limitAmount) },
-                                    { label: "Распределено", value: formatPrice(distributedAmount) },
-                                    { label: "Остаток", value: formatPrice(remainderAmount) },
-                                ]}
-                            />
-                        )
-                    }
-
-                    case "saving":
-                        return (
-                            <TypeCard
-                                key={typeCode}
-                                title="Сбережения"
-                                description={description}
-                                items={[]}
-                            />
-                        )
-
-                    case "investment":
-                        return (
-                            <TypeCard
-                                key={typeCode}
-                                title="Инвестиции"
-                                description={description}
-                                items={[]}
-                            />
-                        )
-
-                    default:
-                        return (
-                            <TypeCard
-                                key={typeCode}
-                                title={`Тип: ${typeCode}`}
-                                description={description}
-                                items={[]}
-                            />
-                        )
-                }
-            })}
+            {cards.map((card) => (
+                <TypeCard
+                    key={card.key}
+                    title={card.title}
+                    description={card.description}
+                    items={card.items}
+                />
+            ))}
         </div>
     )
 }

@@ -1,5 +1,5 @@
+import { AddExpenseForm } from "@/features/expenses/add-expenses/ui/AddExpenseForm";
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop"
-import { AddExpenseForm } from "@/features/add-expense";
 
 export const AddExpensesPage = () => {
     useScrollToTop();

@@ -17,7 +17,6 @@ export const AddConvertsForm = () => {
   const { register, watch, onSubmit, isPending, errorMessage } = useCreateConvertForm()
   const { convert_types } = useConvertTypes()
   const { userConvertsLimits } = useUserConvertsLimits()
-  console.log(userConvertsLimits)
   const type = watch("type_code")
   const canSubmit = Boolean(watch("name")) && Boolean(type)
 

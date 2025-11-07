@@ -6,9 +6,11 @@ import { Button } from "@/shared/ui/Button";
 import { EmptyConverts } from "@/shared/ui/states";
 import { useConvertTypes } from "@/features/converts/get-convert-types";
 import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
+import { usePrefetchConvertsData } from "@/features/converts/get-user-converts-limits/model/usePrefetchConvertsData";
 
 export const ConvertsList = () => {
     const navigate = useNavigate()
+    usePrefetchConvertsData()
     const { converts } = useUserConverts();
     const { convert_types } = useConvertTypes();
 

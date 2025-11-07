@@ -11,11 +11,10 @@ export const useConvertCardOverviewMetrics = ({ convert }: Props) => {
     const title = formatTypeCode(convert.typeCode)
     const distributedAmount = formatPrice(convert.distributedAmount)
     const limitAmount = formatPrice(convert.limitAmount)
-    const percentage = (convert.distributedAmount / convert.limitAmount) * 100;
+    const percentage = Math.floor((convert.distributedAmount / convert.limitAmount) * 100);
 
     // Инвестиции
     const absoluteReturn = (convert.limitAmount / convert.distributedAmount) * 100
-
     const color = absoluteReturn >= 0 ? 'text-green-600' : 'text-red-600';
 
     return {
