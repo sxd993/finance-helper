@@ -50,11 +50,11 @@ export const WishesCardOverview = ({ convert }: Props) => {
 
                         <div className="flex items-center justify-between text-xs pt-1 gap-2">
                             <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium">
-                                {percentage}
+                                {percentage}%
                             </span>
                             <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5">
                                 <CalendarDays className="w-4 h-4" />
-                                {5}
+                               Сброс через 5 дней
                             </span>
                         </div>
                     </div>

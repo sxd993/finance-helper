@@ -52,7 +52,7 @@ export const ImportantCardOverview = ({ convert }: Props) => {
                             </span>
                             <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5">
                                 <CalendarDays className="w-4 h-4" />
-                                5 дней
+                                Сброс через 5 дней
                             </span>
                         </div>
                     </div>

@@ -27,8 +27,8 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
                     <div className="space-y-3 flex justify-between">
                         <div className="flex flex-col items-start justify-between">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">
-                                    Текущая стоимость портфеля
+                                <p className="text-xs tracking-wide text-slate-500 mb-1">
+                                    В этом месяце вы можете пополнить портфели на:
                                 </p>
                                 <p className="text-gray-900 text-lg font-semibold">
                                     {limitAmount}
@@ -36,18 +36,18 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
                             </div>
                             <div>
                                 <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">
-                                    Вложено:
+                                    В этом месяце вы пополнили портфели на:
                                 </p>
                                 <p className="text-gray-900 text-lg font-semibold">
                                     {distributedAmount}
                                 </p>
                             </div>
-                        </div>
-                        {/* P/L */}
-                        <div className="flex items-center justify-center gap-2 text-sm font-medium">
-                            <span className={color}>{absoluteReturn}</span>
-                            <span className="text-slate-300">•</span>
-                            <span className={color}>{percentage}</span>
+                            <div>
+                                стоимость портфеля
+                            </div>
+                            <div>
+                                изначальная сумма вложений
+                            </div>
                         </div>
                     </div>
                 </div>
