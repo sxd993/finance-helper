@@ -1,12 +1,12 @@
-import { useConvertOverview } from "@/features/converts/get-converts/model/hooks/useConvertOverview"
 import { UserConvertCard } from "./UserConvertCard"
 import { SectionTitle } from "@/shared/ui/SectionTItle"
 import { EmptyConverts } from "@/shared/ui/states"
 import { Info } from "lucide-react"
+import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits"
 
 export const UserConvertOverview = () => {
-  const { convertOverview } = useConvertOverview()
-  const isEmpty = !convertOverview || convertOverview.length === 0
+  const { userConvertsLimits } = useUserConvertsLimits();
+  const isEmpty = !userConvertsLimits || userConvertsLimits.length === 0
 
   return (
     <div className="flex flex-col">
@@ -20,8 +20,8 @@ export const UserConvertOverview = () => {
           <EmptyConverts />
         ) : (
           <>
-            {convertOverview.map((convert) => (
-              <UserConvertCard key={convert.code} convert={convert} />
+            {userConvertsLimits.map((convert) => (
+              <UserConvertCard key={convert.typeCode} convert={convert} />
             ))}
           </>
         )}

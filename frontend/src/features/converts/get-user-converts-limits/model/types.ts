@@ -3,6 +3,7 @@ export interface UserConvertLimit {
   typeCode: string
   limitAmount: number
   distributedAmount: number
+  remainderAmount: number
   updatedAt: string
 }
 

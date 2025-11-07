@@ -1,30 +1,13 @@
-import type { ConvertGroup } from "@/entities/convert";
+import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
+import { useConvertCardOverviewMetrics } from "../../model/useConvertCardOverviewMetrics";
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
-import { formatPrice } from "@/shared/utils/formatPrice";
 
 interface Props {
-    convert: ConvertGroup;
+    convert: UserConvertLimit;
 }
 
 export const InvestmentCardOverview = ({ convert }: Props) => {
-    const current = convert.info.used_limit ?? 0;
-    const invested = convert.currentSum ?? 0;
-
-    const absoluteReturn = current - invested;
-    const percent = invested > 0 ? (absoluteReturn / invested) * 100 : 0;
-
-    const color =
-        absoluteReturn > 0
-            ? "text-emerald-600"
-            : absoluteReturn < 0
-                ? "text-rose-600"
-                : "text-slate-600";
-
-
-    const percentage = `${percent.toFixed(2)}%`
-
-    console.log(convert)
-
+    const { title, typeCode, color, percentage, absoluteReturn, limitAmount, distributedAmount } = useConvertCardOverviewMetrics({ convert });
 
     return (
         <div className="group">
@@ -33,10 +16,10 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
                     {/* Заголовок */}
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            {renderConvertIcon(convert.code)}
+                            {renderConvertIcon(typeCode)}
                         </div>
                         <span className="text-gray-900 text-lg font-medium">
-                            {convert.info.title}
+                            {title}
                         </span>
                     </div>
 
@@ -48,7 +31,7 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
                                     Текущая стоимость портфеля
                                 </p>
                                 <p className="text-gray-900 text-lg font-semibold">
-                                    {formatPrice(current)}
+                                    {limitAmount}
                                 </p>
                             </div>
                             <div>
@@ -56,13 +39,13 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
                                     Вложено:
                                 </p>
                                 <p className="text-gray-900 text-lg font-semibold">
-                                    {formatPrice(invested)}
+                                    {distributedAmount}
                                 </p>
                             </div>
                         </div>
                         {/* P/L */}
                         <div className="flex items-center justify-center gap-2 text-sm font-medium">
-                            <span className={color}>{formatPrice(absoluteReturn)}</span>
+                            <span className={color}>{absoluteReturn}</span>
                             <span className="text-slate-300">•</span>
                             <span className={color}>{percentage}</span>
                         </div>

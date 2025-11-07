@@ -1,15 +1,15 @@
-import type { ConvertGroup } from "@/entities/convert"
 import { ImportantCardOverview } from "./cards/ImportantCardOverview";
 import { WishesCardOverview } from "./cards/WishesCardOverview";
 import { SavingCardOverview } from "./cards/SavingCardOverview";
 import { InvestmentCardOverview } from "./cards/InvestmentCardOverview";
+import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
 
 interface Props {
-    convert: ConvertGroup;
+    convert: UserConvertLimit;
 }
 
 export const UserConvertCard = ({ convert }: Props) => {
-    switch (convert.code) {
+    switch (convert.typeCode) {
         case 'important':
             return (
                 <ImportantCardOverview convert={convert} />

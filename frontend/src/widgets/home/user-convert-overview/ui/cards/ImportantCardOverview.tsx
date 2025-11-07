@@ -1,20 +1,14 @@
-import type { ConvertGroup } from "@/entities/convert";
-import { getConvertCardMetrics } from "../../lib/getConvertCardMetrics";
 import { CalendarDays } from "lucide-react";
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
+import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
+import { useConvertCardOverviewMetrics } from "../../model/useConvertCardOverviewMetrics";
 
 interface Props {
-    convert: ConvertGroup;
+    convert: UserConvertLimit;
 }
 
 export const ImportantCardOverview = ({ convert }: Props) => {
-    const metrics = getConvertCardMetrics(convert);
-    const progress = metrics.percentageOfUsedLimit ?? metrics.percentage ?? 0;
-    const limitLabel = convert.info.is_reset
-        ? "Обновится через 5 дн."
-        : metrics.limit != null
-            ? metrics.formattedPercentage
-            : "Нет цели";
+    const { title, typeCode, distributedAmount, limitAmount, percentage } = useConvertCardOverviewMetrics({ convert });
 
     return (
         <div className="group">
@@ -24,41 +18,41 @@ export const ImportantCardOverview = ({ convert }: Props) => {
                         <div
                             className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow bg-slate-50`}
                         >
-                            {renderConvertIcon(convert.code)}
+                            {renderConvertIcon(typeCode)}
                         </div>
                         <span className="text-gray-900 text-lg">
-                            {convert.info.title}
+                            {title}
                         </span>
                     </div>
 
                     <div className="space-y-2.5">
                         <div className="flex items-end justify-between">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-slate-500 mb-0.5">Остаток</p>
+                                <p className="text-xs uppercase tracking-wide text-slate-500 mb-0.5">Использовано средств</p>
                                 <p className="text-gray-900 text-lg font-semibold">
-                                    {metrics.formattedBalance}
+                                    {distributedAmount}
                                 </p>
                             </div>
                             <div className="text-right">
                                 <p className="text-xs uppercase tracking-wide text-slate-500 mb-0.5">Лимит</p>
-                                <p className="text-gray-900 text-sm">{metrics.formattedUsedLimit}</p>
+                                <p className="text-gray-900 text-sm">{limitAmount}</p>
                             </div>
                         </div>
 
                         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div
                                 className={`h-full bg-orange-500 rounded-full transition-[width] duration-700 ease-in-out shadow-sm`}
-                                style={{ width: `${progress}%` }}
+                                style={{ width: `${percentage}%` }}
                             />
                         </div>
 
                         <div className="flex items-center justify-between text-xs pt-1 gap-2">
                             <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium">
-                                {metrics.formattedUsedPercentage}
+                                {percentage}%
                             </span>
                             <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5">
                                 <CalendarDays className="w-4 h-4" />
-                                {limitLabel}
+                                5 дней
                             </span>
                         </div>
                     </div>

@@ -118,20 +118,30 @@ router.post('/add-convert', requireAuth, async (req, res) => {
     // Создаём конверт
     const created = await Convert.create(convertPayload, { transaction });
 
-    // === Встроенная логика updateDistributedAmount ===
     if (shouldApplyTypeLimit(convertType)) {
       const distributed = await getAllocatedAmount(userId, convertType.code, { transaction });
       if (distributed != null) {
         const normalized = normalizeLimit(distributed);
-        await ConvertTypeLimit.upsert(
-          {
-            userId,
-            typeCode: convertType.code,
-            distributedAmount: normalized,
-            limitAmount: 0, // чтобы не было ER_NO_DEFAULT_FOR_FIELD
-          },
-          { transaction }
-        );
+
+        const existing = await ConvertTypeLimit.findOne({
+          where: { userId, typeCode: convertType.code },
+          transaction,
+        });
+
+        if (existing) {
+          existing.distributedAmount = normalized;
+          await existing.save({ transaction });
+        } else {
+          // создаём только с distributedAmount, limitAmount не трогаем
+          await ConvertTypeLimit.create(
+            {
+              userId,
+              typeCode: convertType.code,
+              distributedAmount: normalized,
+            },
+            { transaction }
+          );
+        }
       }
     }
 

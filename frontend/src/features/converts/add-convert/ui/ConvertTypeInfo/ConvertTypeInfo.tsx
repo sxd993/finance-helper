@@ -37,9 +37,9 @@ export const ConvertTypeInfo = ({
                 switch (typeCode) {
                     case "important":
                     case "wishes": {
-                        const limitAmount = item.distributedAmount + item.limitAmount
+                        const limitAmount = item.limitAmount
                         const distributedAmount = item.distributedAmount
-                        const remainderAmount = limitAmount - distributedAmount
+                        const remainderAmount = item.remainderAmount
 
                         return (
                             <TypeCard
