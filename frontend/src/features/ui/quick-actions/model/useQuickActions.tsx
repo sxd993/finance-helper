@@ -1,5 +1,5 @@
 import { MailPlus, Plus, Settings } from "lucide-react";
-import type { QuickAction } from "./type";
+import type { QuickAction } from "../../../../features/ui/quick-actions/type";
 
 interface useQuickActionsParams {
   navigate: (path: string) => void;

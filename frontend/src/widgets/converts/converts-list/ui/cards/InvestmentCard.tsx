@@ -7,15 +7,18 @@ interface Props {
   convert: Convert
 }
 
-export const InvestmentCardOverview = ({ convert }: Props) => {
+export const InvestmentCard = ({ convert }: Props) => {
   const title = convert.name
   const convertType = formatTypeCode(convert.type_code)
   const currentAmount = formatPrice(convert.current_balance)
   const targetAmount = formatPrice(convert.target_amount)
-  const percentage = Math.floor((convert.target_amount / convert.current_balance) * 100);
-  const absoluteReturn = currentAmount - targetAmount
-  const isProfit = absoluteReturn > 0
-  const isLoss = absoluteReturn < 0
+  const percentage = convert.target_amount
+    ? Math.min(999, Math.max(0, Math.round((convert.current_balance / convert.target_amount) * 100)))
+    : 0
+  const absoluteReturnValue = convert.current_balance - convert.target_amount
+  const absoluteReturn = formatPrice(absoluteReturnValue)
+  const isProfit = absoluteReturnValue > 0
+  const isLoss = absoluteReturnValue < 0
   const colorClass = isProfit ? 'text-emerald-600' : isLoss ? 'text-rose-600' : 'text-slate-600';
 
   return (
@@ -39,7 +42,7 @@ export const InvestmentCardOverview = ({ convert }: Props) => {
           <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">Текущая сумма</p>
           <p className="font-semibold text-emerald-600">{targetAmount}</p>
           <div className='flex justify-center'>
-            <span className={colorClass}>{formatPrice(absoluteReturn)}</span>
+            <span className={colorClass}>{absoluteReturn}</span>
             <span className='text-slate-300 px-1'>•</span>
             <span className={colorClass}>{percentage}%</span>
           </div>

@@ -1,4 +1,4 @@
-import type { QuickAction } from '../model/type'
+import type { QuickAction } from '../../../../features/ui/quick-actions/model/type'
 
 interface QuickActionCardProps {
     action: QuickAction

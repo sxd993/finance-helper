@@ -1,31 +1,35 @@
-import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
+import type { Convert } from "@/entities/convert/model/types";
+import { ProgressBar } from "@/shared/ui/ProgressBar";
+import { formatPrice } from "@/shared/utils/formatPrice";
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 import { CalendarDays } from "lucide-react";
-import { useConvertCardMetrics } from "../../../../../entities/convert/model/useConvertCardMetrics";
-import { ProgressBar } from "@/shared/ui/ProgressBar";
 
 interface Props {
-    convert: UserConvertLimit;
+    convert: Convert;
 }
 
-
-export const WishesCardOverview = ({ convert }: Props) => {
-    const { typeCode, title, remainderAmount, limitAmount, percentage } = useConvertCardMetrics({ convert });
-
+export const ImportantCard = ({ convert }: Props) => {
+    const typeCode = convert.type_code;
+    const remainderAmount = formatPrice(convert.current_balance);
+    const limitAmount = formatPrice(convert.target_amount);
+    const percentage = convert.target_amount
+        ? Math.min(100, Math.max(0, Math.round((convert.current_balance / convert.target_amount) * 100)))
+        : 0;
 
     return (
         <div className="group">
             <div className="rounded-2xl border border-slate-200 bg-white transition-shadow duration-300 shadow-sm group-hover:shadow-md">
                 <div className="p-6 space-y-4">
                     <div className="flex items-center gap-2.5">
-                        <div
-                            className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow bg-slate-50`}
-                        >
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow bg-slate-50">
                             {renderConvertIcon(typeCode)}
                         </div>
-                        <span className="text-gray-900 text-lg">
-                            {title}
-                        </span>
+                        <div>
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Важные расходы</p>
+                            <span className="text-gray-900 text-lg font-semibold">
+                                {convert.name}
+                            </span>
+                        </div>
                     </div>
 
                     <div className="space-y-2.5">
@@ -43,7 +47,7 @@ export const WishesCardOverview = ({ convert }: Props) => {
                         </div>
 
                         <ProgressBar
-                            color={'bg-yellow-500'}
+                            color="bg-orange-500"
                             percentage={percentage}
                         />
 

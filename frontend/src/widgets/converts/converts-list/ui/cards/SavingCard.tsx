@@ -8,15 +8,18 @@ interface Props {
   convert: Convert
 }
 
-export const SavingCardOverview = ({ convert }: Props) => {
+export const SavingCard = ({ convert }: Props) => {
 
   const name = convert.name
   const typeCode = convert.type_code
   const convertType = formatTypeCode(convert.type_code)
   const current = formatPrice(convert.current_balance)
   const target = formatPrice(convert.target_amount)
-  const remainder = formatPrice(convert.target_amount - convert.current_balance)
-  const percentage = Math.floor((convert.current_balance / convert.target_amount) * 100);
+  const remainderValue = Math.max(convert.target_amount - convert.current_balance, 0)
+  const remainder = formatPrice(remainderValue)
+  const percentage = convert.target_amount
+    ? Math.min(100, Math.max(0, Math.round((convert.current_balance / convert.target_amount) * 100)))
+    : 0;
   
 
   return (
