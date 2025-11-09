@@ -6,13 +6,26 @@ interface Props {
     convert: UserConvertLimit
 }
 
-export const useConvertCardOverviewMetrics = ({ convert }: Props) => {
+export const useConvertCardMetrics = ({ convert }: Props) => {
     const typeCode = convert.typeCode
     const title = formatTypeCode(convert.typeCode)
     const distributedAmount = formatPrice(convert.distributedAmount)
     const limitAmount = formatPrice(convert.limitAmount)
     const percentage = Math.floor((convert.remainderAmount / convert.limitAmount) * 100);
     const remainderAmount = formatPrice(convert.remainderAmount)
+
+    const progressColor = (typeCode : string) => {
+        switch (typeCode) {
+            case 'important':
+                return 'bg-orange-500'
+            case 'wishes':
+                return 'bg-yellow-500'
+            case 'saving':
+                return 'bg-green-500'
+            case 'investment':
+                return 'bg-blue-500'
+        }
+    }
 
     // Инвестиции
     const absoluteReturn = (convert.limitAmount / convert.distributedAmount) * 100
@@ -25,6 +38,7 @@ export const useConvertCardOverviewMetrics = ({ convert }: Props) => {
         limitAmount,
         percentage,
         remainderAmount,
+        progressColor,
 
         // Инвестиции
         absoluteReturn,

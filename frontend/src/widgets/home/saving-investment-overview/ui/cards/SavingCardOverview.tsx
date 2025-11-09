@@ -17,6 +17,7 @@ export const SavingCardOverview = ({ convert }: Props) => {
   const target = formatPrice(convert.target_amount)
   const remainder = formatPrice(convert.target_amount - convert.current_balance)
   const percentage = Math.floor((convert.current_balance / convert.target_amount) * 100);
+  
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4 shadow-sm">
@@ -36,7 +37,7 @@ export const SavingCardOverview = ({ convert }: Props) => {
           <p className="font-semibold text-slate-900">{current}</p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">Цель</p>
+          <p className="text-xs uppercase tracking-wide text-slate-500 mb-1 text-right">Цель</p>
           <p className="font-semibold text-slate-900">{target}</p>
         </div>
       </div>
@@ -44,14 +45,14 @@ export const SavingCardOverview = ({ convert }: Props) => {
         color={'bg-green-500'}
         percentage={percentage}
       />
-      <div>
-        <span></span>
-        <div className="flex flex-col items-end">
-          <p className="text-xs uppercase tracking-wide text-slate-500 mb-1">Остаток</p>
-          <p className="font-semibold text-gray-800 text-xs">{remainder}</p>
-        </div>
+      <div className="flex items-center justify-between text-xs pt-1 gap-2">
+        <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium">
+          {percentage}%
+        </span>
+        <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5">
+          Остаток: {remainder}
+        </span>
       </div>
     </div>
-
   )
 }

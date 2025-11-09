@@ -17,10 +17,6 @@ export const UserConvertOverview = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-5">
-        <SectionTitle
-          title="Ваши конверты"
-          icon={<Info className="w-6 h-6 text-primary" />}
-        />
 
         {isEmpty ? (
           <EmptyConverts />

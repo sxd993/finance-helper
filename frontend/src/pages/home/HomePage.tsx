@@ -1,15 +1,17 @@
-import { UserConvertOverview } from "@/widgets/home/user-convert-overview";
-import { SavingInvestmentOverview } from "@/widgets/home/saving-investment-overview";
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
 import { QuickActionGrids } from "@/widgets/home/quick-actions";
+import { SwitchConvertTabs } from "@/features/ui/switch-convert-tabs/ui/SwitchConvertTabs";
+import { ConvertOverview } from "@/widgets/converts/converts-overview/ui/ConvertOverview";
+import { ConvertList } from "@/widgets/converts/converts-list/ui/ConvertList";
 
 export const HomePage = () => {
   useScrollToTop();
 
   return (
     <div className="flex flex-col gap-5 max-w-3xl mx-auto pt-5 pb-20 p-4">
-      <UserConvertOverview />
-      <SavingInvestmentOverview />
+      <SwitchConvertTabs />
+      <ConvertOverview />
+      <ConvertList />
       <QuickActionGrids />
     </div>
   );

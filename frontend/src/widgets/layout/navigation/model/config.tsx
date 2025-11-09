@@ -17,16 +17,16 @@ export const navigationItems: NavigationItem[] = [
         icon: <Home className="w-6 h-6 mb-1" />,
     },
     {
-        id: 'converts',
-        path: '/converts',
-        label: 'Конверты',
-        icon: <Mail className="w-6 h-6 mb-1" />,
-    },
-    {
         id: 'expenses',
         path: '/expenses',
         label: 'Расходы',
         icon: <BanknoteArrowDown className="w-6 h-6 mb-1" />,
+    },
+    {
+        id: 'converts',
+        path: '/converts/add-converts',
+        label: 'Добавить конверт',
+        icon: <Mail className="w-6 h-6 mb-1" />,
     },
     {
         id: 'remainders',

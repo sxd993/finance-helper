@@ -1,7 +1,7 @@
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 import { CalendarDays } from "lucide-react";
-import { useConvertCardOverviewMetrics } from "../../model/useConvertCardOverviewMetrics";
+import { useConvertCardMetrics } from "../../../../../entities/convert/model/useConvertCardMetrics";
 import { ProgressBar } from "@/shared/ui/ProgressBar";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 
 export const WishesCardOverview = ({ convert }: Props) => {
-    const { typeCode, title, remainderAmount, limitAmount, percentage } = useConvertCardOverviewMetrics({ convert });
+    const { typeCode, title, remainderAmount, limitAmount, percentage } = useConvertCardMetrics({ convert });
 
 
     return (

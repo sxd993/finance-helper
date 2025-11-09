@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react"
 
 import { useAddExpenseForm } from "../models/hooks/useAddExpenseForm"
-import { IconColorField, IconSelectField } from "../../../pick-icons"
+import { IconColorField, IconSelectField } from "../../../ui/pick-icons"
 
 export const AddExpenseForm = () => {
   const { register, onSubmit, userConvertsLimits, convertTitleOptions } = useAddExpenseForm()

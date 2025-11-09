@@ -17,7 +17,7 @@ export const Navigation = () => {
                     <div key={item.id} className="flex flex-col items-center justify-center flex-1 min-h-[64px]">
                         <Link
                             to={item.path}
-                            className={`flex flex-col items-center p-4 rounded-lg transition-colors duration-200 ${active
+                            className={`flex flex-col items-center p-4 rounded-lg transition-colors  max-w-3 text-center text-wrap duration-200 ${active
                                 ? 'text-secondary'
                                 : 'text-gray-500 hover:text-secondary'
                                 }`}

@@ -6,8 +6,8 @@ import type { Expense } from "@/entities/expense";
 import {
   DEFAULT_EXPENSE_ICON_COLOR,
   DEFAULT_EXPENSE_ICON_NAME,
-} from "../../../../pick-icons";
-import { selectIconPickerState, resetIconPicker } from "../../../../pick-icons";
+} from "../../../../ui/pick-icons";
+import { selectIconPickerState, resetIconPicker } from "../../../../ui/pick-icons";
 import { getConvertTitleOptions } from "../../lib/getConvertTitleOptions";
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
 import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";

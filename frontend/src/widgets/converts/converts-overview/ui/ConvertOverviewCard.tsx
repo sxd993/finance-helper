@@ -1,15 +1,16 @@
-import { CalendarDays } from "lucide-react";
-import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
-import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
-import { ProgressBar } from "@/shared/ui/ProgressBar";
-import { useConvertCardMetrics } from "@/entities/convert/model/useConvertCardMetrics";
+import { useConvertCardMetrics } from "@/entities/convert/model/useConvertCardMetrics"
+import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
+import { renderConvertIcon } from "@/shared/utils/renderConvertIcon"
+import { ProgressBar } from "@/shared/ui/ProgressBar"
+import { CalendarDays } from "lucide-react"
 
 interface Props {
-    convert: UserConvertLimit;
+    convert: UserConvertLimit
 }
 
-export const ImportantCardOverview = ({ convert }: Props) => {
-    const { title, typeCode, remainderAmount, limitAmount, percentage } = useConvertCardMetrics({ convert });
+export const ConvertOverviewCard = ({ convert }: Props) => {
+    const { percentage, remainderAmount, title, typeCode, limitAmount, progressColor } = useConvertCardMetrics({ convert })
+    const color = progressColor(typeCode)
 
     return (
         <div className="group">
@@ -42,7 +43,7 @@ export const ImportantCardOverview = ({ convert }: Props) => {
 
 
                         <ProgressBar
-                            color={'bg-orange-500'}
+                            color={color}
                             percentage={percentage}
                         />
 
@@ -59,5 +60,5 @@ export const ImportantCardOverview = ({ convert }: Props) => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}

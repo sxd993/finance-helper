@@ -1,7 +1,7 @@
 export const formatTypeCode = (code: string) => {
     switch (code) {
         case 'important':
-            return 'Необходимые'
+            return 'Необходимое'
         case 'wishes':
             return 'Желания'
         case 'saving':
