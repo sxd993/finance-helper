@@ -8,13 +8,17 @@ import { usePrefetchConvertsData } from "@/features/converts/get-user-converts-l
 export const UserConvertOverview = () => {
   usePrefetchConvertsData()
   const { userConvertsLimits } = useUserConvertsLimits();
-  const isEmpty = !userConvertsLimits || userConvertsLimits.length === 0
+  const filteredConverts =
+    userConvertsLimits?.filter(
+      (convert) => convert.typeCode !== 'saving' && convert.typeCode !== 'investment'
+    ) ?? [];
+  const isEmpty = filteredConverts.length === 0
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-5">
         <SectionTitle
-          title="Общая информация"
+          title="Ваши конверты"
           icon={<Info className="w-6 h-6 text-primary" />}
         />
 
@@ -22,7 +26,7 @@ export const UserConvertOverview = () => {
           <EmptyConverts />
         ) : (
           <>
-            {userConvertsLimits.map((convert) => (
+            {filteredConverts.map((convert) => (
               <UserConvertCard
                 key={`${convert.typeCode}-${convert.updatedAt}`}
                 convert={convert}

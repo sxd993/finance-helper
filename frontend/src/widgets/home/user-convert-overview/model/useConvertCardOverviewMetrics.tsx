@@ -11,7 +11,8 @@ export const useConvertCardOverviewMetrics = ({ convert }: Props) => {
     const title = formatTypeCode(convert.typeCode)
     const distributedAmount = formatPrice(convert.distributedAmount)
     const limitAmount = formatPrice(convert.limitAmount)
-    const percentage = Math.floor((convert.distributedAmount / convert.limitAmount) * 100);
+    const percentage = Math.floor((convert.remainderAmount / convert.limitAmount) * 100);
+    const remainderAmount = formatPrice(convert.remainderAmount)
 
     // Инвестиции
     const absoluteReturn = (convert.limitAmount / convert.distributedAmount) * 100
@@ -23,6 +24,7 @@ export const useConvertCardOverviewMetrics = ({ convert }: Props) => {
         distributedAmount,
         limitAmount,
         percentage,
+        remainderAmount,
 
         // Инвестиции
         absoluteReturn,

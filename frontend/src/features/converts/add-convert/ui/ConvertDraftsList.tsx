@@ -42,9 +42,6 @@ export const ConvertDraftsList = () => {
                 {draft.initial_amount != null && (
                   <span>Вложено: {draft.initial_amount}</span>
                 )}
-                {draft.current_value != null && (
-                  <span>Стоимость: {draft.current_value}</span>
-                )}
               </div>
             </div>
           </li>

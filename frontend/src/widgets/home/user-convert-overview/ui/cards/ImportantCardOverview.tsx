@@ -2,13 +2,14 @@ import { CalendarDays } from "lucide-react";
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
 import { useConvertCardOverviewMetrics } from "../../model/useConvertCardOverviewMetrics";
+import { ProgressBar } from "@/shared/ui/ProgressBar";
 
 interface Props {
     convert: UserConvertLimit;
 }
 
 export const ImportantCardOverview = ({ convert }: Props) => {
-    const { title, typeCode, distributedAmount, limitAmount, percentage } = useConvertCardOverviewMetrics({ convert });
+    const { title, typeCode, remainderAmount, limitAmount, percentage } = useConvertCardOverviewMetrics({ convert });
 
     return (
         <div className="group">
@@ -28,9 +29,9 @@ export const ImportantCardOverview = ({ convert }: Props) => {
                     <div className="space-y-2.5">
                         <div className="flex items-end justify-between">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-slate-500 mb-0.5">Использовано средств</p>
+                                <p className="text-xs uppercase tracking-wide text-slate-500 mb-0.5">Остаток</p>
                                 <p className="text-gray-900 text-lg font-semibold">
-                                    {distributedAmount}
+                                    {remainderAmount}
                                 </p>
                             </div>
                             <div className="text-right">
@@ -39,12 +40,11 @@ export const ImportantCardOverview = ({ convert }: Props) => {
                             </div>
                         </div>
 
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full bg-orange-500 rounded-full transition-[width] duration-700 ease-in-out shadow-sm`}
-                                style={{ width: `${percentage}%` }}
-                            />
-                        </div>
+
+                        <ProgressBar
+                        color = {'bg-orange-500'}
+                        percentage = {percentage}
+                        />
 
                         <div className="flex items-center justify-between text-xs pt-1 gap-2">
                             <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium">

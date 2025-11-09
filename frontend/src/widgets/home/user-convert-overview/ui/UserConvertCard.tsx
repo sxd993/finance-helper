@@ -1,7 +1,5 @@
 import { ImportantCardOverview } from "./cards/ImportantCardOverview";
 import { WishesCardOverview } from "./cards/WishesCardOverview";
-import { SavingCardOverview } from "./cards/SavingCardOverview";
-import { InvestmentCardOverview } from "./cards/InvestmentCardOverview";
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
 
 interface Props {
@@ -17,14 +15,6 @@ export const UserConvertCard = ({ convert }: Props) => {
         case 'wishes':
             return (
                 <WishesCardOverview convert={convert} />
-            )
-        case 'saving':
-            return (
-                <SavingCardOverview convert={convert} />
-            )
-        case 'investment':
-            return (
-                <InvestmentCardOverview convert={convert} />
             )
     }
 }
