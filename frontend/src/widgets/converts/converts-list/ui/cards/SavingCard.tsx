@@ -1,6 +1,6 @@
 import { formatPrice } from "@/shared/utils/formatPrice"
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon"
-import { formatTypeCode } from "@/features/converts/add-convert/model/lib/formatTypeCode"
+import { formatTypeCode } from "@/entities/convert"
 import type { Convert } from "@/entities/convert/model/types"
 import { ProgressBar } from "@/shared/ui/ProgressBar"
 

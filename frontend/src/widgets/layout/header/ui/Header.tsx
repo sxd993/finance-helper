@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { User } from "@/entities/user";
 import { currentDay, currentDate } from "../model/const";
 import { useParams } from "react-router-dom";
-import { formatTypeCode } from "@/features/converts/add-convert/model/lib/formatTypeCode";
+import { formatTypeCode } from "@/entities/convert";
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon";
 import { useLogout } from "@/features/auth";
 

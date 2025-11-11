@@ -1,5 +1,5 @@
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
-import { formatTypeCode } from "@/features/converts/add-convert/model/lib/formatTypeCode"
+import { formatTypeCode } from "@/entities/convert"
 import { formatPrice } from "@/shared/utils/formatPrice"
 
 interface Props {

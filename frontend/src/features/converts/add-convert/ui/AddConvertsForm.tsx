@@ -5,10 +5,9 @@ import { SavingFields } from "./fields/SavingFields"
 import { ImportantFields } from "./fields/ImportantFields"
 import { WishesFields } from "./fields/WishesFields"
 import { InvestmentFields } from "./fields/InvestmentFields"
-import { ConvertTypeInfo } from "./ConvertTypeInfo/ConvertTypeInfo"
+import { ConvertLimitCard } from "@/features/converts/get-user-converts-limits/ui/ConvertLimitCard"
 
 //Hooks
-import { useUserConvertsLimits } from "../../get-user-converts-limits/model/useUserConvertsLimits"
 import { useConvertTypes } from "../../get-convert-types/model/useConvertTypes"
 
 
@@ -16,15 +15,9 @@ import { useConvertTypes } from "../../get-convert-types/model/useConvertTypes"
 export const AddConvertsForm = () => {
   const { register, watch, onSubmit, isPending, errorMessage } = useCreateConvertForm()
   const { convert_types } = useConvertTypes()
-  const { userConvertsLimits } = useUserConvertsLimits()
   const type = watch("type_code")
   const canSubmit = Boolean(watch("name")) && Boolean(type)
 
-  const selectedOverview = userConvertsLimits?.filter(c => c.typeCode === type)
-  const selectedTypeMeta = convert_types?.find((convert) => convert.code === type)
-  const infoTitle = selectedTypeMeta?.title ?? "Описание конверта"
-  const infoDescription =
-    selectedTypeMeta?.description ?? "Выберите тип конверта, чтобы увидеть лимиты и детали."
 
   return (
     <form
@@ -56,12 +49,7 @@ export const AddConvertsForm = () => {
         </select>
       </div>
 
-      <ConvertTypeInfo
-        data={selectedOverview}
-        fallbackTitle={infoTitle}
-        fallbackDescription={infoDescription}
-      />
-
+      {type && <ConvertLimitCard typeCode={type} />}
       {type === "important" && <ImportantFields register={register} />}
       {type === "saving" && <SavingFields register={register} />}
       {type === "wishes" && <WishesFields register={register} />}
@@ -74,7 +62,7 @@ export const AddConvertsForm = () => {
                    bg-secondary text-white hover:bg-secondary/90
                    disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed disabled:hover:bg-slate-300"
       >
-        {isPending ? "Добавление..." : "Добавить в черновик"}
+        {isPending ? "Создание..." : "Создать конверт"}
       </button>
 
       {errorMessage && <p className="text-red-500 text-center w-full">{errorMessage}</p>}

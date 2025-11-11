@@ -14,7 +14,7 @@ export const ExpensesPage = () => {
             <ExpensesOverview />
             <div className="flex justify-between items-center gap-4 p-2">
                 <SectionTitle
-                    title="Ваши транзакции"
+                    title="Ваши расходы"
                     subtitle="Управляйте своими финансовыми целями"
                     icon={<Banknote className="w-6 h-6 text-primary" />}
                 />
@@ -26,7 +26,7 @@ export const ExpensesPage = () => {
                     className="justify-center items-center flex"
                 />
             </div>
-            <UserExpensesList />
+            <UserExpensesList  />
         </div>
     );
 };

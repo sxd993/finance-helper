@@ -1,36 +1,28 @@
-import type { RootState } from "@/app/providers";
+import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { useDispatch, useSelector } from "react-redux";
-import { addConvertInStore, clearDrafts } from "../store/createConvertDraftsSlice";
-import type { CreateConvertPayload } from "../types";
-import { useCreateConvertDrafts } from "./useCreateConvertDrafts";
-
+import { useCreateConvert } from "./useCreateConvert"
+import type { CreateConvertPayload } from "../types"
 
 export const useCreateConvertForm = () => {
-  const form = useForm<CreateConvertPayload>();
-  const dispatch = useDispatch();
-  const drafts = useSelector((state: RootState) => state.create_converts_drafts)
-  const { createDrafts, isCreating, lastErrorMessage } = useCreateConvertDrafts();
+  const form = useForm<CreateConvertPayload>()
+  const { onCreateConverts, invalidateQueries, isPending } = useCreateConvert()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-
-  const onClearDrafts = () => {
-    dispatch(clearDrafts())
-  }
-  const onSubmit = form.handleSubmit((data) => {
-    dispatch(addConvertInStore(data))
+  const onSubmit = form.handleSubmit(async (data) => {
+    try {
+      setErrorMessage(null)
+      await onCreateConverts(data)
+      await invalidateQueries()
+      form.reset()
+    } catch (error) {
+      console.log(error)
+    }
   })
-
-  const onCreate = async () => {
-    await createDrafts({ drafts })
-  }
 
   return {
     ...form,
     onSubmit,
-    onCreate,
-    onClearDrafts,
-    isPending: isCreating,
-    errorMessage: lastErrorMessage,
+    isPending,
+    errorMessage,
   }
-
 }

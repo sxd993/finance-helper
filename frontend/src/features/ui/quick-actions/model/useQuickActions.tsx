@@ -9,7 +9,7 @@ export const useQuickActions = ({ navigate }: useQuickActionsParams): QuickActio
 
   return [
     {
-      title: "Добавить трату",
+      title: "Добавить расход",
       subtitle: "Запишите расход или перевод",
       logo: <Plus className="text-green-500" />,
       action_func: () => navigate('/expenses/add-expense'),

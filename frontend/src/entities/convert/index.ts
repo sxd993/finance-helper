@@ -8,4 +8,4 @@ export type {
   ConvertTypeLimitsResponse,
 } from './model/types';
 
-
+export { formatTypeCode } from './lib/formatTypeCode';
