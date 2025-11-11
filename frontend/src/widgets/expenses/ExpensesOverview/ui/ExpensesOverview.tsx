@@ -1,6 +1,12 @@
 import { Banknote } from "lucide-react";
 
 export const ExpensesOverview = () => {
+    const empty = true
+
+    if (empty) {
+        return <></>
+    }
+    
     return (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all">
             <div className="flex items-center space-x-3 mb-3">

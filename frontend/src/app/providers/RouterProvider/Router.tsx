@@ -33,13 +33,6 @@ export const Router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        index: true,
-        lazy: async () => {
-          const { ConvertsPage } = await import('@pages/converts');
-          return { Component: ConvertsPage };
-        },
-      },
-      {
         path: 'add-converts',
         lazy: async () => {
           const { AddConvertsPage } = await import('@pages/converts');

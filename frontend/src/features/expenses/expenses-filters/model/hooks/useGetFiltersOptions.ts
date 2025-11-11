@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { getFilterOptions } from "../../lib/getFilterOptions";
 import { getSelectStyles } from "../../lib/getSelectStyles";
-import { useConvertTypes } from "@/features/converts/get-convert-types";
 import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
+import { useConvertTypes } from "@/features/converts/get-convert-types/model/useConvertTypes";
 
 export const useGetFiltersOptions = () => {
   const { convert_types } = useConvertTypes();

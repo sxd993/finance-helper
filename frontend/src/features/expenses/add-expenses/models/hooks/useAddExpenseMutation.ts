@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { addExpense, type Expense } from "@/entities/expense"
+import type { Expense } from "@/entities/expense"
+import { AddExpense } from "../../api/AddExpense"
 import { toast } from "sonner"
 
 export const useAddExpenseMutation = () => {
@@ -7,7 +8,7 @@ export const useAddExpenseMutation = () => {
 
     const mutation = useMutation({
         mutationKey: ["add-expense"],
-        mutationFn: addExpense,
+        mutationFn: AddExpense,
         onSuccess: () => {
             queryClient.invalidateQueries();
             toast.success('Транзакция создана!')

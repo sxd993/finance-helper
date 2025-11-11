@@ -8,8 +8,8 @@ import { InvestmentFields } from "./fields/InvestmentFields"
 import { ConvertTypeInfo } from "./ConvertTypeInfo/ConvertTypeInfo"
 
 //Hooks
-import { useConvertTypes } from '@features/converts/get-convert-types'
 import { useUserConvertsLimits } from "../../get-user-converts-limits/model/useUserConvertsLimits"
+import { useConvertTypes } from "../../get-convert-types/model/useConvertTypes"
 
 
 

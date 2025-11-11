@@ -1,6 +1,6 @@
 import image from '../../../../../assets/empty-fallback-images/empty-expense-image.png';
 
-export const ExpensesListEmpty = () => {
+export const UserExpensesListEmpty = () => {
     return (
         <div className="flex justify-center flex-col items-center mt-2 mb-2 max-w-xl mx-auto">
             <img src={image} width={124} height={124} alt="empty-expense-image.png" />

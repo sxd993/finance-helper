@@ -1,7 +1,7 @@
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
 import { Button } from "@/shared/ui/Button";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
-import { ExpensesOverview, ExpensesList } from "@/widgets/expenses";
+import { ExpensesOverview, UserExpensesList } from "@/widgets/expenses";
 import { Plus, Banknote } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +26,7 @@ export const ExpensesPage = () => {
                     className="justify-center items-center flex"
                 />
             </div>
-            <ExpensesList />
+            <UserExpensesList />
         </div>
     );
 };

@@ -1,21 +1,23 @@
-import { Error, Loading } from "@/shared/ui/states"
-import { useExpensesList } from "../model/hooks/useExpensesList"
 import { ExpenseListCard } from "@entities/expense"
-import { ExpensesListEmpty } from "./states/ExpenseListEmpty"
-import { ExpensesFilters } from "@/features/expenses/expenses-filters"
+import { Error, Loading } from "@/shared/ui/states"
+import { useUserExpenses } from "../model/useUserExpenses"
+import { UserExpensesListEmpty } from "./states/UserExpensesListEmpty"
 
-export const ExpensesList = () => {
-    const { expenses, expenseGroups, error, isLoading } = useExpensesList()
+export const UserExpensesList = () => {
+    const { expenseGroups, isLoading, error } = useUserExpenses()
 
     if (isLoading) return <Loading title="Загрузка расходов..." />
     if (error) return <Error error_name="Ошибка при загрузке расходов" />
-    if (!expenses.length) return <ExpensesListEmpty />
+    const isEmpty = expenseGroups.length === 0
+
+    if (isEmpty) {
+        return <UserExpensesListEmpty/>
+    }
 
     return (
-        <div className="flex flex-col gap-3 mt-1">
-            <ExpensesFilters />
+        <div className="flex flex-col gap-3">
             {expenseGroups.map(({ label, items }) => (
-                <div key={label} className="flex flex-col gap-2 rounded-2xl  overflow-hidden">
+                <div key={label} className="flex flex-col gap-2 rounded-2xl overflow-hidden">
                     <div className="text-black text-lg text-start">{label}</div>
                     <div className="flex flex-col border border-slate-200 rounded-2xl bg-white">
                         {items.map((expense) => (

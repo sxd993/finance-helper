@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { formatPrice } from '@/shared/utils/formatPrice'
-import { useConvertTypes } from '@/features/converts/get-convert-types'
 import type { UseUserConvertsLimitsResult } from '@/features/converts/get-user-converts-limits/model/types'
+import { useConvertTypes } from '@/features/converts/get-convert-types/model/useConvertTypes'
 
 type ConvertLimits = UseUserConvertsLimitsResult['userConvertsLimits']
 
