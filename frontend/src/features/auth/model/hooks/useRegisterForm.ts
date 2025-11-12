@@ -14,7 +14,7 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: AuthApi.register,
     onSuccess: () => {
-      queryClient.invalidateQueries(['user']);
+      queryClient.invalidateQueries();
     },
   });
 };

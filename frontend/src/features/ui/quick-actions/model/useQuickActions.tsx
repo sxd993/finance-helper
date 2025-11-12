@@ -1,5 +1,5 @@
-import { MailPlus, Plus, Settings } from "lucide-react";
-import type { QuickAction } from "../../../../features/ui/quick-actions/type";
+import { Plus, Settings } from "lucide-react";
+import type { QuickAction } from "./type";
 
 interface useQuickActionsParams {
   navigate: (path: string) => void;
@@ -13,12 +13,6 @@ export const useQuickActions = ({ navigate }: useQuickActionsParams): QuickActio
       subtitle: "Запишите расход или перевод",
       logo: <Plus className="text-green-500" />,
       action_func: () => navigate('/expenses/add-expense'),
-    },
-    {
-      title: "Создать конверт",
-      subtitle: "Настройте новый конверт",
-      logo: <MailPlus className="text-blue-500" />,
-      action_func: () => navigate('/converts/add-converts'),
     },
     {
       title: "Настройки бюджета",

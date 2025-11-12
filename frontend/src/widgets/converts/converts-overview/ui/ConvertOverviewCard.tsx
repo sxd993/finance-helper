@@ -3,6 +3,7 @@ import type { UserConvertLimit } from "@/features/converts/get-user-converts-lim
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon"
 import { ProgressBar } from "@/shared/ui/ProgressBar"
 import { CalendarDays } from "lucide-react"
+import { useHasConvertRemainder } from "@/shared/hooks/useHasConvertRemainder"
 
 interface Props {
     convert: UserConvertLimit
@@ -10,23 +11,28 @@ interface Props {
 
 export const ConvertOverviewCard = ({ convert }: Props) => {
     const { percentage, remainderAmount, title, typeCode, limitAmount, progressColor } = useConvertCardMetrics({ convert })
+    const hasRemainder = useHasConvertRemainder(typeCode)
     const color = progressColor(typeCode)
 
     return (
         <div className="group">
             <div className="rounded-2xl border border-slate-200 bg-white transition-shadow duration-300 shadow-sm group-hover:shadow-md">
                 <div className="p-6 space-y-4">
-                    <div className="flex items-center gap-2.5">
-                        <div
-                            className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow bg-slate-50`}
-                        >
-                            {renderConvertIcon(typeCode)}
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2.5">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow bg-slate-50`}>
+                                {renderConvertIcon(typeCode)}
+                            </div>
+                            <span className="text-gray-900 text-lg">
+                                {title}
+                            </span>
                         </div>
-                        <span className="text-gray-900 text-lg">
-                            {title}
-                        </span>
+                        {hasRemainder && (
+                            <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg">
+                                Можно потратить
+                            </span>
+                        )}
                     </div>
-
                     <div className="space-y-2.5">
                         <div className="flex items-end justify-between">
                             <div>
