@@ -25,16 +25,6 @@ export const AddConvertsForm = () => {
       className="bg-white px-6 py-8 flex flex-col items-center gap-4 rounded-lg w-full border border-slate-200 shadow-lg"
     >
       <div className="flex flex-col gap-2 w-full">
-        <h2>Название конверта</h2>
-        <input
-          {...register("name", { required: true })}
-          type="text"
-          placeholder="Название конверта"
-          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2 w-full">
         <h2>Тип конверта</h2>
         <select
           {...register("type_code", { required: true })}
@@ -48,6 +38,17 @@ export const AddConvertsForm = () => {
           ))}
         </select>
       </div>
+      
+      <div className="flex flex-col gap-2 w-full">
+        <h2>Название конверта</h2>
+        <input
+          {...register("name", { required: true })}
+          type="text"
+          placeholder="Название конверта"
+          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+        />
+      </div>
+
 
       {type && <ConvertLimitCard typeCode={type} />}
       {type === "important" && <ImportantFields register={register} />}

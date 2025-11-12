@@ -1,2 +1,2 @@
 export { AddConvertsPage } from "./AddConvertsPage";
-export { ConvertByTypePage } from "./ConvertByTypePage";
+export { ConvertSettings } from "./ConvertSettings";

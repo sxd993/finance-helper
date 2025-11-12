@@ -2,7 +2,7 @@ import type { Convert, ConvertInfo } from "@/entities/convert";
 import { Modal } from "@/shared/ui/Modal";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { Edit2, Trash } from "lucide-react";
-import { EditConvertModal } from "../../../../features/converts/edit-convert";
+import { EditConvertModal } from "@/features/converts/edit-convert";
 import { useModal } from "@/shared/ui/Modal/model/useModal";
 import { DeleteConvertModal } from "@/features/converts/delete-convert";
 
@@ -60,12 +60,8 @@ export const ConvertByTypeCard = ({ convert, overviewInfo }: ConvertByTypeCardPr
                 onClose={closeEditModal}
             >
                 <EditConvertModal
-                    id={convert.id}
-                    name={convert.name}
-                    target_amount={convert.target_amount}
-                    convert_type_limit={convert.type?.limit ?? overviewInfo?.total_limit ?? null}
-                    convert_type_used={overviewInfo?.used_limit ?? null}
-                    convert_type_available={overviewInfo?.avaliable_limit ?? null}
+                    convert={convert}
+                    overviewInfo={overviewInfo}
                     onClose={closeEditModal}
                 />
             </Modal>

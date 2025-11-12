@@ -37,5 +37,5 @@
       "@widgets/*": ["src/widgets/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/pages/converts/ConvertSettings.tsx"]
 }

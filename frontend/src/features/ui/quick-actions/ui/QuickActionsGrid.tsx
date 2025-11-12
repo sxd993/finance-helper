@@ -6,7 +6,7 @@ import { useQuickActions } from "../model/useQuickActions"
 
 export const QuickActionGrids = () => {
     const navigate = useNavigate()
-    const actions = useQuickActions(navigate)
+    const actions = useQuickActions({ navigate })
 
     return (
         <div className="flex flex-col items-start gap-5 max-w-3xl mb-5">

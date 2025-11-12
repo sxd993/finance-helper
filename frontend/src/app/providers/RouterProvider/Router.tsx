@@ -39,11 +39,17 @@ export const Router = createBrowserRouter([
           return { Component: AddConvertsPage };
         },
       },
+    ],
+  },
+  {
+    path: '/converts/edit/:type_code',
+    element: <ProtectedRoute />,
+    children: [
       {
-        path: 'edit/:type_code',
+        index: true,
         lazy: async () => {
-          const { ConvertByTypePage } = await import('@pages/converts');
-          return { Component: ConvertByTypePage };
+          const { ConvertSettings } = await import('@pages/converts');
+          return { Component: ConvertSettings };
         },
       },
     ],

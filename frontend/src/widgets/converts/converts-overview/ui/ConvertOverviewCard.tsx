@@ -2,8 +2,9 @@ import { useConvertCardMetrics } from "@/entities/convert/model/useConvertCardMe
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon"
 import { ProgressBar } from "@/shared/ui/ProgressBar"
-import { CalendarDays } from "lucide-react"
+import { CalendarDays, Settings } from "lucide-react"
 import { useHasConvertRemainder } from "@/shared/hooks/useHasConvertRemainder"
+import { Link } from "react-router-dom"
 
 interface Props {
     convert: UserConvertLimit
@@ -13,6 +14,8 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
     const { percentage, remainderAmount, title, typeCode, limitAmount, progressColor } = useConvertCardMetrics({ convert })
     const hasRemainder = useHasConvertRemainder(typeCode)
     const color = progressColor(typeCode)
+    const editPath = `/converts/edit/${typeCode}`
+    const canSpend = convert.typeCode === 'wishes' || convert.typeCode === 'important'
 
     return (
         <div className="group">
@@ -27,11 +30,12 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
                                 {title}
                             </span>
                         </div>
-                        {hasRemainder && (
-                            <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg">
-                                Можно потратить
-                            </span>
-                        )}
+                        <Link
+                            to={editPath}
+                            className="px-2 py-1 text-md font-semibold text-black bg-slate-100 rounded-lg"
+                        >
+                            <Settings />
+                        </Link>
                     </div>
                     <div className="space-y-2.5">
                         <div className="flex items-end justify-between">
@@ -46,25 +50,27 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
                                 <p className="text-gray-900 text-sm">{limitAmount}</p>
                             </div>
                         </div>
-
-
                         <ProgressBar
                             color={color}
                             percentage={percentage}
                         />
 
                         <div className="flex items-center justify-between text-xs pt-1 gap-2">
-                            <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium">
-                                {percentage}%
-                            </span>
+                            <div>
+                                {hasRemainder && (
+                                    <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg">
+                                        {canSpend ? 'Можно распределить' : 'Можно потратить'}
+                                    </span>
+                                )}
+                            </div>
                             <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5">
                                 <CalendarDays className="w-4 h-4" />
-                                Сброс через 5 дней
+                                {canSpend ? 'Сброс через 5 дней' : 'Пополнение через 5 дней'}
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

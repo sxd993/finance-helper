@@ -9,6 +9,7 @@ interface ButtonProps {
   leftIcon?: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export const Button = ({
@@ -20,6 +21,7 @@ export const Button = ({
   leftIcon,
   className = '',
   disabled = false,
+  type = 'button',
 }: ButtonProps) => {
   const bgClassMap = {
     primary: "bg-primary hover:bg-primary-dark",
@@ -40,6 +42,7 @@ export const Button = ({
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`${sizeClass} ${textClass} font-medium transition-colors duration-200 ${bgClass} ${disabled ? "opacity-60 cursor-not-allowed" : ""} ${className}`}

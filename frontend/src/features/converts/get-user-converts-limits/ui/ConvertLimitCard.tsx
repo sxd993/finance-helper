@@ -37,12 +37,12 @@ export const ConvertLimitCard = ({ typeCode }: Props) => {
         <div className="w-full">
             <div className="flex justify-between gap-3 text-sm">
                 <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
-                    <span className="text-xs uppercase text-slate-500">Лимит</span>
-                    <span className="text-base font-semibold text-slate-900">{limit}</span>
-                </div>
-                <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
                     <span className="text-xs uppercase text-slate-500">Остаток</span>
                     <span className="text-base font-semibold text-emerald-600">{remainder}</span>
+                </div>
+                <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
+                    <span className="text-xs uppercase text-slate-500">Лимит</span>
+                    <span className="text-base font-semibold text-slate-900">{limit}</span>
                 </div>
             </div>
         </div>
