@@ -56,14 +56,12 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
                         />
 
                         <div className="flex items-center justify-between text-xs pt-1 gap-2">
-                            <div>
                                 {hasRemainder && (
-                                    <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg">
-                                        {canSpend ? 'Можно распределить' : 'Можно потратить'}
+                                    <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg ≈">
+                                        {canSpend ? 'Можно распределить средства' : 'Можно перевести в конверты'}
                                     </span>
                                 )}
-                            </div>
-                            <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5">
+                            <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5  max-w-1/2 text-wrap">
                                 <CalendarDays className="w-4 h-4" />
                                 {canSpend ? 'Сброс через 5 дней' : 'Пополнение через 5 дней'}
                             </span>

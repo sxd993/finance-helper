@@ -9,7 +9,6 @@ export const useHasConvertRemainder = (typeCode: string): boolean => {
     if (!typeCode || !userConvertsLimits) {
       return false;
     }
-
     return userConvertsLimits.some(
       (convert) => convert.typeCode === typeCode && convert.remainderAmount > 0,
     );

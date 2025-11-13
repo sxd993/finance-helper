@@ -16,7 +16,7 @@ export const SwitchConvertTabs: React.FC = () => {
         flex gap-3 p-2 rounded-xl
         overflow-x-auto overflow-y-hidden
         whitespace-nowrap
-        no-scrollbar
+        no-scrollbar justify-between
       "
       style={{
         scrollbarWidth: "none",
