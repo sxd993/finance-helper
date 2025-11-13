@@ -42,19 +42,6 @@ export const Router = createBrowserRouter([
     ],
   },
   {
-    path: '/converts/edit/:type_code',
-    element: <ProtectedRoute />,
-    children: [
-      {
-        index: true,
-        lazy: async () => {
-          const { ConvertSettings } = await import('@pages/converts');
-          return { Component: ConvertSettings };
-        },
-      },
-    ],
-  },
-  {
     path: '/expenses',
     element: <ProtectedRoute />,
     children: [

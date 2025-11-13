@@ -179,8 +179,13 @@ async function updateDistributedAmount(userId, typeCode, { transaction, value } 
 
   if (distributed == null) return;
 
+  const storedLimit = await findStoredTypeLimit(userId, typeCode, transaction);
+  if (storedLimit == null) {
+    return;
+  }
+
   await ConvertTypeLimit.upsert(
-    { userId, typeCode, distributedAmount: distributed },
+    { userId, typeCode, distributedAmount: distributed, limitAmount: storedLimit },
     { transaction }
   );
 }

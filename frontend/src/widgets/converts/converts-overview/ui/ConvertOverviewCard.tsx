@@ -2,7 +2,7 @@ import { useConvertCardMetrics } from "@/entities/convert/model/useConvertCardMe
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
 import { renderConvertIcon } from "@/shared/utils/renderConvertIcon"
 import { ProgressBar } from "@/shared/ui/ProgressBar"
-import { CalendarDays, Settings } from "lucide-react"
+import { CalendarDays } from "lucide-react"
 import { useHasConvertRemainder } from "@/shared/hooks/useHasConvertRemainder"
 import { Link } from "react-router-dom"
 
@@ -15,6 +15,7 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
     const hasRemainder = useHasConvertRemainder(typeCode)
     const color = progressColor(typeCode)
     const editPath = `/converts/edit/${typeCode}`
+    const createConvertPath = '/converts/add-converts'
     const canSpend = convert.typeCode === 'wishes' || convert.typeCode === 'important'
 
     return (
@@ -30,12 +31,6 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
                                 {title}
                             </span>
                         </div>
-                        <Link
-                            to={editPath}
-                            className="px-2 py-1 text-md font-semibold text-black bg-slate-100 rounded-lg"
-                        >
-                            <Settings />
-                        </Link>
                     </div>
                     <div className="space-y-2.5">
                         <div className="flex items-end justify-between">
@@ -56,11 +51,19 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
                         />
 
                         <div className="flex items-center justify-between text-xs pt-1 gap-2">
+                            <div>
                                 {hasRemainder && (
-                                    <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg ≈">
-                                        {canSpend ? 'Можно распределить средства' : 'Можно перевести в конверты'}
-                                    </span>
+                                    <Link
+                                        to={canSpend ? createConvertPath : editPath}
+                                        className="text-md font-semibold text-black rounded-lg"
+                                    >
+                                        <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg ≈">
+                                            {canSpend ? 'Можно создать конверты' : 'Можно пополнить конверты'}
+                                        </span>
+                                    </Link>
+
                                 )}
+                            </div>
                             <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5  max-w-1/2 text-wrap">
                                 <CalendarDays className="w-4 h-4" />
                                 {canSpend ? 'Сброс через 5 дней' : 'Пополнение через 5 дней'}

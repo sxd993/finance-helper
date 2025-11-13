@@ -1,9 +1,6 @@
-import { Button } from "@/shared/ui/Button";
-import { useNavigate } from "react-router-dom";
 import image from "../../../assets/empty-fallback-images/empty-converts-image.png";
 
 export const EmptyConverts = () => {
-    const navigate = useNavigate();
 
     return (
         <div className="flex flex-col items-center justify-center w-fit mx-auto my-6">
@@ -17,14 +14,8 @@ export const EmptyConverts = () => {
                     У вас нет конвертов
                 </h1>
                 <p className="text-gray-500 text-sm text-center">
-                    Вы пока не создали ни одной транзакции.
+                    Вы пока не создали ни одного конверта этой категории.
                 </p>
-                <Button
-                    title="Перейти к созданию"
-                    size="sm"
-                    onClick={() => navigate("/converts/add-converts")}
-                    bg="primary"
-                />
             </div>
         </div>
     );
