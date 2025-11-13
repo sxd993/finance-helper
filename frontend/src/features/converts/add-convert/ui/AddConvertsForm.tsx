@@ -13,7 +13,8 @@ import { useConvertTypes } from "../../get-convert-types/model/useConvertTypes"
 
 
 export const AddConvertsForm = () => {
-  const { register, watch, onSubmit, isPending, errorMessage } = useCreateConvertForm()
+  const { register, watch, onSubmit, isPending, errorMessage, formState } = useCreateConvertForm()
+  const { errors } = formState
   const { convert_types } = useConvertTypes()
   const type = watch("type_code")
   const canSubmit = Boolean(watch("name")) && Boolean(type)
@@ -38,7 +39,7 @@ export const AddConvertsForm = () => {
           ))}
         </select>
       </div>
-      
+
       <div className="flex flex-col gap-2 w-full">
         <h2>Название конверта</h2>
         <input
@@ -51,10 +52,29 @@ export const AddConvertsForm = () => {
 
 
       {type && <ConvertLimitCard typeCode={type} />}
-      {type === "important" && <ImportantFields register={register} />}
-      {type === "saving" && <SavingFields register={register} />}
-      {type === "wishes" && <WishesFields register={register} />}
-      {type === "investment" && <InvestmentFields register={register} />}
+      {type === "important" && (
+        <ImportantFields
+          register={register}
+          error={errors}
+        />
+      )}
+      {type === "saving" && (
+        <SavingFields
+          register={register}
+          error={errors}
+        />
+      )}
+      {type === "wishes" && (
+        <WishesFields register={register}
+          error={errors}
+        />
+      )}
+      {type === "investment" && (
+        <InvestmentFields
+          register={register}
+          error={errors}
+        />
+      )}
 
       <button
         type="submit"
