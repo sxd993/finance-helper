@@ -73,7 +73,7 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       typeCode: convertType.code,
       name,
       isActive,
-      targetAmount: null,
+      targetAmount: targetAmount ?? null,
     };
 
     if (hasLimit) {
@@ -82,6 +82,9 @@ router.post('/add-convert', requireAuth, async (req, res) => {
         return res.status(400).json({ message: `Для типа ${typeCode} требуется target_amount` });
       }
       convertPayload.targetAmount = targetAmount ?? 0;
+    } else if (targetAmount != null) {
+      // для типов без лимита тоже сохраняем переданное значение
+      convertPayload.targetAmount = targetAmount;
     }
 
     if (initialAmount != null) {

@@ -39,6 +39,13 @@ export const Router = createBrowserRouter([
           return { Component: AddConvertsPage };
         },
       },
+      {
+        path: 'replenish',
+        lazy: async () => {
+          const { ReplenishConvertPage } = await import('@pages/converts');
+          return { Component: ReplenishConvertPage };
+        },
+      },
     ],
   },
   {

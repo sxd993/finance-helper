@@ -8,7 +8,8 @@ import { ConvertOverviewCard } from "./ConvertOverviewCard"
 export const ConvertOverview = () => {
     const typeCode = useSelector((state: RootState) => state.convert_tabs.activeTab)
     const { userConvertsLimits } = useUserConvertsLimits();
-    const filteredConvert = userConvertsLimits?.filter(c => c.typeCode === typeCode)
+    const filteredConvert = userConvertsLimits?.filter(c => c.typeCode === typeCode) ?? null;
+
 
     return (
         <>

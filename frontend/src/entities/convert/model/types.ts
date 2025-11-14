@@ -13,7 +13,7 @@ export interface Convert {
   total_out: number;
 }
 
-
+export type ConvertTab = "important" | "wishes" | "saving" | "investment"
 
 export interface ConvertType {
   id: number | null;

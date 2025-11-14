@@ -1,6 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
-export type ConvertTab = "important" | "wishes" | "saving" | "investment"
+import type { ConvertTab } from "@/entities/convert/model/types";
 
 interface SwitchConvertTabsState {
     activeTab: ConvertTab;

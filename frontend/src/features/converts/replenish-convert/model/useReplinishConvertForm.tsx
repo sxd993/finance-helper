@@ -1,69 +1,58 @@
-import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 
-import type { Convert } from "@/entities/convert";
-import type { ConvertTab } from "@/features/ui/switch-convert-tabs/store/ConvertTabs.slice";
-import { useEditConvert } from "@/features/converts/edit-convert";
+import type { RootState } from "@/app/providers";
+import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
+import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits";
 
-interface ReplenishFormValues {
-  convertId: string;
-  amount: number;
-}
+import { useReplinishConvertMutation } from "./useReplinishConvertMutation";
+import type { ReplenishFormValues, ReplenishSourceType } from "./types";
+import { useSourceTypeController } from "../lib/useSourceTypeController";
+import { useConvertSelection } from "../lib/useConvertSelection";
 
-interface UseReplinishConvertFormParams {
-  converts: Convert[];
-  targetTypeCodes: ConvertTab[];
-}
-
-export const useReplinishConvertForm = ({
-  converts,
-  targetTypeCodes,
-}: UseReplinishConvertFormParams) => {
-  const eligibleConverts = useMemo(
-    () => converts.filter((convert) => targetTypeCodes.includes(convert.type_code as ConvertTab)),
-    [converts, targetTypeCodes],
+export const useReplinishConvertForm = () => {
+  const storedSourceType = useSelector(
+    (state: RootState) => state.replenish_form.sourceType,
   );
+  const { converts, isLoading: convertsLoading } = useUserConverts();
+  const { userConvertsLimits, isLoading: limitsLoading } = useUserConvertsLimits();
 
   const form = useForm<ReplenishFormValues>({
     defaultValues: {
-      convertId: eligibleConverts[0]?.id ? String(eligibleConverts[0].id) : "",
+      sourceType: storedSourceType ?? "",
+      convertId: "",
       amount: 0,
     },
   });
+  const { register, handleSubmit, reset, formState } = form;
 
-  const { register, handleSubmit, watch, reset, formState } = form;
+  const sourceControl = useSourceTypeController({
+    form,
+    storedSourceType: storedSourceType as ReplenishSourceType | null,
+    limits: userConvertsLimits,
+  });
 
-  useEffect(() => {
-    reset({
-      convertId: eligibleConverts[0]?.id ? String(eligibleConverts[0].id) : "",
-      amount: 0,
-    });
-  }, [eligibleConverts, reset]);
+  const convertControl = useConvertSelection({
+    form,
+    converts,
+    sourceTypeValue: sourceControl.sourceTypeValue,
+  });
 
-  const selectedConvert = eligibleConverts.find(
-    (convert) => String(convert.id) === watch("convertId"),
-  );
-  const amountValue = watch("amount");
-  const isValidAmount = Number.isFinite(amountValue) && amountValue > 0;
-
-  const { editConvert, isPending } = useEditConvert();
+  const isLoading = convertsLoading || limitsLoading;
+  const { replenishConvert, isPending } = useReplinishConvertMutation();
 
   const onSubmit = handleSubmit(async (values) => {
-    if (!selectedConvert) return;
+    if (!convertControl.selectedConvert || !values.sourceType) return;
 
-    const nextInitial = Number(selectedConvert.initial_amount ?? 0) + Number(values.amount ?? 0);
-
-    await editConvert({
-      id: selectedConvert.id,
-      name: selectedConvert.name,
-      type_code: selectedConvert.type_code,
-      target_amount: selectedConvert.target_amount ?? null,
-      initial_amount: nextInitial,
-      is_active: selectedConvert.is_active,
+    await replenishConvert({
+      type_code: values.sourceType,
+      convert_id: convertControl.selectedConvert.id,
+      amount: values.amount ?? 0,
     });
 
     reset({
-      convertId: String(selectedConvert.id),
+      sourceType: values.sourceType,
+      convertId: String(convertControl.selectedConvert.id),
       amount: 0,
     });
   });
@@ -71,10 +60,12 @@ export const useReplinishConvertForm = ({
   return {
     register,
     onSubmit,
-    eligibleConverts,
-    selectedConvert,
-    isValidAmount,
+    handleSourceTypeChange: sourceControl.handleSourceTypeChange,
+    eligibleConverts: convertControl.eligibleConverts,
+    availableRemainder: sourceControl.availableRemainder,
     isPending,
+    isLoading,
+    sourceTypeOptions: sourceControl.sourceTypeOptions,
     formState,
   };
 };

@@ -30,13 +30,13 @@ export const Header = ({ user }: HeaderProps) => {
     <header className="sticky top-0 z-50 max-w-3xl bg-white border-b border-slate-200 w-full mx-auto">
       <div className="mx-auto w-full p-5 flex items-center">
         {showBackButton && (
-          <div className="relative flex items-center w-full justify-center">
+          <div className="relative flex items-center w-full justify-center p-4">
             <button
               onClick={() => navigate(-1)}
               aria-label="Назад"
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl text-slate-700 text-sm hover:bg-slate-200 active:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 absolute left-0"
             >
-              <ArrowLeft size={24} />
+              <ArrowLeft size={24} className="" />
             </button>
             {isEditConvertPage && (
               <div className="flex flex-col items-baseline gap-2">

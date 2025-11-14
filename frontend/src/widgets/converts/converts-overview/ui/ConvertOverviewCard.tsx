@@ -5,6 +5,9 @@ import { ProgressBar } from "@/shared/ui/ProgressBar"
 import { CalendarDays } from "lucide-react"
 import { useHasConvertRemainder } from "@/shared/hooks/useHasConvertRemainder"
 import { Link } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import type { AppDispatch } from "@/app/providers/StoreProvider/config/store"
+import { setSourceType } from "@/features/converts/replenish-convert/store"
 
 interface Props {
     convert: UserConvertLimit
@@ -14,9 +17,18 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
     const { percentage, remainderAmount, title, typeCode, limitAmount, progressColor } = useConvertCardMetrics({ convert })
     const hasRemainder = useHasConvertRemainder(typeCode)
     const color = progressColor(typeCode)
-    const editPath = `/converts/edit/${typeCode}`
+    const replenishPath = `/converts/replenish`
     const createConvertPath = '/converts/add-converts'
     const canSpend = convert.typeCode === 'wishes' || convert.typeCode === 'important'
+    const dispatch = useDispatch<AppDispatch>()
+
+    const handleReplenishNavigate = () => {
+        if (typeCode === 'saving' || typeCode === 'investment') {
+            dispatch(setSourceType(typeCode))
+        } else {
+            dispatch(setSourceType(null))
+        }
+    }
 
     return (
         <div className="group">
@@ -54,7 +66,8 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
                             <div>
                                 {hasRemainder && (
                                     <Link
-                                        to={canSpend ? createConvertPath : editPath}
+                                        to={canSpend ? createConvertPath : replenishPath}
+                                        onClick={canSpend ? undefined : handleReplenishNavigate}
                                         className="text-md font-semibold text-black rounded-lg"
                                     >
                                         <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg ≈">
