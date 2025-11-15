@@ -68,7 +68,6 @@ export interface ConvertTypeLimitSummary {
 export interface ConvertTypeLimitsResponse {
   user: {
     monthly_income: number | null
-    distribution_mode: string | null
     percent_important: number | null
     percent_wishes: number | null
     percent_saving: number | null

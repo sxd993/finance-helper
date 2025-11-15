@@ -1,11 +1,11 @@
 export interface User {
-  id: number;
   login: string;
   name: string;
-  monthlyIncome: number;
   email: string;
-  currency: string;
-  percent_necessary: number;
-  percent_desire: number;
-  percent_saving: number;
+  monthlyIncome: number | null;
+  percentImportant: number;
+  percentWishes: number;
+  percentSaving: number;
+  percentInvestment: number;
+  cycleType: "monthly";
 }

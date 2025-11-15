@@ -17,7 +17,6 @@ router.post('/', async (req, res) => {
     name,
     email,
     password,
-    distributionMode,
     monthly_income,
     cycle_type: _cycleType,
   } = req.body || {};
@@ -43,9 +42,6 @@ router.post('/', async (req, res) => {
 
     const normalizedIncome = hasIncome ? Number(monthly_income) || 0 : null;
 
-    const resolvedDistributionMode =
-      distributionMode === 'flex' ? 'flex' : 'baseline';
-
     const resolvedPercents = {
       important: DEFAULT_DISTRIBUTION.important,
       wishes: DEFAULT_DISTRIBUTION.wishes,
@@ -62,7 +58,6 @@ router.post('/', async (req, res) => {
         name,
         email,
         passwordHash,
-        distributionMode: resolvedDistributionMode,
         percentImportant: resolvedPercents.important,
         percentWishes: resolvedPercents.wishes,
         percentSaving: resolvedPercents.saving,
@@ -114,10 +109,9 @@ router.post('/', async (req, res) => {
     await transaction.commit();
 
     // Авторизация
+    const freshUser = await findUserByLogin(login);
     const token = createToken(login);
     setAuthCookie(res, token);
-
-    const freshUser = await findUserByLogin(login);
 
     return res.status(201).json({
       token,
@@ -126,7 +120,6 @@ router.post('/', async (req, res) => {
         name,
         email,
         monthly_income: normalizedIncome,
-        distribution_mode: resolvedDistributionMode,
         percent_important: resolvedPercents.important,
         percent_wishes: resolvedPercents.wishes,
         percent_saving: resolvedPercents.saving,

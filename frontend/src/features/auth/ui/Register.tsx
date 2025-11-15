@@ -15,7 +15,6 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
   const {
     register,
     handleSubmit,
-    watch,
     onSubmit,
     isPending,
     form_errors,
@@ -54,7 +53,6 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
           onSubmit={onSubmit}
           onBack={onBack}
           isLoading={isPending}
-          watch={watch}
           error={send_error}
         />
       }

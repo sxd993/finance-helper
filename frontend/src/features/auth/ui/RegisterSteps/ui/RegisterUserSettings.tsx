@@ -1,7 +1,6 @@
 import type {
   UseFormHandleSubmit,
   UseFormRegister,
-  UseFormWatch,
 } from 'react-hook-form';
 import type { RegisterFormData } from '@/features/auth/model/types/auth.types';
 
@@ -11,7 +10,6 @@ interface RegisterUserSettingsProps {
   onSubmit: (data: RegisterFormData) => void;
   onBack: () => void;
   isLoading: boolean;
-  watch: UseFormWatch<RegisterFormData>;
   error: Error | null;
 }
 
@@ -21,13 +19,8 @@ export const RegisterUserSettings = ({
   onSubmit,
   onBack,
   isLoading,
-  watch,
   error,
 }: RegisterUserSettingsProps) => {
-  const distributionMode = watch('distributionMode');
-  const shouldShowIncome = distributionMode === 'baseline';
-
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -42,24 +35,22 @@ export const RegisterUserSettings = ({
 
 
       {/* Доход */}
-      {shouldShowIncome && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Ежемесячный доход
-          </label>
-          <input
-            type="number"
-            placeholder="Введите сумму"
-            {...register('monthly_income', {
-              valueAsNumber: true,
-              required: 'Доход обязателен',
-              min: { value: 0, message: 'Доход не может быть отрицательным' },
-            })}
-            disabled={isLoading}
-            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none transition-all"
-          />
-        </div>
-      )}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Ежемесячный доход
+        </label>
+        <input
+          type="number"
+          placeholder="Введите сумму"
+          {...register('monthly_income', {
+            valueAsNumber: true,
+            required: 'Доход обязателен',
+            min: { value: 0, message: 'Доход не может быть отрицательным' },
+          })}
+          disabled={isLoading}
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none transition-all"
+        />
+      </div>
 
       {/* Ошибка формы */}
       {error && (

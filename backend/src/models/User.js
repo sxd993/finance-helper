@@ -29,12 +29,6 @@ const initUser = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'password_hash',
     },
-    distributionMode: {
-      type: DataTypes.ENUM('baseline', 'flex'),
-      allowNull: false,
-      defaultValue: 'baseline',
-      field: 'distribution_mode',
-    },
     percentImportant: {
       type: DataTypes.DECIMAL(5, 2),
       allowNull: false,

@@ -35,7 +35,6 @@ function toPublicUser(user) {
     name: data.name,
     email: data.email,
     monthlyIncome: monthlyIncomeNormalized,
-    distributionMode: data.distributionMode || data.distribution_mode || 'baseline',
     percentImportant: normalizeNumber(data.percentImportant ?? data.percent_important),
     percentWishes: normalizeNumber(data.percentWishes ?? data.percent_wishes),
     percentSaving: normalizeNumber(data.percentSaving ?? data.percent_saving),

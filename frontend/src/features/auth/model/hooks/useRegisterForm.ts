@@ -27,7 +27,6 @@ export const useRegisterForm = () => {
       email: '',
       name: '',
       password: '',
-      distributionMode: 'baseline',
       cycle_type: 'monthly',
     },
   });
@@ -47,7 +46,6 @@ export const useRegisterForm = () => {
   return {
     register: form.register,
     handleSubmit: form.handleSubmit,
-    watch: form.watch,
     isPending: registerMutation.isPending,
     form_errors: form.formState.errors,
     send_error: registerMutation.error instanceof Error ? registerMutation.error.response.data  : null,

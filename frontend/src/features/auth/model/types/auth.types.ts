@@ -5,7 +5,6 @@ export interface RegisterFormData {
     name: string;
     email: string;
     password: string;
-    distributionMode: 'baseline' | 'flex';
     monthly_income: number;
     cycle_type: 'monthly';
 }
