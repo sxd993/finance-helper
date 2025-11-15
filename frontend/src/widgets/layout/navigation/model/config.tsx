@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { Home, Mail, Coins, BanknoteArrowDown, User2 } from 'lucide-react';
+import { Home, Mail, Coins, BanknoteArrowDown, Settings2 } from 'lucide-react';
 
 interface NavigationItem {
     id: string;
@@ -35,9 +35,9 @@ export const navigationItems: NavigationItem[] = [
         icon: <Coins className="w-6 h-6 mb-1" />,
     },
     {
-        id: 'profile',
-        path: '/profile',
-        label: 'Профиль',
-        icon: <User2 className="w-6 h-6 mb-1" />,
+        id: 'settings',
+        path: '/settings',
+        label: 'Настройки',
+        icon: <Settings2 className="w-6 h-6 mb-1" />,
     },
 ];
