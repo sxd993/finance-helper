@@ -1,1 +1,1 @@
-export { ChangeIncomeFeature } from "./ui/ChangeIncomeFeature";
+export { ChangeIncome } from "./ui/ChangeIncome";

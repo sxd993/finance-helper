@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-
-import { useUser } from '@/entities/user';
 import { Header } from '@/widgets/layout/header';
 import { Navigation } from '@/widgets/layout/navigation';
+import { useUser } from '@/shared/hooks/useUser';
 
 interface ProtectedRouteProps {
   children?: ReactNode;

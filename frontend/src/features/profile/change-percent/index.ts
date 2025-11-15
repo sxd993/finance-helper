@@ -1,1 +1,1 @@
-export { ChangePercentFeature } from "./ui/ChangePercentFeature";
+export { ChangePercent } from "./ui/ChangePercent";

@@ -30,7 +30,7 @@ const distributionPresets = [
   },
 ];
 
-export const ChangePercentFeature = () => {
+export const ChangePercent = () => {
   return (
     <div className="rounded-2xl bg-slate-50">
       <SectionTitle

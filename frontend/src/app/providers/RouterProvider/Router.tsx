@@ -75,7 +75,7 @@ export const Router = createBrowserRouter([
       {
         index: true,
         lazy: async () => {
-          const { SettingsPage } = await import('@pages/settings');
+          const { SettingsPage } = await import('@/pages/settings');
           return { Component: SettingsPage };
         },
       },

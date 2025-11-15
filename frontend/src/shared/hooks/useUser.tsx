@@ -1,6 +1,7 @@
-import type { User } from "./types"
+import { userApi } from "../api/userApi"
+import type { User } from "@/entities/user"
 import { useQuery } from "@tanstack/react-query"
-import { UserApi } from "../api/UserApi"
+
 
 interface UseUserResult {
     user: User | null,
@@ -9,11 +10,11 @@ interface UseUserResult {
     error: unknown
 }
 
-// Хук для получения текущего пользователя
+
 export const useUser = (): UseUserResult => {
     const { data, isLoading, error } = useQuery({
         queryKey: ['user'],
-        queryFn: UserApi,
+        queryFn: userApi,
         staleTime: 30 * 60 * 1000, // 30 минут
         retry: false,
     })

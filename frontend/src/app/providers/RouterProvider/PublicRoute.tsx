@@ -1,6 +1,6 @@
+import { useUser } from '@/shared/hooks/useUser';
 import type { ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useUser } from '@/entities/user';
 
 interface PublicRouteProps {
   children?: ReactNode;

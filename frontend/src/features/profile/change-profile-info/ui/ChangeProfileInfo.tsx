@@ -1,8 +1,11 @@
+import { useUser } from "@/shared/hooks/useUser";
 import { Button } from "@/shared/ui/Button";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { UserRound } from "lucide-react";
 
-export const ChangeProfileInfoFeature = () => {
+export const ChangeProfileInfo = () => {
+  const { user } = useUser()
+
   return (
     <div className="rounded-2xl">
       <SectionTitle title="Профиль" icon={<UserRound size={20} className="text-primary" />} />
@@ -11,7 +14,7 @@ export const ChangeProfileInfoFeature = () => {
           <label className="text-xs uppercase tracking-wide text-slate-500">Имя</label>
           <input
             type="text"
-            defaultValue="Владимир"
+            defaultValue={user?.name}
             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-primary"
           />
         </div>
@@ -20,7 +23,7 @@ export const ChangeProfileInfoFeature = () => {
           <label className="text-xs uppercase tracking-wide text-slate-500">Логин</label>
           <input
             type="text"
-            defaultValue="volodya123"
+            defaultValue={user?.login}
             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-primary"
           />
         </div>
@@ -29,7 +32,7 @@ export const ChangeProfileInfoFeature = () => {
           <label className="text-xs uppercase tracking-wide text-slate-500">Email</label>
           <input
             type="email"
-            defaultValue="volodya123@mail.ru"
+            defaultValue={user?.email}
             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-primary"
           />
         </div>

@@ -2,7 +2,7 @@ import { Button } from "@/shared/ui/Button";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { Wallet } from "lucide-react";
 
-export const ChangeIncomeFeature = () => {
+export const ChangeIncome = () => {
   return (
     <div className="rounded-2xl mb-5">
       <SectionTitle title="Текущий доход" icon={<Wallet size={20} className="text-primary" />} />

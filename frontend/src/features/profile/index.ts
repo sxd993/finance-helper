@@ -1,3 +1,3 @@
-export { ChangePercentFeature } from "./change-percent";
-export { ChangeIncomeFeature } from "./change-income";
-export { ChangeProfileInfoFeature } from "./change-profile-info";
+export { ChangePercent } from "./change-percent";
+export { ChangeIncome } from "./change-income";
+export { ChangeProfileInfo } from "./change-profile-info";

@@ -1,1 +1,1 @@
-export { ChangeProfileInfoFeature } from "./ui/ChangeProfileInfoFeature";
+export { ChangeProfileInfo } from "./ui/ChangeProfileInfo";
