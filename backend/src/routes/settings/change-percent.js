@@ -1,4 +1,12 @@
-router.patch('/settings/change-percent', requireAuth, async (req, res) => {
+import express from 'express';
+import { requireAuth } from '../../utils/auth.js';
+import { DEFAULT_DISTRIBUTION } from '../../utils/constants.js';
+import { toNumber } from '../../utils/numbers.js';
+import { User } from '../../db/index.js';
+
+const router = express.Router();
+
+router.patch('/', requireAuth, async (req, res) => {
   const {
     distribution_mode: distributionMode = 'baseline',
     percent_necessary,
@@ -51,3 +59,5 @@ router.patch('/settings/change-percent', requireAuth, async (req, res) => {
     res.status(500).json({ message: 'Не удалось обновить схему распределения' });
   }
 });
+
+export default router;

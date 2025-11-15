@@ -1,10 +1,10 @@
 import { userApi } from "../api/userApi"
 import type { User } from "@/entities/user"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 
 interface UseUserResult {
-    user: User | null,
+    user: User,
     isAuthenticated: boolean
     isLoading: boolean,
     error: unknown
@@ -12,16 +12,19 @@ interface UseUserResult {
 
 
 export const useUser = (): UseUserResult => {
-    const { data, isLoading, error } = useQuery({
+    const queryClient = useQueryClient()
+    const { data, isLoading, error } = useQuery<User>({
         queryKey: ['user'],
         queryFn: userApi,
         staleTime: 30 * 60 * 1000, // 30 минут
         retry: false,
+        initialData: () => queryClient.getQueryData<User>(['user']),
     })
     return {
-        user: data ?? null,
-        isAuthenticated: !!data && !error,
+        user: data!,
+        isAuthenticated: true,
         isLoading,
         error
     }
+
 }

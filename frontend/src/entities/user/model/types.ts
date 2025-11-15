@@ -2,7 +2,7 @@ export interface User {
   id: number;
   login: string;
   name: string;
-  monthly_income: number;
+  monthlyIncome: number;
   email: string;
   currency: string;
   percent_necessary: number;

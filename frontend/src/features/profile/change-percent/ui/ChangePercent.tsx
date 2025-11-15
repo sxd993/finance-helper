@@ -32,7 +32,7 @@ const distributionPresets = [
 
 export const ChangePercent = () => {
   return (
-    <div className="rounded-2xl bg-slate-50">
+    <div className="rounded-2xl bg-slate-50 mb-6">
       <SectionTitle
         title="Доли распределения"
         icon={<PieChart size={20} className="text-primary" />}
