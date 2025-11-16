@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import {
   getTodayDateOnly,
   RESETTABLE_TYPES,
+  RESET_BEHAVIOR_BY_TYPE,
   shouldResetCycle,
 } from './utils.js';
 import {
@@ -12,7 +13,6 @@ import {
   Convert,
   Remainder,
 } from '../../db/index.js';
-import { getUserConverts } from '../../routes/converts/utils/get-user-converts.js';
 import { recalcUserTypeLimitsAndResetDistributed } from '../../routes/converts/utils/type-limits.js';
 
 /* 
@@ -110,14 +110,6 @@ async function saveRemainders(userId, cycleId, convertSnapshots, transaction) {
 Функция сброса цикла
 */
 async function resetConverts(userId, transaction) {
-  const rows = await getUserConverts(userId);
-  const targetAmountById = new Map(
-    rows.map((convert) => [
-      convert.id,
-      Number.parseFloat(convert.targetAmount ?? 0) || 0,
-    ])
-  );
-
   const converts = await Convert.findAll({
     where: {
       userId,
@@ -135,21 +127,24 @@ async function resetConverts(userId, transaction) {
   const snapshots = [];
 
   for (const convert of converts) {
+    const behavior = RESET_BEHAVIOR_BY_TYPE[convert.typeCode];
+    if (!behavior) {
+      throw new Error(
+        `Reset behavior is not defined for type "${convert.typeCode}". Update RESET_BEHAVIOR_BY_TYPE to reflect all convert types.`
+      );
+    }
+
     const amount = Number(convert.initialAmount || 0);
     if (amount > 0) {
       snapshots.push({ typeCode: convert.typeCode, amount });
     }
 
-    const targetAmount =
-      targetAmountById.get(convert.id) ??
-      (Number.parseFloat(convert.targetAmount ?? 0) || 0);
+    if (behavior.deleteConvert) {
+      await convert.destroy({ transaction });
+      continue;
+    }
 
-    await convert.update(
-      {
-        initialAmount: targetAmount,
-      },
-      { transaction }
-    );
+    // For other types we keep convert as is; limits are reset via convert_type_limits table
   }
   return snapshots;
 }

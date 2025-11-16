@@ -5,6 +5,7 @@ import {
   ConvertType,
   ConvertTypeLimit,
 } from '../../../db/index.js';
+import { RESETTABLE_TYPES } from '../../../features/cycles/utils.js';
 
 const PERCENT_KEY_BY_TYPE = {
   important: 'percentImportant',
@@ -19,6 +20,10 @@ const LIMIT_COLUMN_BY_TYPE = {
   saving: 'target_amount',
   investment: 'initial_amount',
 };
+
+const RESETTABLE_LIMIT_TYPES = new Set(
+  RESETTABLE_TYPES.filter((code) => Boolean(code) && code !== 'wish')
+);
 
 const toNumberOrZero = (value) => {
   const num = Number(value);
@@ -43,10 +48,10 @@ const snakeToCamel = (key) => key.replace(/_([a-z])/g, (_, letter) => letter.toU
 const shouldApplyTypeLimit = (convertType) =>
   Boolean(convertType?.isReset && convertType?.hasLimit && convertType?.canSpend);
 
-function calculateLimitValue(user, typeCode, convertType) {
+function calculateLimitValue(user, typeCode, convertType, { force = false } = {}) {
   if (!user) return null;
 
-  if (!shouldApplyTypeLimit(convertType)) {
+  if (!force && !shouldApplyTypeLimit(convertType)) {
     return null;
   }
 
@@ -198,10 +203,10 @@ async function recalcUserTypeLimitsAndResetDistributed(user, { transaction } = {
   });
 
   for (const type of types) {
-    if (!shouldApplyTypeLimit(type)) {
+    if (!RESETTABLE_LIMIT_TYPES.has(type.code)) {
       continue;
     }
-    const newLimit = calculateLimitValue(user, type.code, type);
+    const newLimit = calculateLimitValue(user, type.code, type, { force: true });
     if (newLimit == null) continue;
 
     // reset distributed to 0 on new cycle

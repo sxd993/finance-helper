@@ -1,4 +1,12 @@
-export const RESETTABLE_TYPES = ['important', 'wish'];
+export const RESET_BEHAVIOR_BY_TYPE = Object.freeze({
+  important: { deleteConvert: true },
+  wish: { deleteConvert: true }, // legacy alias for wishes
+  wishes: { deleteConvert: true },
+  saving: { deleteConvert: false },
+  investment: { deleteConvert: false },
+});
+
+export const RESETTABLE_TYPES = ['important', 'wish', 'wishes', 'saving', 'investment'];
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function getTodayDateOnly() {
