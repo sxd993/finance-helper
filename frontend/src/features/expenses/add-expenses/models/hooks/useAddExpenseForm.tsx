@@ -3,12 +3,10 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useAddExpenseMutation } from "./useAddExpenseMutation";
 import type { Expense } from "@/entities/expense";
-import {
-  DEFAULT_EXPENSE_ICON_COLOR,
-  DEFAULT_EXPENSE_ICON_NAME,
-} from "../../../../ui/pick-icons";
+import { DEFAULT_EXPENSE_ICON_COLOR, DEFAULT_EXPENSE_ICON_NAME } from "../../../../ui/pick-icons";
 import { selectIconPickerState, resetIconPicker } from "../../../../ui/pick-icons";
 import { getConvertTitleOptions } from "../../lib/getConvertTitleOptions";
+import { getConvertTypeOptions } from "../../lib/getConvertTypeOptions";
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
 import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
 import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits";
@@ -75,6 +73,7 @@ export const useAddExpenseForm = () => {
   const convertType = watch("convert_type");
 
   const { userConvertsLimits } = useUserConvertsLimits();
+  const convertTypeOptions = getConvertTypeOptions(userConvertsLimits);
   const convertTitleOptions = getConvertTitleOptions(converts, convertType);
 
   const onSubmit = handleSubmit(onAddExpense);
@@ -83,6 +82,6 @@ export const useAddExpenseForm = () => {
     register,
     onSubmit,
     convertTitleOptions,
-    userConvertsLimits
+    convertTypeOptions,
   };
 };

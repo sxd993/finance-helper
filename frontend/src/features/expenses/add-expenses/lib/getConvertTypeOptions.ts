@@ -1,9 +1,20 @@
-import type { FilterOption } from "@/features/expenses/expenses-filters/model/types/type";
-import type { ConvertGroup } from "@/entities/convert/model/types";
-import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types";
+import { formatTypeCode } from "@/entities/convert"
+import type { FilterOption } from "@/features/expenses/expenses-filters/model/types/type"
+import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
 
-export const getConvertTypeOptions = (convert_limits: UserConvertLimit | null): FilterOption[] => {
-    if (!convert_limits) return [];
+const BLOCKED_TYPE_CODES = new Set(["saving", "investment"])
 
-    return c
-};
+export const getConvertTypeOptions = (
+  limits: UserConvertLimit[] | null
+): FilterOption[] => {
+  if (!limits) {
+    return []
+  }
+
+  return limits
+    .filter((limit) => Boolean(limit?.typeCode) && !BLOCKED_TYPE_CODES.has(limit.typeCode))
+    .map((limit) => ({
+      value: limit.typeCode,
+      label: formatTypeCode(limit.typeCode),
+    }))
+}
