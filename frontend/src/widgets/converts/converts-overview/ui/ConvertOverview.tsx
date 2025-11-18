@@ -19,7 +19,11 @@ export const ConvertOverview = () => {
             />
 
             {filteredConvert?.map(c => (
-                <ConvertOverviewCard convert={c} />
+                <ConvertOverviewCard
+                    key={c.typeCode}
+                    convert={c}
+                    isHasRemainder={c.remainderAmount === 0}
+                />
             ))}
         </>
 

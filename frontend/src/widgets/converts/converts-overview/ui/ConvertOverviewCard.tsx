@@ -8,12 +8,14 @@ import { Link } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store"
 import { setSourceType } from "@/features/converts/replenish-convert/store"
+import { ConvertsOverviewEmpty } from "./states/ConvertsOverviewEmpty"
 
 interface Props {
     convert: UserConvertLimit
+    isHasRemainder: boolean
 }
 
-export const ConvertOverviewCard = ({ convert }: Props) => {
+export const ConvertOverviewCard = ({ convert, isHasRemainder }: Props) => {
     const { percentage, remainderAmount, title, typeCode, limitAmount, progressColor } = useConvertCardMetrics({ convert })
     const hasRemainder = useHasConvertRemainder(typeCode)
     const color = progressColor(typeCode)
@@ -21,6 +23,14 @@ export const ConvertOverviewCard = ({ convert }: Props) => {
     const createConvertPath = '/converts/add-converts'
     const canSpend = convert.typeCode === 'wishes' || convert.typeCode === 'important'
     const dispatch = useDispatch<AppDispatch>()
+
+    if (isHasRemainder) {
+        return (<ConvertsOverviewEmpty
+            resetInDays={5}
+            type_code={convert.typeCode}
+        />)
+
+    }
 
     const handleReplenishNavigate = () => {
         if (typeCode === 'saving' || typeCode === 'investment') {
