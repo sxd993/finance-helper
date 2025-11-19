@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store"
 import { setSourceType } from "@/features/converts/replenish-convert/store"
 import { ConvertsOverviewEmpty } from "./states/ConvertsOverviewEmpty"
+import { useRemainingDays } from "@/features/cycles"
 
 interface Props {
     convert: UserConvertLimit
@@ -16,7 +17,10 @@ interface Props {
 }
 
 export const ConvertOverviewCard = ({ convert, isHasRemainder }: Props) => {
+
     const { percentage, remainderAmount, title, typeCode, limitAmount, progressColor } = useConvertCardMetrics({ convert })
+    const { remainingDays } = useRemainingDays();
+
     const hasRemainder = useHasConvertRemainder(typeCode)
     const color = progressColor(typeCode)
     const replenishPath = `/converts/replenish`
@@ -25,11 +29,12 @@ export const ConvertOverviewCard = ({ convert, isHasRemainder }: Props) => {
     const dispatch = useDispatch<AppDispatch>()
 
     if (isHasRemainder) {
-        return (<ConvertsOverviewEmpty
-            resetInDays={5}
-            type_code={convert.typeCode}
-        />)
-
+        return (
+            <ConvertsOverviewEmpty
+                resetInDays={remainingDays}
+                type_code={convert.typeCode}
+            />
+        )
     }
 
     const handleReplenishNavigate = () => {
@@ -80,7 +85,7 @@ export const ConvertOverviewCard = ({ convert, isHasRemainder }: Props) => {
                                         onClick={canSpend ? undefined : handleReplenishNavigate}
                                         className="text-md font-semibold text-black rounded-lg"
                                     >
-                                        <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg ≈">
+                                        <span className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-100 border border-emerald-200 rounded-lg">
                                             {canSpend ? 'Можно создать конверты' : 'Можно пополнить конверты'}
                                         </span>
                                     </Link>
@@ -89,7 +94,7 @@ export const ConvertOverviewCard = ({ convert, isHasRemainder }: Props) => {
                             </div>
                             <span className="text-gray-600 bg-gray-50 px-2 py-0.5 rounded-md flex items-center gap-1.5  max-w-1/2 text-wrap">
                                 <CalendarDays className="w-4 h-4" />
-                                {canSpend ? 'Сброс через 5 дней' : 'Пополнение через 5 дней'}
+                                {canSpend ? `Сброс через ${remainingDays} дней` : `Пополнение через ${remainingDays} дней`}
                             </span>
                         </div>
                     </div>

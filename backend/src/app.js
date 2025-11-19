@@ -7,6 +7,7 @@ import convertsRoutes from './routes/converts/index.js';
 import expensesRoutes from './routes/expenses/index.js';
 import settingsRoutes from './routes/settings/index.js';
 import remaindersRoutes from './routes/remainders/index.js';
+import cyclesRoutes from './routes/cycles/index.js';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/converts', convertsRoutes);
 app.use('/api/expenses', expensesRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/remainders', remaindersRoutes);
+app.use('/api/cycles', cyclesRoutes);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
