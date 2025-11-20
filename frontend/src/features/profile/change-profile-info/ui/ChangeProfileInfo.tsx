@@ -76,7 +76,7 @@ export const ChangeProfileInfo = () => {
 
         <div className="space-y-2">
           <label className="text-xs uppercase tracking-wide text-slate-500">Ежемесячный доход</label>
-          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 ring-inset focus-within:border-primary">
+          <div className="flex w-full items-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 ring-inset focus-within:border-primary">
             <input
               type="number"
               step="0.01"
@@ -84,20 +84,20 @@ export const ChangeProfileInfo = () => {
                 min: { value: 0, message: "Доход не может быть отрицательным" },
               })}
               disabled={isDisabled}
-              className="w-full border-none bg-transparent text-right text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:bg-transparent"
+              className="w-full border-none bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:bg-transparent"
             />
-            <span className="text-sm text-slate-500">₽</span>
           </div>
           {errors.monthlyIncome && (
             <p className="text-xs text-red-500">{errors.monthlyIncome.message}</p>
           )}
-          {successMessage && (
-            <p className="mt-4 whitespace-pre-line text-sm text-emerald-600 text-center">
-              {successMessage}
-            </p>
-          )}
         </div>
       </div>
+
+      {successMessage && (
+        <p className="mt-4 whitespace-pre-line text-sm text-emerald-600 text-center">
+          {successMessage}
+        </p>
+      )}
 
       <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
         <Button

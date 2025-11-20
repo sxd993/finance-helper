@@ -5,10 +5,15 @@ export type GetUserExpensesParams = {
     convert_type?: string
 }
 
+export type GetUserExpensesResponse = {
+    expenses: Expense[]
+    current_cycle_spent: number
+}
+
 export const GetUserExpenses = async (
     filters?: GetUserExpensesParams
-): Promise<Expense[]> => {
-    const response = await client.get<Expense[]>("/expenses/get-expenses", {
+): Promise<GetUserExpensesResponse> => {
+    const response = await client.get<GetUserExpensesResponse>("/expenses/get-expenses", {
         params: filters,
     })
 

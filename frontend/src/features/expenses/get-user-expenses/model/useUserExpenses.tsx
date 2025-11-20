@@ -2,20 +2,23 @@ import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/providers"
-import type { Expense } from "@/entities/expense/model/types"
-import { GetUserExpenses } from "../api/GetUserExpenses"
+import { GetUserExpenses, type GetUserExpensesResponse } from "../api/GetUserExpenses"
 import { groupExpensesByDate } from "../lib/groupExpensesByDate"
+import { formatPrice } from "@/shared/utils/formatPrice"
 
 export const useUserExpenses = () => {
 
     const convertType = useSelector((state: RootState) => state.expenses_filters.convert_type.value)
 
-    const { data = [], error, isLoading } = useQuery<Expense[]>({
+    const { data, error, isLoading } = useQuery<GetUserExpensesResponse>({
         queryKey: ["userExpenses", convertType],
         queryFn: () => GetUserExpenses({ convert_type: convertType }),
     })
 
-    const expenseGroups = useMemo(() => groupExpensesByDate(data), [data])
+    const expenses = data?.expenses ?? []
+    const currentCycleSpent = formatPrice(data?.current_cycle_spent)
 
-    return { expenses: data, expenseGroups, error, isLoading }
+    const expenseGroups = useMemo(() => groupExpensesByDate(expenses), [expenses])
+
+    return { expenses, expenseGroups, currentCycleSpent, error, isLoading }
 }

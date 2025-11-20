@@ -3,22 +3,25 @@
 > Все роуты защищены мидлварой `requireAuth` и доступны только после успешной аутентификации.
 
 ## GET `/expenses/get-expenses`
-Возвращает список трат пользователя, отсортированный по дате (по убыванию). Принимает необязательный query-параметр `convert_type`.
+Возвращает список трат пользователя, отсортированный по дате (по убыванию), а также общую сумму расходов за текущий (последний незакрытый) цикл. Принимает необязательный query-параметр `convert_type`.
 
 **Response 200**
 ```json
-[
-  {
-    "name": "Coffee",
-    "convert_name": "Повседневные расходы",
-    "convert_type": "basic",
-    "convert_title": "Базовые",
-    "sum": 180,
-    "date": 1700000000000,
-    "icon_name": "coffee",
-    "icon_color": "#A76D22"
-  }
-]
+{
+  "expenses": [
+    {
+      "name": "Coffee",
+      "convert_name": "Повседневные расходы",
+      "convert_type": "basic",
+      "convert_title": "Базовые",
+      "sum": 180,
+      "date": 1700000000000,
+      "icon_name": "coffee",
+      "icon_color": "#A76D22"
+    }
+  ],
+  "current_cycle_spent": 180
+}
 ```
 
 ## POST `/expenses/add-expense`

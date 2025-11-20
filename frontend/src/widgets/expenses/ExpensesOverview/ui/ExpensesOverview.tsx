@@ -1,7 +1,8 @@
+import { useUserExpenses } from "@/features/expenses/get-user-expenses/model/useUserExpenses";
 import { Banknote } from "lucide-react";
 
 export const ExpensesOverview = () => {
-    
+    const { currentCycleSpent } = useUserExpenses();
     return (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all">
             <div className="flex items-center space-x-3 mb-3">
@@ -13,7 +14,7 @@ export const ExpensesOverview = () => {
                 </h3>
             </div>
             <div className="text-3xl font-semibold text-gray-900 leading-tight">
-                23 500 ₽
+                {currentCycleSpent}
             </div>
         </div>
     );

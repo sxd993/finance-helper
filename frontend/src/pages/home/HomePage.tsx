@@ -2,7 +2,6 @@ import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
 import { SwitchConvertTabs } from "@/features/ui/switch-convert-tabs/ui/SwitchConvertTabs";
 import { ConvertOverview } from "@/widgets/converts/converts-overview/ui/ConvertOverview";
 import { ConvertList } from "@/widgets/converts/converts-list/ui/ConvertList";
-import { QuickActionGrids } from "@/features/ui/quick-actions";
 
 export const HomePage = () => {
   useScrollToTop();
@@ -12,7 +11,6 @@ export const HomePage = () => {
       <SwitchConvertTabs />
       <ConvertOverview />
       <ConvertList />
-      <QuickActionGrids />
     </div>
   );
 };

@@ -1,10 +1,7 @@
 import express from 'express';
+import { Op } from 'sequelize';
 
-import {
-  Expense,
-  Convert,
-  ConvertType,
-} from '../../db/index.js';
+import { Expense, ConvertType, Cycle } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 
 const router = express.Router();
@@ -50,7 +47,37 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
       };
     });
 
-    return res.json(result);
+    const activeCycle = await Cycle.findOne({
+      where: { userId, isClosed: false },
+      // Берём самую свежую запись, если по пользователю есть несколько открытых циклов
+      order: [['id', 'DESC']],
+      attributes: ['startDate', 'endDate'],
+    });
+
+    let currentCycleSpent = 0;
+
+    if (activeCycle) {
+      const cycleStart = new Date(activeCycle.startDate).getTime();
+      const cycleEnd = activeCycle.endDate
+        ? new Date(activeCycle.endDate).getTime()
+        : Date.now();
+
+      const spent = await Expense.sum('sum', {
+        where: {
+          userId,
+          date: {
+            [Op.between]: [cycleStart, cycleEnd],
+          },
+        },
+      });
+
+      currentCycleSpent = Number(spent ?? 0);
+    }
+
+    return res.json({
+      expenses: result,
+      current_cycle_spent: currentCycleSpent,
+    });
   } catch (error) {
     console.error('[get-expenses] failed to fetch expenses', error);
     return res.status(500).json({ message: 'Не удалось получить список трат' });
