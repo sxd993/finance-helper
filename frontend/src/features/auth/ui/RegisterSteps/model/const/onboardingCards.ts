@@ -1,6 +1,11 @@
-import type { OnboardingCardList } from '@shared/types/onboarding'
+export interface OnboardingCard {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+}
 
-export const onboardingCards: OnboardingCardList = [
+export const onboardingCards: OnboardingCard[] = [
     {
         id: 1,
         title: "Что делает Finance Helper?",
@@ -17,7 +22,7 @@ export const onboardingCards: OnboardingCardList = [
         id: 3,
         title: "Циклы",
         description: "Финансы живут по циклам — каждый месяц деньги распределяются по конвертам, а в конце месяца система фиксирует остатки. Так ты всегда знаешь, сколько потратил и что осталось.",
-        image: "https://img.icons8.com/?size=1200&id=DILfEi3J82Mb&format=png"
+        image: "https://cdn-icons-png.flaticon.com/512/3580/3580066.png"
     },
     {
         id: 4,

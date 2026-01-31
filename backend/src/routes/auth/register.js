@@ -77,28 +77,27 @@ router.post('/', async (req, res) => {
       { transaction }
     );
 
-    // Создаём лимиты по типам для saving/investment исходя из процентов (если задан доход)
+    // Создаём лимиты по всем типам (даже если доход не задан — лимит 0)
     try {
       const monthlyIncomeNum = Number(user.monthlyIncome) || 0;
-      if (monthlyIncomeNum > 0) {
-        const savingPercent = Number(user.percentSaving) || 0;
-        const investmentPercent = Number(user.percentInvestment) || 0;
+      const percentByType = {
+        important: Number(user.percentImportant) || 0,
+        wishes: Number(user.percentWishes) || 0,
+        saving: Number(user.percentSaving) || 0,
+        investment: Number(user.percentInvestment) || 0,
+      };
 
-        const savingLimit = Number(((monthlyIncomeNum * savingPercent) / 100).toFixed(2));
-        const investmentLimit = Number(((monthlyIncomeNum * investmentPercent) / 100).toFixed(2));
-
-        // Вставляем/обновляем строки для saving и investment
-        await Promise.all([
-          ConvertTypeLimit.upsert(
-            { userId: user.id, typeCode: 'saving', limitAmount: savingLimit },
+      const typeCodes = ['important', 'wishes', 'saving', 'investment'];
+      await Promise.all(
+        typeCodes.map((typeCode) => {
+          const percent = percentByType[typeCode] ?? 0;
+          const limitAmount = Number(((monthlyIncomeNum * percent) / 100).toFixed(2));
+          return ConvertTypeLimit.upsert(
+            { userId: user.id, typeCode, limitAmount, distributedAmount: 0 },
             { transaction }
-          ),
-          ConvertTypeLimit.upsert(
-            { userId: user.id, typeCode: 'investment', limitAmount: investmentLimit },
-            { transaction }
-          ),
-        ]);
-      }
+          );
+        })
+      );
     } catch (e) {
       console.warn('Failed to create initial type limits for user', e);
     }

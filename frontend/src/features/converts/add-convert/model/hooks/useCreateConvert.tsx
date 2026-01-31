@@ -21,7 +21,13 @@ export const useCreateConvert = () => {
         return CreateConvertMutation.mutateAsync(data);
     }
 
-    const invalidateQueries = () => queryClient.invalidateQueries();
+    const invalidateQueries = async () => {
+        await Promise.all([
+            queryClient.refetchQueries({ queryKey: ['converts'] }),
+            queryClient.refetchQueries({ queryKey: ['limits'] }),
+            queryClient.refetchQueries({ queryKey: ['converts', 'limits'] }),
+        ]);
+    };
 
     return {
         onCreateConverts,

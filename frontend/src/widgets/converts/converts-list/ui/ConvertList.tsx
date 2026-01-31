@@ -22,7 +22,7 @@ export const ConvertList = () => {
             )}
 
             {isEmpty ? (
-                <EmptyConverts />
+                <EmptyConverts typeCode={convert_type} />
             ) : (
                 filteredConverts.map((convert) => (
                     <ConvertCard key={convert.id} convert={convert} />

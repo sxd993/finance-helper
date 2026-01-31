@@ -1,8 +1,8 @@
 import type { RootState } from "@/app/providers"
 import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits"
+import { useSelector } from "react-redux"
 import { SectionTitle } from "@/shared/ui/SectionTItle"
 import { Mail } from "lucide-react"
-import { useSelector } from "react-redux"
 import { ConvertOverviewCard } from "./ConvertOverviewCard"
 
 export const ConvertOverview = () => {

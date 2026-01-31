@@ -1,7 +1,9 @@
+
+
 interface SectionTitleProps {
     title: string,
     subtitle?: string,
-    icon?: any
+    icon: React.ReactNode
 }
 
 export const SectionTitle = ({ title, icon }: SectionTitleProps) => {

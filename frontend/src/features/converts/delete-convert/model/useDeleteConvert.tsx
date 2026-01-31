@@ -8,12 +8,17 @@ export const useDeleteConvert = () => {
     const mutation = useMutation({
         mutationKey: ["delete-convert"],
         mutationFn: DeleteConvert,
-        onSuccess: () => {
-            queryClient.invalidateQueries();
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.refetchQueries({ queryKey: ['converts'] }),
+                queryClient.refetchQueries({ queryKey: ['limits'] }),
+                queryClient.refetchQueries({ queryKey: ['converts', 'limits'] }),
+            ]);
             toast.success("Конверт успешно удален");
         },
-        onError: () => {
-            toast.error('Конверт не был создан')
+        onError: (error) => {
+            toast.error(error?.response.data.message || "Ошибка при удалении конверта");
+            console.log(error)
         }
     });
 

@@ -147,34 +147,32 @@ async function getTypeLimitsMap({ userId, user, transaction }) {
   return Object.fromEntries(entries);
 }
 
-async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transaction }) {
+async function getAllocatedAmount(userId, typeCode, { excludeConvertId, transaction } = {}) {
   const column = LIMIT_COLUMN_BY_TYPE[typeCode];
   if (!column) {
     return 0;
   }
 
-  const where = { userId, typeCode };
+  const conditions = ['user_id = :userId', 'type_code = :typeCode'];
+  const replacements = { userId, typeCode };
+
   if (excludeConvertId) {
-    where.id = { [Op.ne]: excludeConvertId };
+    conditions.push('id != :excludeConvertId');
+    replacements.excludeConvertId = excludeConvertId;
   }
 
-  const result = await Convert.findOne({
-    where,
-    attributes: [
-      [
-        sequelize.fn(
-          'COALESCE',
-          sequelize.fn('SUM', sequelize.col(`Convert.${column}`)),
-          0,
-        ),
-        'total',
-      ],
-    ],
-    raw: true,
+  const query = `
+    SELECT COALESCE(SUM(${column}), 0) AS total
+    FROM converts
+    WHERE ${conditions.join(' AND ')}
+  `;
+
+  const [rows] = await sequelize.query(query, {
+    replacements,
     transaction,
   });
 
-  return toNumberOrZero(result?.total);
+  return toNumberOrZero(rows?.[0]?.total);
 }
 
 async function updateDistributedAmount(userId, typeCode, { transaction, value } = {}) {
