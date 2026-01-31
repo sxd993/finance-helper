@@ -1,0 +1,1 @@
+export { useRemainingDays } from "./get-remaining-days/model/hooks/useRemainingDays";

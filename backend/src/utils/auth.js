@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken';
 import { User } from '../db/index.js';
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your-secret-key-here-change-in-production';
-const ACCESS_TOKEN_EXPIRE_HOURS = Number(process.env.ACCESS_TOKEN_EXPIRE_HOURS) || 1;
+const PERMANENT_TOKEN_MAX_AGE_MS = Number(process.env.PERMANENT_TOKEN_MAX_AGE_MS)
+  || 10 * 365 * 24 * 60 * 60 * 1000; // 10 years
 
 const normalizeNumber = (value) => (typeof value === 'number' ? value : Number(value || 0));
 
@@ -47,7 +48,6 @@ function createToken(login) {
   return jwt.sign(
     { sub: login },
     SECRET_KEY,
-    { expiresIn: `${ACCESS_TOKEN_EXPIRE_HOURS}h` },
   );
 }
 
@@ -72,7 +72,7 @@ function setAuthCookie(res, token) {
     httpOnly: true,
     secure: (process.env.ENV || 'development') === 'production',
     sameSite: 'strict',
-    maxAge: ACCESS_TOKEN_EXPIRE_HOURS * 60 * 60 * 1000,
+    maxAge: PERMANENT_TOKEN_MAX_AGE_MS,
     path: '/',
   });
 }

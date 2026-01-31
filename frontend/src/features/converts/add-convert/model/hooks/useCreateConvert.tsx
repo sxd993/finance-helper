@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { CreateConvert } from "../../api/CreateConvert"
 import type { CreateConvertPayload } from "../types"
+import { toast } from "sonner";
 
 export const useCreateConvert = () => {
     const queryClient = useQueryClient();
@@ -8,6 +9,12 @@ export const useCreateConvert = () => {
     const CreateConvertMutation = useMutation({
         mutationKey: ['add-convert'],
         mutationFn: CreateConvert,
+        onSuccess: () => {
+            toast.success('Конверт успешно создан')
+        },
+        onError: (error) => {
+            toast.error(error.response.data.message)
+        }
     })
 
     const onCreateConverts = async (data: CreateConvertPayload) => {

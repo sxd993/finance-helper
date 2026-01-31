@@ -9,17 +9,24 @@ export const ConvertOverview = () => {
     const typeCode = useSelector((state: RootState) => state.convert_tabs.activeTab)
     const { userConvertsLimits } = useUserConvertsLimits();
     const filteredConvert = userConvertsLimits?.filter(c => c.typeCode === typeCode) ?? null;
+    const hasOverviewContent = filteredConvert?.some(c => c.remainderAmount !== 0) ?? false;
 
 
     return (
         <>
-            <SectionTitle
-                icon={<Mail h-4 w-4 />}
-                title="Общая информация"
-            />
+            {hasOverviewContent && (
+                <SectionTitle
+                    icon={<Mail h-4 w-4 />}
+                    title="Общая информация"
+                />
+            )}
 
             {filteredConvert?.map(c => (
-                <ConvertOverviewCard convert={c} />
+                <ConvertOverviewCard
+                    key={c.typeCode}
+                    convert={c}
+                    isHasRemainder={c.remainderAmount === 0}
+                />
             ))}
         </>
 

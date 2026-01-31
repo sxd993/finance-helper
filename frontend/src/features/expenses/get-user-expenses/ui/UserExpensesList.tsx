@@ -11,7 +11,7 @@ export const UserExpensesList = () => {
     const isEmpty = expenseGroups.length === 0
 
     if (isEmpty) {
-        return <UserExpensesListEmpty/>
+        return <UserExpensesListEmpty />
     }
 
     return (
