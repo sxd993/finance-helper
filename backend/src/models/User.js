@@ -77,6 +77,11 @@ const initUser = (sequelize, DataTypes) => {
       foreignKey: 'userId',
     });
 
+    User.hasMany(models.Expense, {
+      as: 'expenses',
+      foreignKey: 'userId',
+    });
+
     User.hasMany(models.Remainder, {
       as: 'remainders',
       foreignKey: 'userId',

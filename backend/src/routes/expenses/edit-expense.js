@@ -1,9 +1,10 @@
 import express from 'express';
-import { sequelize, Expense, Convert } from '../../db/index.js';
+import { sequelize, Expense } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { parseExpensePayload, validateExpensePayload } from './utils/payload.js';
 import { resolveConvertAndType } from './utils/converts.js';
 import { buildExpenseResponse } from './utils/formatter.js';
+import { getTransactionsSummary } from '../converts/utils/get-user-converts.js';
 
 const router = express.Router();
 
@@ -73,6 +74,38 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
         message: 'С этого типа конверта нельзя списывать средства',
         code: 'TYPE_NOT_SPENDABLE',
       });
+    }
+
+    if (convertResolution.convertType?.hasLimit) {
+      const summaryMap = await getTransactionsSummary(
+        userId,
+        [convertResolution.convert.id],
+        { transaction }
+      );
+
+      const summary = summaryMap.get(convertResolution.convert.id);
+      const initialAmount = Number.parseFloat(convertResolution.convert.initialAmount ?? 0) || 0;
+      const balance =
+        summary && Number.isFinite(summary.balance)
+          ? summary.balance
+          : initialAmount;
+
+      const requestedSum = Number(payload.sum);
+      const currentExpenseSum = Number(expense.sum) || 0;
+      const isSameConvert =
+        expense.convertName === convertResolution.convert.name
+        && expense.convertType === convertResolution.convertTypeCode;
+      const available = isSameConvert ? balance + currentExpenseSum : balance;
+
+      if (requestedSum - available > 1e-6) {
+        await transaction.rollback();
+        return res.status(400).json({
+          message: 'Сумма траты превышает доступный остаток конверта',
+          code: 'EXPENSE_EXCEEDS_BALANCE',
+          available: Number(available.toFixed(2)),
+          requested: Number(requestedSum.toFixed(2)),
+        });
+      }
     }
 
     const expenseDate = payload.date ?? Number(expense.date);
