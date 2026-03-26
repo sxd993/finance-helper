@@ -10,7 +10,7 @@ export const useHasConvertRemainder = (typeCode: string): boolean => {
       return false;
     }
     return userConvertsLimits.some(
-      (convert) => convert.typeCode === typeCode && convert.remainderAmount > 0,
+      (convert) => convert.typeCode === typeCode && (convert.availableToSpend ?? 0) > 0,
     );
   }, [typeCode, userConvertsLimits]);
 };

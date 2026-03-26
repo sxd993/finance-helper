@@ -27,11 +27,13 @@ const extractExpenseSource = (raw = {}) => {
 const parseExpensePayload = (raw = {}) => {
   const data = extractExpenseSource(raw);
   const parsedDate = parseNumericField(data.date);
+  const convertId = parseNumericField(data.convert_id);
   const normalizedConvertName = sanitizeString(data.convert_name);
   const fallbackConvertName = sanitizeString(data.convert_title);
 
   return {
     name: sanitizeString(data.name),
+    convertId: Number.isFinite(convertId) && convertId > 0 ? convertId : undefined,
     convertName: normalizedConvertName || fallbackConvertName,
     convertType: sanitizeString(data.convert_type) || undefined,
     iconName: sanitizeString(data.icon_name),
@@ -52,8 +54,8 @@ const validateExpensePayload = (payload) => {
     errors.push('Поле name обязательно');
   }
 
-  if (!payload.convertName) {
-    errors.push('Поле convert_name обязательно');
+  if (!Number.isFinite(payload.convertId) || payload.convertId <= 0) {
+    errors.push('Поле convert_id обязательно и должно быть положительным числом');
   }
 
   if (!payload.iconName) {

@@ -9,7 +9,7 @@ export const ConvertOverview = () => {
     const typeCode = useSelector((state: RootState) => state.convert_tabs.activeTab)
     const { userConvertsLimits } = useUserConvertsLimits();
     const filteredConvert = userConvertsLimits?.filter(c => c.typeCode === typeCode) ?? null;
-    const hasOverviewContent = filteredConvert?.some(c => c.remainderAmount !== 0) ?? false;
+    const hasOverviewContent = filteredConvert?.some(c => (c.availableToSpend ?? 0) > 0) ?? false;
 
 
     return (
@@ -25,7 +25,7 @@ export const ConvertOverview = () => {
                 <ConvertOverviewCard
                     key={c.typeCode}
                     convert={c}
-                    isHasRemainder={c.remainderAmount === 0}
+                    isHasRemainder={(c.availableToSpend ?? 0) === 0}
                 />
             ))}
         </>

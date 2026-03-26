@@ -4,6 +4,9 @@ import initUser from '../models/User.js';
 import initCycle from '../models/Cycle.js';
 import initConvertType from '../models/ConvertType.js';
 import initConvert from '../models/Convert.js';
+import initConvertSpend from '../models/ConvertSpend.js';
+import initConvertSaving from '../models/ConvertSaving.js';
+import initConvertInvestment from '../models/ConvertInvestment.js';
 import initExpense from '../models/Expense.js';
 import initRemainder from '../models/Remainder.js';
 import initConvertTypeLimit from '../models/ConvertTypeLimit.js';
@@ -45,6 +48,9 @@ const User = initUser(sequelize, DataTypes);
 const Cycle = initCycle(sequelize, DataTypes);
 const ConvertType = initConvertType(sequelize, DataTypes);
 const Convert = initConvert(sequelize, DataTypes);
+const ConvertSpend = initConvertSpend(sequelize, DataTypes);
+const ConvertSaving = initConvertSaving(sequelize, DataTypes);
+const ConvertInvestment = initConvertInvestment(sequelize, DataTypes);
 const Expense = initExpense(sequelize, DataTypes);
 const Remainder = initRemainder(sequelize, DataTypes);
 const ConvertTypeLimit = initConvertTypeLimit(sequelize, DataTypes);
@@ -54,6 +60,9 @@ const models = {
   Cycle,
   ConvertType,
   Convert,
+  ConvertSpend,
+  ConvertSaving,
+  ConvertInvestment,
   Expense,
   Remainder,
   ConvertTypeLimit,
@@ -73,6 +82,9 @@ export {
   Cycle,
   ConvertType,
   Convert,
+  ConvertSpend,
+  ConvertSaving,
+  ConvertInvestment,
   Expense,
   Remainder,
   ConvertTypeLimit,
@@ -86,6 +98,9 @@ export default {
   Cycle,
   ConvertType,
   Convert,
+  ConvertSpend,
+  ConvertSaving,
+  ConvertInvestment,
   Expense,
   Remainder,
   ConvertTypeLimit,

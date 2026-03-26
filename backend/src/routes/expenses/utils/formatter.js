@@ -3,6 +3,7 @@
  */
 const buildExpenseResponse = (expense, convertType) => ({
   id: expense.id,
+  convert_id: expense.convertId,
   name: expense.name,
   convert_name: expense.convertName,
   convert_type: expense.convertType,

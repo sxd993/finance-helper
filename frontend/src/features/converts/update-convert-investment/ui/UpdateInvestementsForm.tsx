@@ -3,13 +3,13 @@ import { useInvestmentForm } from '../model/useInvestmentForm'
 
 type UpdateInvestementsFormProps = {
   convertId: number
-  initial_amount?: number | null
-  target_amount?: number | null
+  invested_amount?: number | null
+  current_value?: number | null
   onClose?: () => void
 }
 
-export const UpdateInvestementsForm = ({ convertId, initial_amount, target_amount, onClose }: UpdateInvestementsFormProps) => {
-  const { register, onSubmit, isPending, formState } = useInvestmentForm({ convertId, initial_amount, target_amount })
+export const UpdateInvestementsForm = ({ convertId, invested_amount, current_value, onClose }: UpdateInvestementsFormProps) => {
+  const { register, onSubmit, isPending, formState } = useInvestmentForm({ convertId, invested_amount, current_value })
 
   return (
     <form onSubmit={onSubmit} className='px-6 py-2 flex flex-col gap-4'>
@@ -20,7 +20,7 @@ export const UpdateInvestementsForm = ({ convertId, initial_amount, target_amoun
             type='number'
             step='0.01'
             className='h-9 rounded-md border border-slate-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-200'
-            {...register('initial_amount', { valueAsNumber: true })}
+            {...register('invested_amount', { valueAsNumber: true })}
           />
         </label>
         <label className='flex flex-col'>
@@ -29,7 +29,7 @@ export const UpdateInvestementsForm = ({ convertId, initial_amount, target_amoun
             type='number'
             step='0.01'
             className='h-9 rounded-md border border-slate-200 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-200'
-            {...register('target_amount', { valueAsNumber: true })}
+            {...register('current_value', { valueAsNumber: true })}
           />
         </label>
       </div>

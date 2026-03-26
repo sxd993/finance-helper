@@ -50,16 +50,12 @@ CREATE TABLE IF NOT EXISTS cycles (
   INDEX idx_cycles_user_closed (user_id, is_closed)
 ) ENGINE=InnoDB;
 
--- Конверты (упрощенная единая таблица)
+-- Конверты
 CREATE TABLE IF NOT EXISTS converts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
-  
-  -- Универсальные поля
-  target_amount DECIMAL(12,2) DEFAULT NULL COMMENT 'Цель для saving, лимит для important/wishes',
-  initial_amount DECIMAL(12,2) DEFAULT NULL COMMENT 'Начальная сумма для investment',
 
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -73,9 +69,31 @@ CREATE TABLE IF NOT EXISTS converts (
   INDEX idx_converts_type (type_code)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS convert_spend (
+  convert_id INT NOT NULL PRIMARY KEY,
+  monthly_limit DECIMAL(12,2) NOT NULL DEFAULT 0,
+  funded_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  CONSTRAINT fk_convert_spend_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS convert_saving (
+  convert_id INT NOT NULL PRIMARY KEY,
+  goal_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  saved_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  CONSTRAINT fk_convert_saving_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS convert_investment (
+  convert_id INT NOT NULL PRIMARY KEY,
+  invested_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  current_value DECIMAL(12,2) NOT NULL DEFAULT 0,
+  CONSTRAINT fk_convert_investment_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS expenses (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
+  convert_id INT NULL,
   name VARCHAR(255) NOT NULL,
   convert_name VARCHAR(255) NOT NULL,
   convert_type VARCHAR(50) NOT NULL,
@@ -85,10 +103,12 @@ CREATE TABLE IF NOT EXISTS expenses (
   icon_color VARCHAR(32) NOT NULL,
   
   CONSTRAINT fk_expenses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_expenses_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE SET NULL,
   CONSTRAINT fk_expenses_convert_type FOREIGN KEY (convert_type) REFERENCES convert_types(code) ON DELETE RESTRICT,
   CONSTRAINT chk_expenses_sum_positive CHECK (sum > 0),
   
   INDEX idx_expenses_user (user_id),
+  INDEX idx_expenses_convert (convert_id),
   INDEX idx_expenses_convert_type (convert_type),
   INDEX idx_expenses_date (date)
 ) ENGINE=InnoDB;
@@ -97,7 +117,6 @@ CREATE TABLE IF NOT EXISTS convert_type_limits (
   user_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
   limit_amount DECIMAL(12,2) NOT NULL,
-  distributed_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   PRIMARY KEY (user_id, type_code),

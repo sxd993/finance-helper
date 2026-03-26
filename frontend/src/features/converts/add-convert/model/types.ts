@@ -2,10 +2,15 @@ export interface CreateConvertPayload {
     name: string;
     type_code: string; // important | wishes | saving | investment
     is_active?: boolean;
-    current_amount?: number | null;
+    monthly_limit?: number | null;
+    funded_amount?: number | null;
+    goal_amount?: number | null;
+    saved_amount?: number | null;
+    invested_amount?: number | null;
+    current_value?: number | null;
+    // legacy form fields (mapped in api layer)
     target_amount?: number | null;
     initial_amount?: number | null;
-    current_value?: number | null;
 }
 
 export interface CreateConvertResponse {
@@ -13,8 +18,6 @@ export interface CreateConvertResponse {
     name: string;
     type_code: string;
     is_active: boolean;
-    target_amount: number | null;
-    initial_amount: number | null;
 }
 
 export interface ConvertErrorResponse {

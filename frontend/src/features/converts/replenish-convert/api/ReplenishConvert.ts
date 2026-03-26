@@ -12,11 +12,11 @@ export interface ReplenishConvertResponse {
     id: number;
     name: string;
     type_code: string;
-    initial_amount: number;
+    current_amount: number;
   };
   limit: {
     type_code: string;
-    distributed_amount: number;
+    allocated_amount: number;
     remainder_amount: number;
   };
 }

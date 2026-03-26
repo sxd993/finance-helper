@@ -2,6 +2,7 @@ import express from 'express';
 import {
   sequelize,
   Convert,
+  ConvertInvestment,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 
@@ -17,7 +18,6 @@ router.patch('/:id/investment', requireAuth, async (req, res) => {
 
   try {
     const id = Number(req.params.id);
-
     if (!Number.isFinite(id)) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Некорректный id' });
@@ -25,44 +25,45 @@ router.patch('/:id/investment', requireAuth, async (req, res) => {
 
     const userId = req.userId;
     const convert = await Convert.findOne({ where: { id, userId }, transaction });
-
     if (!convert) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Конверт не найден' });
     }
-
     if (convert.typeCode !== 'investment') {
       await transaction.rollback();
       return res.status(400).json({ message: 'Обновлять инвестиции можно только для инвестиционных конвертов' });
     }
 
     const body = req.body || {};
-    const desiredInitial = toNumberOrNull(body.initial_amount ?? body.initial_investment);
-    const desiredValue = toNumberOrNull(body.current_value);
-    const desiredTarget = toNumberOrNull(body.target_amount);
+    const desiredInvested = toNumberOrNull(body.invested_amount);
+    const desiredCurrent = toNumberOrNull(body.current_value);
+
+    const investment = await ConvertInvestment.findByPk(id, { transaction });
+    if (!investment) {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'Инвестиционные данные конверта не найдены' });
+    }
 
     const updates = {};
-    if (desiredInitial != null) {
-      updates.initialAmount = desiredInitial;
-    }
-    if (desiredValue != null) {
-      updates.currentAmount = desiredValue;
-    }
-    if (desiredTarget != null) {
-      updates.targetAmount = desiredTarget;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      await convert.update(updates, { transaction });
+    if (desiredInvested != null) updates.investedAmount = desiredInvested;
+    if (desiredCurrent != null) updates.currentValue = desiredCurrent;
+    if (Object.keys(updates).length) {
+      await investment.update(updates, { transaction });
     }
 
     await transaction.commit();
 
+    const investedAmount = Number(investment.investedAmount ?? 0);
+    const currentValue = Number(investment.currentValue ?? 0);
+    const pnlAmount = Number((currentValue - investedAmount).toFixed(2));
+    const pnlPercent = investedAmount > 0 ? Number(((pnlAmount / investedAmount) * 100).toFixed(2)) : 0;
+
     return res.json({
       id: convert.id,
-      initial_amount: convert.initialAmount,
-      current_amount: convert.currentAmount,
-      target_amount: convert.targetAmount,
+      invested_amount: investedAmount,
+      current_value: currentValue,
+      pnl_amount: pnlAmount,
+      pnl_percent: pnlPercent,
     });
   } catch (error) {
     await transaction.rollback();

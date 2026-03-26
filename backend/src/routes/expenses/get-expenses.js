@@ -36,6 +36,8 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
     const result = expenses.map((expense) => {
       const data = expense.toJSON();
       return {
+        id: data.id,
+        convert_id: data.convertId,
         name: data.name,
         convert_name: data.convertName,
         convert_type: data.convertType,

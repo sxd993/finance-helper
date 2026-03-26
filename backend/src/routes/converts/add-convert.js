@@ -3,12 +3,20 @@ import {
   sequelize,
   Convert,
   ConvertType,
-  ConvertTypeLimit,
+  ConvertSpend,
+  ConvertSaving,
+  ConvertInvestment,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { ensureWithinTypeLimit, shouldApplyTypeLimit, getAllocatedAmount, normalizeLimit } from './utils/type-limits.js';
+import { ensureWithinTypeLimit } from './utils/type-limits.js';
 
 const router = express.Router();
+
+const toNumberOrNull = (val) => {
+  if (val === null || val === undefined || val === '') return null;
+  const num = Number(val);
+  return Number.isFinite(num) ? num : null;
+};
 
 router.post('/add-convert', requireAuth, async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -16,14 +24,16 @@ router.post('/add-convert', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
     const payload = req.body?.convert || {};
-    console.log('[add-convert] incoming payload:', JSON.stringify(payload));
-
     const {
       name,
       type_code: typeCode,
-      target_amount: targetRaw = null,
-      initial_amount: initialAmountRaw = null,
       is_active: isActiveRaw = true,
+      monthly_limit: monthlyLimitRaw = null,
+      funded_amount: fundedAmountRaw = null,
+      goal_amount: goalAmountRaw = null,
+      saved_amount: savedAmountRaw = null,
+      invested_amount: investedAmountRaw = null,
+      current_value: currentValueRaw = null,
     } = payload;
 
     if (!name || !typeCode) {
@@ -31,8 +41,7 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Поля name и type_code обязательны' });
     }
 
-    // Проверка на дубликат по имени
-    const existingByName = await Convert.findOne({ where: { userId, name }, transaction });
+    const existingByName = await Convert.findOne({ where: { userId, name, isActive: true }, transaction });
     if (existingByName) {
       await transaction.rollback();
       return res.status(409).json({
@@ -42,128 +51,79 @@ router.post('/add-convert', requireAuth, async (req, res) => {
       });
     }
 
-    // Проверка существующего типа
     const convertType = await ConvertType.findOne({ where: { code: typeCode }, transaction });
     if (!convertType) {
       await transaction.rollback();
       return res.status(400).json({ message: `Неизвестный тип конверта: ${typeCode}` });
     }
 
-    // Преобразование числовых значений
-    const toNumberOrNull = (val) => {
-      if (val === null || val === undefined || val === '') return null;
-      const num = Number(val);
-      return Number.isFinite(num) ? num : null;
-    };
-
-    const targetAmount = toNumberOrNull(targetRaw);
-    let initialAmount = toNumberOrNull(initialAmountRaw);
     const isActive = Boolean(isActiveRaw);
-    const canSpend = Boolean(convertType.canSpend);
-    const hasLimit = Boolean(convertType.hasLimit);
-
-    // Если тип important или wishes — ставим initial = target
-    if (['important', 'wishes'].includes(typeCode)) {
-      initialAmount = targetAmount ?? 0;
-    }
-
-    // Основная запись
-    const convertPayload = {
+    const created = await Convert.create({
       userId,
       typeCode: convertType.code,
       name,
       isActive,
-      targetAmount: targetAmount ?? null,
-    };
+    }, { transaction });
 
-    if (hasLimit) {
-      if (!canSpend && targetAmount == null) {
-        await transaction.rollback();
-        return res.status(400).json({ message: `Для типа ${typeCode} требуется target_amount` });
-      }
-      convertPayload.targetAmount = targetAmount ?? 0;
-    } else if (targetAmount != null) {
-      // для типов без лимита тоже сохраняем переданное значение
-      convertPayload.targetAmount = targetAmount;
-    }
+    if (typeCode === 'important' || typeCode === 'wishes') {
+      const monthlyLimit = toNumberOrNull(monthlyLimitRaw) ?? 0;
+      const fundedAmount = toNumberOrNull(fundedAmountRaw) ?? monthlyLimit;
 
-    if (initialAmount != null) {
-      convertPayload.initialAmount = initialAmount;
-    }
-
-    // allocationAmount — сколько "запрашивается" из лимита
-    const allocationAmount = shouldApplyTypeLimit(convertType)
-      ? Number(convertPayload.targetAmount ?? 0)
-      : 0;
-
-    // Проверяем лимиты пользователя
-    const limitCheck = await ensureWithinTypeLimit({
-      userId,
-      user: req.user,
-      typeCode: convertType.code,
-      amount: allocationAmount,
-      transaction,
-      convertType,
-    });
-
-    if (!limitCheck.valid) {
-      await transaction.rollback();
-      return res.status(400).json({
-        message: `Превышен лимит для типа ${typeCode}`,
-        code: 'TYPE_LIMIT_EXCEEDED',
-        limit: limitCheck.limit,
-        used: limitCheck.used,
-        required: limitCheck.required,
-        available: limitCheck.available,
+      const limitCheck = await ensureWithinTypeLimit({
+        userId,
+        user: req.user,
+        typeCode,
+        amount: monthlyLimit,
+        transaction,
+        convertType,
       });
-    }
 
-    // Создаём конверт
-    const created = await Convert.create(convertPayload, { transaction });
-
-    if (shouldApplyTypeLimit(convertType)) {
-      const distributed = await getAllocatedAmount(userId, convertType.code, { transaction });
-      if (distributed != null) {
-        const normalized = normalizeLimit(distributed);
-
-        const existing = await ConvertTypeLimit.findOne({
-          where: { userId, typeCode: convertType.code },
-          transaction,
+      if (!limitCheck.valid) {
+        await transaction.rollback();
+        return res.status(400).json({
+          message: `Превышен лимит для данного типа конверта.`,
+          code: 'TYPE_LIMIT_EXCEEDED',
+          limit: limitCheck.limit,
+          used: limitCheck.used,
+          required: limitCheck.required,
+          available: limitCheck.available,
         });
-
-        if (existing) {
-          existing.distributedAmount = normalized;
-          await existing.save({ transaction });
-        } else {
-          // создаём только с distributedAmount, limitAmount не трогаем
-          await ConvertTypeLimit.create(
-            {
-              userId,
-              typeCode: convertType.code,
-              distributedAmount: normalized,
-            },
-            { transaction }
-          );
-        }
       }
+
+      await ConvertSpend.create({
+        convertId: created.id,
+        monthlyLimit: monthlyLimit,
+        fundedAmount: fundedAmount,
+      }, { transaction });
+    } else if (typeCode === 'saving') {
+      const goalAmount = toNumberOrNull(goalAmountRaw) ?? 0;
+      const savedAmount = toNumberOrNull(savedAmountRaw) ?? 0;
+      await ConvertSaving.create({
+        convertId: created.id,
+        goalAmount,
+        savedAmount,
+      }, { transaction });
+    } else if (typeCode === 'investment') {
+      const investedAmount = toNumberOrNull(investedAmountRaw) ?? 0;
+      const currentValue = toNumberOrNull(currentValueRaw) ?? investedAmount;
+      await ConvertInvestment.create({
+        convertId: created.id,
+        investedAmount,
+        currentValue,
+      }, { transaction });
+    } else {
+      await transaction.rollback();
+      return res.status(400).json({ message: `Для типа ${typeCode} не описана модель данных` });
     }
 
     await transaction.commit();
-
-    console.log('[add-convert] created convert:', created.toJSON());
-
-    const responseInitialAmount =
-      created.initialAmount != null ? Number(created.initialAmount) : convertPayload.targetAmount;
 
     return res.status(201).json({
       id: created.id,
       name: created.name,
       type_code: typeCode,
       is_active: created.isActive,
-      target_amount: convertPayload.targetAmount,
-      initial_amount: responseInitialAmount,
     });
-
   } catch (error) {
     console.error('Не удалось создать конверт', error);
     await transaction.rollback();

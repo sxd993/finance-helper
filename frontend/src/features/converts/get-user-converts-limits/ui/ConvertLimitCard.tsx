@@ -31,17 +31,17 @@ export const ConvertLimitCard = ({ typeCode }: Props) => {
     }
 
     const limit = formatPrice(convertLimit.limitAmount) ?? "—"
-    const remainder = formatPrice(convertLimit.remainderAmount) ?? "—"
+    const unspent = formatPrice(convertLimit.availableToSpend) ?? "—"
 
     return (
         <div className="w-full">
             <div className="flex justify-between gap-3 text-sm">
                 <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
-                    <span className="text-xs uppercase text-slate-500">Остаток</span>
-                    <span className="text-base font-semibold text-emerald-600">{remainder}</span>
+                    <span className="text-xs uppercase text-slate-500">Непотрачено</span>
+                    <span className="text-base font-semibold text-emerald-600">{unspent}</span>
                 </div>
                 <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
-                    <span className="text-xs uppercase text-slate-500">Лимит</span>
+                    <span className="text-xs uppercase text-slate-500">Общий лимит</span>
                     <span className="text-base font-semibold text-slate-900">{limit}</span>
                 </div>
             </div>

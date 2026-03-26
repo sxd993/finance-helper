@@ -12,7 +12,7 @@ interface Props {
 
 export const ImportantConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
-    const limitValue = convert.target_amount ?? 0
+    const limitValue = convert.monthly_limit ?? 0
     const remainderValue = convert.current_balance ?? 0
     const remainder = formatPrice(remainderValue)
     const limit = formatPrice(limitValue)

@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
           const percent = percentByType[typeCode] ?? 0;
           const limitAmount = Number(((monthlyIncomeNum * percent) / 100).toFixed(2));
           return ConvertTypeLimit.upsert(
-            { userId: user.id, typeCode, limitAmount, distributedAmount: 0 },
+            { userId: user.id, typeCode, limitAmount },
             { transaction }
           );
         })

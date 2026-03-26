@@ -11,8 +11,13 @@ export const useAddExpenseMutation = () => {
     const mutation = useMutation({
         mutationKey: ["add-expense"],
         mutationFn: AddExpense,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["userExpenses"] });
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["userExpenses"] }),
+                queryClient.invalidateQueries({ queryKey: ["converts"] }),
+                queryClient.invalidateQueries({ queryKey: ["limits"] }),
+                queryClient.invalidateQueries({ queryKey: ["converts", "limits"] }),
+            ]);
             toast.success('Транзакция создана!')
             navigate(-1);
         },

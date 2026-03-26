@@ -11,6 +11,9 @@ import {
   User,
   Cycle,
   Convert,
+  ConvertSpend,
+  ConvertSaving,
+  ConvertInvestment,
   Remainder,
 } from '../../db/index.js';
 import { recalcUserTypeLimitsAndResetDistributed } from '../../routes/converts/utils/type-limits.js';
@@ -134,7 +137,17 @@ async function resetConverts(userId, transaction) {
       );
     }
 
-    const amount = Number(convert.initialAmount || 0);
+    let amount = 0;
+    if (convert.typeCode === 'important' || convert.typeCode === 'wishes') {
+      const spend = await ConvertSpend.findByPk(convert.id, { transaction });
+      amount = Number(spend?.fundedAmount || 0);
+    } else if (convert.typeCode === 'saving') {
+      const saving = await ConvertSaving.findByPk(convert.id, { transaction });
+      amount = Number(saving?.savedAmount || 0);
+    } else if (convert.typeCode === 'investment') {
+      const investment = await ConvertInvestment.findByPk(convert.id, { transaction });
+      amount = Number(investment?.investedAmount || 0);
+    }
     if (amount > 0) {
       snapshots.push({ typeCode: convert.typeCode, amount });
     }

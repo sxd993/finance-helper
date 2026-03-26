@@ -1,11 +1,11 @@
 import { Convert, ConvertType } from '../../../db/index.js';
 
 /**
- * Находит конверт пользователя по имени.
+ * Находит конверт пользователя по id.
  */
-const findUserConvertByName = async ({ userId, convertName, transaction }) =>
+const findUserConvertById = async ({ userId, convertId, transaction }) =>
   Convert.findOne({
-    where: { userId, name: convertName },
+    where: { userId, id: convertId },
     transaction,
   });
 
@@ -23,11 +23,11 @@ const findConvertTypeByCode = async ({ code, transaction }) =>
  */
 const resolveConvertAndType = async ({
   userId,
-  convertName,
+  convertId,
   requestedTypeCode,
   transaction,
 }) => {
-  const convert = await findUserConvertByName({ userId, convertName, transaction });
+  const convert = await findUserConvertById({ userId, convertId, transaction });
 
   if (!convert) {
     return { error: 'CONVERT_NOT_FOUND' };
@@ -56,7 +56,7 @@ const resolveConvertAndType = async ({
 };
 
 export {
-  findUserConvertByName,
+  findUserConvertById,
   findConvertTypeByCode,
   resolveConvertAndType,
 };

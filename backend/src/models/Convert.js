@@ -19,18 +19,6 @@ const initConvert = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    targetAmount: {
-      type: DataTypes.DECIMAL(12, 2),
-      allowNull: true,
-      defaultValue: null,
-      field: 'target_amount',
-    },
-    initialAmount: {
-      type: DataTypes.DECIMAL(12, 2),
-      allowNull: true,
-      defaultValue: null,
-      field: 'initial_amount',
-    },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -58,9 +46,22 @@ const initConvert = (sequelize, DataTypes) => {
 
     Convert.hasMany(models.Expense, {
       as: 'expenses',
-      foreignKey: 'convertName',
-      sourceKey: 'name',
-      constraints: false,
+      foreignKey: 'convertId',
+    });
+
+    Convert.hasOne(models.ConvertSpend, {
+      as: 'spend',
+      foreignKey: 'convertId',
+    });
+
+    Convert.hasOne(models.ConvertSaving, {
+      as: 'saving',
+      foreignKey: 'convertId',
+    });
+
+    Convert.hasOne(models.ConvertInvestment, {
+      as: 'investment',
+      foreignKey: 'convertId',
     });
   };
 

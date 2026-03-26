@@ -12,8 +12,8 @@ interface Props {
 
 export const SavingConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
-    const targetValue = convert.target_amount ?? convert.initial_amount ?? 0
-    const remainderValue = convert.current_balance ?? 0
+    const targetValue = convert.goal_amount ?? 0
+    const remainderValue = convert.saved_amount ?? 0
     const remainder = formatPrice(remainderValue)
     const goal = formatPrice(targetValue)
     const progress = targetValue

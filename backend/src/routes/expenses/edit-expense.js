@@ -1,5 +1,5 @@
 import express from 'express';
-import { sequelize, Expense } from '../../db/index.js';
+import { sequelize, Expense, ConvertSpend } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { parseExpensePayload, validateExpensePayload } from './utils/payload.js';
 import { resolveConvertAndType } from './utils/converts.js';
@@ -44,7 +44,7 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
 
     const convertResolution = await resolveConvertAndType({
       userId,
-      convertName: payload.convertName,
+      convertId: payload.convertId,
       requestedTypeCode: payload.convertType,
       transaction,
     });
@@ -84,17 +84,17 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
       );
 
       const summary = summaryMap.get(convertResolution.convert.id);
-      const initialAmount = Number.parseFloat(convertResolution.convert.initialAmount ?? 0) || 0;
+      const spendData = await ConvertSpend.findByPk(convertResolution.convert.id, { transaction });
+      const fundedAmount = Number.parseFloat(spendData?.fundedAmount ?? 0) || 0;
       const balance =
         summary && Number.isFinite(summary.balance)
           ? summary.balance
-          : initialAmount;
+          : fundedAmount;
 
       const requestedSum = Number(payload.sum);
       const currentExpenseSum = Number(expense.sum) || 0;
       const isSameConvert =
-        expense.convertName === convertResolution.convert.name
-        && expense.convertType === convertResolution.convertTypeCode;
+        Number(expense.convertId) === Number(convertResolution.convert.id);
       const available = isSameConvert ? balance + currentExpenseSum : balance;
 
       if (requestedSum - available > 1e-6) {
@@ -113,6 +113,7 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
     await expense.update(
       {
         name: payload.name,
+        convertId: convertResolution.convert.id,
         convertName: convertResolution.convert.name,
         convertType: convertResolution.convertTypeCode,
         sum: payload.sum,

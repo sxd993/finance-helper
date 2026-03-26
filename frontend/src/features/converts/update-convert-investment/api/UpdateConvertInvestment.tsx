@@ -2,8 +2,8 @@ import { client } from '@/shared/api/client';
 
 export type UpdateConvertInvestmentPayload = {
   id: number;
-  initial_amount: number;
-  target_amount: number;
+  invested_amount: number;
+  current_value: number;
 };
 
 export const UpdateConvertInvestment = async (payload: UpdateConvertInvestmentPayload) => {

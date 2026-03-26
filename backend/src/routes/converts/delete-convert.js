@@ -2,11 +2,11 @@ import express from 'express';
 import {
   sequelize,
   Convert,
-  ConvertTypeLimit,
+  ConvertSpend,
   Expense,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { getAllocatedAmount, normalizeLimit } from './utils/type-limits.js';
+import { getTransactionsSummary } from './utils/get-user-converts.js';
 
 const router = express.Router();
 
@@ -23,82 +23,54 @@ router.delete('/delete-convert/:id', requireAuth, async (req, res) => {
     }
 
     const convert = await Convert.findOne({ where: { id, userId }, transaction });
-
     if (!convert) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Конверт не найден' });
     }
 
-    const spentRow = await Expense.findOne({
-      where: {
-        userId,
-        convertName: convert.name,
-        convertType: convert.typeCode,
-      },
-      attributes: [
-        [
-          sequelize.fn(
-            'COALESCE',
-            sequelize.fn('SUM', sequelize.col('sum')),
-            0,
-          ),
-          'total',
-        ],
-      ],
-      raw: true,
-      transaction,
-    });
+    let spentTotal = 0;
+    let unspentAmount = 0;
 
-    const spentTotal = Number(spentRow?.total) || 0;
-    if (spentTotal > 0) {
-      await transaction.rollback();
-      return res.status(400).json({
-        message: 'Нельзя удалить конверт: в нём есть расходы',
-        code: 'CONVERT_HAS_EXPENSES',
-        spent: Number(spentTotal.toFixed(2)),
-      });
+    if (convert.typeCode === 'important' || convert.typeCode === 'wishes') {
+      const summaryMap = await getTransactionsSummary(userId, [id], { transaction });
+      spentTotal = Number(summaryMap.get(id)?.totalOut ?? 0);
+
+      const spendData = await ConvertSpend.findByPk(id, { transaction });
+      const fundedAmount = Number(spendData?.fundedAmount ?? 0);
+      unspentAmount = Number(Math.max(fundedAmount - spentTotal, 0).toFixed(2));
+
+      await ConvertSpend.destroy({ where: { convertId: id }, transaction });
     }
 
-    await Expense.destroy({
-      where: {
-        convertName: convert.name,
-        convertType: convert.typeCode,
-      },
-      transaction,
-    });
+    await Expense.update(
+      { convertId: null },
+      {
+        where: { userId, convertId: id },
+        transaction,
+        validate: false,
+        hooks: false,
+        individualHooks: false,
+      }
+    );
+
     const deletedCount = await Convert.destroy({
       where: { id, userId },
       transaction,
     });
+
     if (!deletedCount) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Конверт не найден' });
     }
-    const typeCode = convert.typeCode || convert.type_code;
-    if (typeCode) {
-      const distributed = await getAllocatedAmount(userId, typeCode, { transaction });
-      const existingLimit = await ConvertTypeLimit.findOne({
-        where: { userId, typeCode },
-        attributes: ['limitAmount'],
-        raw: true,
-        transaction,
-      });
 
-      const limitAmount = existingLimit?.limitAmount ?? 0;
-
-      await ConvertTypeLimit.upsert(
-        {
-          userId,
-          typeCode,
-          limitAmount: Number(limitAmount) || 0,
-          distributedAmount: normalizeLimit(distributed) ?? 0,
-        },
-        { transaction }
-      );
-    }
     await transaction.commit();
 
-    return res.json({ message: 'Конверт удалён', id });
+    return res.json({
+      message: 'Конверт удалён',
+      id,
+      unspent_amount: unspentAmount,
+      spent_amount: Number(spentTotal.toFixed(2)),
+    });
   } catch (error) {
     console.error('[delete-convert] error:', error);
     await transaction.rollback();

@@ -21,8 +21,8 @@ export const useAddExpenseForm = () => {
   const form = useForm<Expense>({
     defaultValues: {
       name: "",
+      convert_id: 0,
       convert_type: "",
-      convert_name: "",
       sum: 0,
       icon_name: DEFAULT_EXPENSE_ICON_NAME,
       icon_color: DEFAULT_EXPENSE_ICON_COLOR,

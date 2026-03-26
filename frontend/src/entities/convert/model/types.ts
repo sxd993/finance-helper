@@ -5,12 +5,21 @@ export interface Convert {
   type: ConvertType;
   is_active: boolean;
 
-
-  // Финансовые поля
   current_balance: number;
-  initial_amount: number;
-  target_amount: number;
   total_out: number;
+
+  monthly_limit?: number;
+  funded_amount?: number;
+  spent_amount?: number;
+
+  goal_amount?: number;
+  saved_amount?: number;
+  progress_percent?: number;
+
+  invested_amount?: number;
+  current_value?: number;
+  pnl_amount?: number;
+  pnl_percent?: number;
 }
 
 export type ConvertTab = "important" | "wishes" | "saving" | "investment"

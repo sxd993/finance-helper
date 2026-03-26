@@ -11,10 +11,10 @@ interface Props {
 
 export const InvestmentConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
-    const invested = formatPrice(convert.initial_amount ?? 0)
-    const current = formatPrice(convert.target_amount ?? 0)
-    const baseValue = convert.initial_amount ?? 0
-    const currentValue = convert.target_amount ?? 0
+    const invested = formatPrice(convert.invested_amount ?? 0)
+    const current = formatPrice(convert.current_value ?? 0)
+    const baseValue = convert.invested_amount ?? 0
+    const currentValue = convert.current_value ?? 0
 
     const diff = baseValue ? Math.round(((currentValue - baseValue) / baseValue) * 100) : 0
     const diffLabel = diff > 0 ? `+${diff}%` : `${diff}%`

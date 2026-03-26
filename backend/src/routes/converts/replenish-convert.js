@@ -1,11 +1,15 @@
 import express from 'express';
-
-import { sequelize, Convert, ConvertTypeLimit } from '../../db/index.js';
+import {
+  sequelize,
+  Convert,
+  ConvertTypeLimit,
+  ConvertSaving,
+  ConvertInvestment,
+} from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
-import { normalizeLimit } from './utils/type-limits.js';
+import { getAllocatedAmount, normalizeLimit } from './utils/type-limits.js';
 
 const router = express.Router();
-
 const SUPPORTED_TYPES = new Set(['saving', 'investment']);
 
 router.post('/replenish-convert', requireAuth, async (req, res) => {
@@ -14,7 +18,6 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
     const payload = req.body || {};
-
     const typeCode = typeof payload.type_code === 'string' ? payload.type_code.trim() : '';
     const convertId = Number(payload.convert_id);
     const amount = Number(payload.amount);
@@ -23,68 +26,57 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
       await transaction.rollback();
       return res.status(400).json({ message: 'Для пополнения можно выбрать только типы saving или investment' });
     }
-
     if (!Number.isFinite(convertId) || convertId <= 0) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Некорректный идентификатор конверта' });
     }
-
     if (!Number.isFinite(amount) || amount <= 0) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Сумма пополнения должна быть больше нуля' });
     }
 
-    const convert = await Convert.findOne({
-      where: { id: convertId, userId },
-      transaction,
-    });
-
+    const convert = await Convert.findOne({ where: { id: convertId, userId }, transaction });
     if (!convert) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Конверт не найден' });
     }
-
     if (convert.typeCode !== typeCode) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Выбранный конверт не соответствует типу источника' });
     }
 
-    const limitRow = await ConvertTypeLimit.findOne({
-      where: { userId, typeCode },
-      transaction,
-    });
-
+    const limitRow = await ConvertTypeLimit.findOne({ where: { userId, typeCode }, transaction });
     if (!limitRow) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Лимит для выбранного типа не найден' });
     }
 
     const limitAmount = Number(limitRow.limitAmount ?? 0);
-    const distributedAmount = Number(limitRow.distributedAmount ?? 0);
-
-    if (!Number.isFinite(limitAmount) || limitAmount <= 0) {
-      await transaction.rollback();
-      return res.status(400).json({ message: 'Лимит для выбранного типа не задан' });
-    }
-
-    const remainder = Number((limitAmount - distributedAmount).toFixed(2));
-
+    const allocatedAmount = await getAllocatedAmount(userId, typeCode, { transaction });
+    const remainder = Number((limitAmount - allocatedAmount).toFixed(2));
     if (remainder <= 0 || amount > remainder + 1e-6) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Недостаточно средств для пополнения конверта' });
     }
 
-    const nextDistributed = normalizeLimit(distributedAmount + amount);
-    const nextInitialAmount = normalizeLimit(Number(convert.initialAmount ?? 0) + amount);
-
-    await convert.update({ initialAmount: nextInitialAmount }, { transaction });
-    await limitRow.update(
-      {
-        distributedAmount: nextDistributed ?? distributedAmount + amount,
-        updatedAt: new Date(),
-      },
-      { transaction },
-    );
+    let updatedAmount = 0;
+    if (typeCode === 'saving') {
+      const row = await ConvertSaving.findByPk(convertId, { transaction });
+      if (!row) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Данные накопления для конверта не найдены' });
+      }
+      updatedAmount = normalizeLimit(Number(row.savedAmount ?? 0) + amount);
+      await row.update({ savedAmount: updatedAmount }, { transaction });
+    } else {
+      const row = await ConvertInvestment.findByPk(convertId, { transaction });
+      if (!row) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Данные инвестиций для конверта не найдены' });
+      }
+      updatedAmount = normalizeLimit(Number(row.investedAmount ?? 0) + amount);
+      await row.update({ investedAmount: updatedAmount }, { transaction });
+    }
 
     await transaction.commit();
 
@@ -93,12 +85,12 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
         id: convert.id,
         name: convert.name,
         type_code: convert.typeCode,
-        initial_amount: nextInitialAmount,
+        current_amount: updatedAmount,
       },
       limit: {
         type_code: typeCode,
-        distributed_amount: nextDistributed,
-        remainder_amount: Number((limitAmount - (nextDistributed ?? distributedAmount + amount)).toFixed(2)),
+        allocated_amount: normalizeLimit(allocatedAmount + amount),
+        remainder_amount: Number((limitAmount - (allocatedAmount + amount)).toFixed(2)),
       },
     });
   } catch (error) {

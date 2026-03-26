@@ -29,8 +29,16 @@ export const EditConvertModal = ({ convert, overviewInfo, onClose }: EditConvert
   const showTargetField = Boolean(convert.type?.has_limit ?? true);
   const showInitialField = ACCUMULATION_TYPES.has(convert.type_code);
 
-  const defaultTarget = convert.target_amount ?? 0;
-  const defaultInitial = convert.initial_amount ?? convert.current_balance ?? convert.target_amount ?? 0;
+  const defaultTarget = convert.type_code === "important" || convert.type_code === "wishes"
+    ? (convert.monthly_limit ?? 0)
+    : convert.type_code === "saving"
+      ? (convert.goal_amount ?? 0)
+      : (convert.current_value ?? 0);
+  const defaultInitial = convert.type_code === "saving"
+    ? (convert.saved_amount ?? 0)
+    : convert.type_code === "investment"
+      ? (convert.invested_amount ?? 0)
+      : (convert.current_balance ?? defaultTarget ?? 0);
 
   const form = useForm<EditConvertFormValues>({
     defaultValues: {
@@ -50,7 +58,7 @@ export const EditConvertModal = ({ convert, overviewInfo, onClose }: EditConvert
 
     const payloadInitial = showInitialField
       ? normalizeNumber(values.initial_amount) ?? defaultInitial
-      : convert.initial_amount ?? defaultInitial;
+      : defaultInitial;
 
     await editConvert({
       id: convert.id,

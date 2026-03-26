@@ -2,8 +2,10 @@ export interface UserConvertLimit {
   userId: number
   typeCode: string
   limitAmount: number
-  distributedAmount: number
-  remainderAmount: number
+  allocatedAmount: number
+  spentAmount: number
+  availableToAllocate: number
+  availableToSpend: number
   updatedAt: string
 }
 

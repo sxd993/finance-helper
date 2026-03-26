@@ -13,7 +13,7 @@ export const getConvertTitleOptions = (
             (convert) => convert.type_code === convertType && convert.type?.can_spend
         )
         .map((convert) => ({
-            value: convert.name,
+            value: String(convert.id),
             label: `${convert.name} (${formatPrice(convert.current_balance)})`,
         }));
 };

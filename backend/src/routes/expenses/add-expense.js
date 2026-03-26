@@ -1,5 +1,5 @@
 import express from 'express';
-import { sequelize, Expense } from '../../db/index.js';
+import { sequelize, Expense, ConvertSpend } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { parseExpensePayload, validateExpensePayload } from './utils/payload.js';
 import { resolveConvertAndType } from './utils/converts.js';
@@ -26,7 +26,7 @@ router.post('/add-expense', requireAuth, async (req, res) => {
 
     const convertResolution = await resolveConvertAndType({
       userId,
-      convertName: payload.convertName,
+      convertId: payload.convertId,
       requestedTypeCode: payload.convertType,
       transaction,
     });
@@ -68,11 +68,12 @@ router.post('/add-expense', requireAuth, async (req, res) => {
       );
 
       const summary = summaryMap.get(convert.id);
-      const initialAmount = Number.parseFloat(convert.initialAmount ?? 0) || 0;
+      const spendData = await ConvertSpend.findByPk(convert.id, { transaction });
+      const fundedAmount = Number.parseFloat(spendData?.fundedAmount ?? 0) || 0;
       const balance =
         summary && Number.isFinite(summary.balance)
           ? summary.balance
-          : initialAmount;
+          : fundedAmount;
       const requestedSum = Number(payload.sum);
 
       if (requestedSum - balance > 1e-6) {
@@ -94,6 +95,7 @@ router.post('/add-expense', requireAuth, async (req, res) => {
     const createdExpense = await Expense.create(
       {
         userId,
+        convertId: convert.id,
         name: payload.name,
         convertName: convert.name,
         convertType: convertResolution.convertTypeCode,

@@ -9,10 +9,14 @@ interface Props {
 export const useConvertCardMetrics = ({ convert }: Props) => {
     const typeCode = convert.typeCode
     const title = formatTypeCode(convert.typeCode)
-    const distributedAmount = formatPrice(convert.distributedAmount)
+    const allocatedAmount = formatPrice(convert.allocatedAmount)
     const limitAmount = formatPrice(convert.limitAmount)
-    const percentage = Math.floor((convert.remainderAmount / convert.limitAmount) * 100);
-    const remainderAmount = formatPrice(convert.remainderAmount)
+    const safeLimit = Number(convert.limitAmount) || 0
+    const availableToSpend = Number(convert.availableToSpend ?? 0)
+    const percentage = safeLimit > 0
+        ? Math.floor((availableToSpend / safeLimit) * 100)
+        : 0
+    const remainderAmount = formatPrice(availableToSpend)
 
     const progressColor = (typeCode : string) => {
         switch (typeCode) {
@@ -28,13 +32,13 @@ export const useConvertCardMetrics = ({ convert }: Props) => {
     }
 
     // Инвестиции
-    const absoluteReturn = (convert.limitAmount / convert.distributedAmount) * 100
+    const absoluteReturn = convert.allocatedAmount ? (convert.limitAmount / convert.allocatedAmount) * 100 : 0
     const color = absoluteReturn >= 0 ? 'text-green-600' : 'text-red-600';
 
     return {
         title,
         typeCode,
-        distributedAmount,
+        allocatedAmount,
         limitAmount,
         percentage,
         remainderAmount,

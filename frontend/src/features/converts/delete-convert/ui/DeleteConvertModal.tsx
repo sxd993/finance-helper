@@ -23,7 +23,7 @@ export const DeleteConvertModal = ({ id, name, onClose }: DeleteConvertModalProp
                     </p>
                 </div>
             </div>
-            <div className="flex w-full flex-col gap-3 sm:flex-row">
+            <div className="flex w-full flex-col justify-between gap-3">
                 <Button
                     title={isPending ? "Удаление..." : "Удалить"}
                     text="white"

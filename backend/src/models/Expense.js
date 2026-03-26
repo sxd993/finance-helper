@@ -14,6 +14,11 @@ const initExpense = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    convertId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      field: 'convert_id',
+    },
     convertName: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -68,8 +73,7 @@ const initExpense = (sequelize, DataTypes) => {
   Expense.associate = (models) => {
     Expense.belongsTo(models.Convert, {
       as: 'convert',
-      foreignKey: 'convertName',
-      targetKey: 'name',
+      foreignKey: 'convertId',
       constraints: false,
     });
 
