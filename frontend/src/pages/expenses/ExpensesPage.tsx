@@ -10,9 +10,9 @@ export const ExpensesPage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col max-w-3xl mx-auto pt-5 pb-20 px-4">
+        <div className="flex flex-col max-w-3xl mx-auto pt-5 pb-20 px-4 gap-5">
             <ExpensesOverview />
-            <div className="flex justify-between items-center gap-4 p-2">
+            <div className="flex items-center justify-between gap-4">
                 <SectionTitle
                     title="Ваши расходы"
                     subtitle="Управляйте своими финансовыми целями"
@@ -20,10 +20,11 @@ export const ExpensesPage = () => {
                 />
                 <Button
                     onClick={() => { navigate('add-expense') }}
-                    size='sm'
+                    title="Добавить"
                     bg="secondary"
-                    leftIcon={<Plus />}
-                    className="justify-center items-center flex"
+                    size="sm"
+                    leftIcon={<Plus width={18} height={18} />}
+                    className="shrink-0 gap-2 px-4 py-2.5 shadow-sm"
                 />
             </div>
             <UserExpensesList  />

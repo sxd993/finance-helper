@@ -37,7 +37,6 @@ const parseExpensePayload = (raw = {}) => {
     convertName: normalizedConvertName || fallbackConvertName,
     convertType: sanitizeString(data.convert_type) || undefined,
     iconName: sanitizeString(data.icon_name),
-    iconColor: sanitizeString(data.icon_color),
     sum: parseNumericField(data.sum),
     date: Number.isFinite(parsedDate) && parsedDate > 0 ? parsedDate : undefined,
   };
@@ -60,10 +59,6 @@ const validateExpensePayload = (payload) => {
 
   if (!payload.iconName) {
     errors.push('Поле icon_name обязательно');
-  }
-
-  if (!payload.iconColor) {
-    errors.push('Поле icon_color обязательно');
   }
 
   if (!Number.isFinite(payload.sum) || payload.sum <= 0) {

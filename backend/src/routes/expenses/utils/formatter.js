@@ -11,7 +11,6 @@ const buildExpenseResponse = (expense, convertType) => ({
   sum: Number(expense.sum),
   date: Number(expense.date),
   icon_name: expense.iconName,
-  icon_color: expense.iconColor,
 });
 
 export { buildExpenseResponse };

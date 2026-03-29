@@ -73,7 +73,7 @@ SQL-схема: `backend/db/schema_v2.sql`.
 Расходы пользователя:
 - `convert_id` — основной FK на `converts.id`
 - `convert_name`, `convert_type` — snapshot-поля для истории/отчётов
-- `sum`, `date`, `icon_name`, `icon_color`
+- `sum`, `date`, `icon_name`
 
 ### `convert_type_limits`
 Лимиты по типам:

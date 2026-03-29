@@ -16,7 +16,7 @@ export const ConvertOverview = () => {
         <>
             {hasOverviewContent && (
                 <SectionTitle
-                    icon={<Mail h-4 w-4 />}
+                    icon={<Mail className="h-6 w-6 text-primary"/>}
                     title="Общая информация"
                 />
             )}

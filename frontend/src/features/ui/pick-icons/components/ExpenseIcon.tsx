@@ -10,7 +10,7 @@ type ExpenseIconProps = {
 
 export const ExpenseIcon = ({
   name,
-  color = "currentColor",
+  color = "#000",
   size = 24,
   className,
   strokeWidth,

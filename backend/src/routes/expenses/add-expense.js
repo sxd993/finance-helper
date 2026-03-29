@@ -102,7 +102,6 @@ router.post('/add-expense', requireAuth, async (req, res) => {
         sum: payload.sum,
         date: expenseDate,
         iconName: payload.iconName,
-        iconColor: payload.iconColor,
       },
       { transaction }
     );

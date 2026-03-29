@@ -2,10 +2,13 @@ import image from '../../../../../assets/empty-fallback-images/empty-expense-ima
 
 export const UserExpensesListEmpty = () => {
     return (
-        <div className="flex justify-center flex-col items-center mt-5 max-w-xl mx-auto">
-            <img src={image} width={124} height={124} alt="empty-expense-image.png" />
-            <h1 className='mb-1'>У вас нет расходов</h1>
-            <p className="text-gray-500">Вы пока не создали ни одной транзакции.</p>
+        <div className="mx-auto mt-8 flex max-w-md flex-col items-center text-center">
+            <img
+                src={image}
+                alt="empty-expense-image"
+                className="h-32 w-56 object-contain"
+            />
+            <h1 className="text-xl font-semibold text-slate-900">У вас пока нет расходов</h1>
         </div>
     )
 }

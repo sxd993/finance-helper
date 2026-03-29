@@ -43,11 +43,6 @@ const initExpense = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'icon_name',
     },
-    iconColor: {
-      type: DataTypes.STRING(32),
-      allowNull: false,
-      field: 'icon_color',
-    },
     convertTitle: {
       type: DataTypes.VIRTUAL,
       get() {

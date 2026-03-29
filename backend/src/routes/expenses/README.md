@@ -16,8 +16,7 @@
       "convert_title": "Базовые",
       "sum": 180,
       "date": 1700000000000,
-      "icon_name": "coffee",
-      "icon_color": "#A76D22"
+      "icon_name": "coffee"
     }
   ],
   "current_cycle_spent": 180
@@ -36,8 +35,7 @@
     "convert_type": "basic",
     "sum": 180,
     "date": 1700000000000,
-    "icon_name": "coffee",
-    "icon_color": "#A76D22"
+    "icon_name": "coffee"
   }
 }
 ```
@@ -57,8 +55,7 @@
   "convert_title": "Базовые",
   "sum": 180,
   "date": 1700000000000,
-  "icon_name": "coffee",
-  "icon_color": "#A76D22"
+  "icon_name": "coffee"
 }
 ```
 
@@ -75,8 +72,7 @@
   "convert_title": "Базовые",
   "sum": 950,
   "date": 1701000000000,
-  "icon_name": "groceries",
-  "icon_color": "#228B22"
+  "icon_name": "groceries"
 }
 ```
 

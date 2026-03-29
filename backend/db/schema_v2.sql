@@ -100,7 +100,6 @@ CREATE TABLE IF NOT EXISTS expenses (
   sum DECIMAL(12,2) NOT NULL,
   date BIGINT UNSIGNED NOT NULL,
   icon_name VARCHAR(100) NOT NULL,
-  icon_color VARCHAR(32) NOT NULL,
   
   CONSTRAINT fk_expenses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_expenses_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE SET NULL,

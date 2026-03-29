@@ -2,7 +2,6 @@ import { useSelector, useDispatch } from "react-redux"
 import type { AppDispatch } from "@/app/providers/StoreProvider/config/store"
 import {
   selectIconPickerState,
-  setIconColor,
   setIconName,
 } from "./iconPicker.slice"
 import { useMemo } from "react"
@@ -12,7 +11,7 @@ import {
 } from "../const/registry"
 
 export const useIconPicker = () => {
-  const { iconName, iconColor } = useSelector(selectIconPickerState)
+  const { iconName } = useSelector(selectIconPickerState)
   const dispatch = useDispatch<AppDispatch>()
 
   const selectedIcon = useMemo(() => {
@@ -32,9 +31,5 @@ export const useIconPicker = () => {
     }
   }
 
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setIconColor(e.target.value))
-  }
-
-  return { iconName, iconColor, selectedIcon, handleIconSelect, handleColorChange }
+  return { iconName, selectedIcon, handleIconSelect }
 }

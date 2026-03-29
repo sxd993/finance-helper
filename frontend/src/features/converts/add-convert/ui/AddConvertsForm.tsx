@@ -6,6 +6,7 @@ import { ImportantFields } from "./fields/ImportantFields"
 import { WishesFields } from "./fields/WishesFields"
 import { InvestmentFields } from "./fields/InvestmentFields"
 import { ConvertLimitCard } from "@/features/converts/get-user-converts-limits/ui/ConvertLimitCard"
+import { ChevronDown } from "lucide-react"
 
 //Hooks
 import { useConvertTypes } from "../../get-convert-types/model/useConvertTypes"
@@ -23,30 +24,33 @@ export const AddConvertsForm = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white px-6 py-8 flex flex-col items-center gap-4 rounded-lg w-full border border-slate-200 shadow-lg"
+      className="flex w-full flex-col gap-6 rounded-3xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8"
     >
       <div className="flex flex-col gap-2 w-full">
-        <h2>Тип конверта</h2>
-        <select
-          {...register("type_code", { required: true })}
-          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
-        >
-          <option value="">Выберите тип...</option>
-          {convert_types?.map((convert) => (
-            <option key={convert.code} value={convert.code}>
-              {convert.title}
-            </option>
-          ))}
-        </select>
+        <label className="text-sm font-medium text-slate-700">Тип конверта</label>
+        <div className="relative">
+          <select
+            {...register("type_code", { required: true })}
+            className="w-full appearance-none rounded-xl border border-slate-300 px-4 py-2.5 pr-10 outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary"
+          >
+            <option value="">Выберите тип...</option>
+            {convert_types?.map((convert) => (
+              <option key={convert.code} value={convert.code}>
+                {convert.title}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-3 top-3 text-slate-400" />
+        </div>
       </div>
 
       <div className="flex flex-col gap-2 w-full">
-        <h2>Название конверта</h2>
+        <label className="text-sm font-medium text-slate-700">Название конверта</label>
         <input
           {...register("name", { required: true })}
           type="text"
           placeholder="Название конверта"
-          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary"
         />
       </div>
 
@@ -79,14 +83,12 @@ export const AddConvertsForm = () => {
       <button
         type="submit"
         disabled={isPending || !canSubmit}
-        className="mt-4 px-6 py-2 rounded-xl transition-all
-                   bg-secondary text-white hover:bg-secondary/90
-                   disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed disabled:hover:bg-slate-300"
+        className="mt-2 w-full rounded-2xl bg-secondary py-3 text-base font-medium text-white shadow-sm transition-colors hover:bg-secondary-dark disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-white"
       >
         {isPending ? "Создание..." : "Создать конверт"}
       </button>
 
-      {errorMessage && <p className="text-red-500 text-center w-full">{errorMessage}</p>}
+      {errorMessage && <p className="w-full text-center text-sm text-red-500">{errorMessage}</p>}
     </form>
   )
 }

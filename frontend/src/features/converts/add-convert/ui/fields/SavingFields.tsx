@@ -12,9 +12,7 @@ export const SavingFields = ({ register, error }: Props) => {
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex flex-col gap-2">
-        <h2>Сколько вы накопили?
-          <span className="text-red-500">*</span>
-        </h2>
+        <label className="text-sm font-medium text-slate-700">Сколько вы накопили? <span className="text-red-500">*</span></label>
         <input
           {...register("initial_amount",
             {
@@ -24,12 +22,10 @@ export const SavingFields = ({ register, error }: Props) => {
           type="number"
           min={0}
           placeholder="Введите сумму ваших накоплений"
-          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary"
         />
-        {initital_amount_error && <p className="text-red-500">{initital_amount_error.message}</p>}
-        <h2>Сколько вы хотите накопить?
-          <span className="text-red-500">*</span>
-        </h2>
+        {initital_amount_error && <p className="text-sm text-red-500">{initital_amount_error.message}</p>}
+        <label className="text-sm font-medium text-slate-700">Сколько вы хотите накопить? <span className="text-red-500">*</span></label>
         <input
           {...register("target_amount",
             {
@@ -40,9 +36,9 @@ export const SavingFields = ({ register, error }: Props) => {
           type="number"
           min={0}
           placeholder="Введите итоговую сумму цели"
-          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-secondary"
+          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary"
         />
-        {target_amount_error && <p className="text-red-500">{target_amount_error.message}</p>}
+        {target_amount_error && <p className="text-sm text-red-500">{target_amount_error.message}</p>}
       </div>
     </div>
   )

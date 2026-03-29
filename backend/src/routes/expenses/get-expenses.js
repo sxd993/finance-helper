@@ -45,7 +45,6 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
         sum: Number(data.sum),
         date: Number(data.date),
         icon_name: data.iconName,
-        icon_color: data.iconColor,
       };
     });
 

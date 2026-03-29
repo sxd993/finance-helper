@@ -1,12 +1,16 @@
 import { Modal } from "@/shared/ui/Modal"
 import { useModal } from "@/shared/ui/Modal/model/useModal"
 import { useIconPicker } from "../model/useIconPicker"
-import { EXPENSE_ICON_OPTIONS, EXPENSE_ICON_REGISTRY } from "../const/registry"
+import {
+  DEFAULT_EXPENSE_ICON_COLOR,
+  EXPENSE_ICON_OPTIONS,
+  EXPENSE_ICON_REGISTRY,
+} from "../const/registry"
 import { ExpenseIcon } from "../components/ExpenseIcon"
 
 export const IconSelectField = () => {
   const { isOpen, open, close } = useModal("add-expense-icon-select")
-  const { iconName, iconColor, selectedIcon, handleIconSelect } = useIconPicker()
+  const { iconName, selectedIcon, handleIconSelect } = useIconPicker()
 
   return (
     <div className="flex flex-col gap-3 bg-white">
@@ -21,7 +25,7 @@ export const IconSelectField = () => {
       >
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm">
-            <ExpenseIcon name={iconName} color={iconColor} size={28} strokeWidth={1.6} />
+            <ExpenseIcon name={iconName} color={DEFAULT_EXPENSE_ICON_COLOR} size={28} strokeWidth={1.6} />
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-slate-800">
@@ -55,7 +59,7 @@ export const IconSelectField = () => {
                     }`}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm">
-                    <IconComponent color={iconColor} size={26} strokeWidth={1.6} />
+                    <IconComponent color={DEFAULT_EXPENSE_ICON_COLOR} size={26} strokeWidth={1.6} />
                   </div>
                   <span className="text-[11px] text-center leading-tight">{label}</span>
                 </button>
@@ -77,4 +81,3 @@ export const IconSelectField = () => {
     </div>
   )
 }
-

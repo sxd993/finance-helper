@@ -1,6 +1,7 @@
 import * as LucideIcons from "lucide-react";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import type { Expense } from "@/entities/expense";
+import { DEFAULT_EXPENSE_ICON_COLOR } from "@/features/ui/pick-icons";
 
 export const ExpenseListCard = ({ expense }: { expense: Expense }) => {
     const Icon = LucideIcons[expense.icon_name as keyof typeof LucideIcons];
@@ -11,7 +12,7 @@ export const ExpenseListCard = ({ expense }: { expense: Expense }) => {
                     <div className="w-10 h-10 flex items-center justify-center">
                         <Icon
                             className="w-6 h-6"
-                            style={{ color: expense.icon_color }} />
+                            style={{ color: DEFAULT_EXPENSE_ICON_COLOR }} />
                     </div>
                 )}
                 <div className="flex flex-col justify-between">

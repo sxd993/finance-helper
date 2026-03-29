@@ -8,6 +8,5 @@ export interface Expense {
   sum: number;
   date?: number;
   icon_name: string;
-  icon_color: string;
 }
 

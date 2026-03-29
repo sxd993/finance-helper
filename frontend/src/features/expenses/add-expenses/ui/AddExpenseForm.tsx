@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react"
 
 import { useAddExpenseForm } from "../models/hooks/useAddExpenseForm"
-import { IconColorField, IconSelectField } from "../../../ui/pick-icons"
+import { IconSelectField } from "../../../ui/pick-icons"
 
 export const AddExpenseForm = () => {
   const { register, onSubmit, convertTypeOptions, convertTitleOptions } = useAddExpenseForm()
@@ -9,7 +9,7 @@ export const AddExpenseForm = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex w-full max-w-lg flex-col gap-6 rounded-2xl border border-slate-200 bg-white px-8 py-10 shadow-xl"
+      className="flex w-full flex-col gap-6 rounded-3xl border border-slate-200 bg-white px-6 py-7 shadow-sm sm:px-8 sm:py-8"
     >
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-slate-700">Название расхода</label>
@@ -75,11 +75,10 @@ export const AddExpenseForm = () => {
       </div>
 
       <IconSelectField />
-      <IconColorField />
 
       <button
         type="submit"
-        className="w-full rounded-xl bg-secondary py-3 text-base font-medium text-white shadow-sm transition-colors hover:bg-secondary-dark"
+        className="mt-2 w-full rounded-2xl bg-secondary py-3 text-base font-medium text-white shadow-sm transition-colors hover:bg-secondary-dark"
       >
         Добавить расход
       </button>

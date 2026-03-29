@@ -36,11 +36,11 @@ export const ConvertLimitCard = ({ typeCode }: Props) => {
     return (
         <div className="w-full">
             <div className="flex justify-between gap-3 text-sm">
-                <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
+                <div className="flex min-w-1/2 flex-col gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                     <span className="text-xs uppercase text-slate-500">Непотрачено</span>
                     <span className="text-base font-semibold text-emerald-600">{unspent}</span>
                 </div>
-                <div className="flex flex-col gap-1 border rounded-xl p-5 bg-slate-50 min-w-1/2">
+                <div className="flex min-w-1/2 flex-col gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                     <span className="text-xs uppercase text-slate-500">Общий лимит</span>
                     <span className="text-base font-semibold text-slate-900">{limit}</span>
                 </div>
