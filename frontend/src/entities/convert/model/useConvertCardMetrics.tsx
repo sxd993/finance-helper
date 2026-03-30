@@ -1,5 +1,6 @@
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
 import { formatTypeCode } from "@/entities/convert"
+import { getConvertTypeColor } from "@/entities/convert/lib/getConvertTypeColor"
 import { formatPrice } from "@/shared/utils/formatPrice"
 
 interface Props {
@@ -19,16 +20,7 @@ export const useConvertCardMetrics = ({ convert }: Props) => {
     const remainderAmount = formatPrice(availableToSpend)
 
     const progressColor = (typeCode : string) => {
-        switch (typeCode) {
-            case 'important':
-                return 'bg-orange-500'
-            case 'wishes':
-                return 'bg-yellow-500'
-            case 'saving':
-                return 'bg-green-500'
-            case 'investment':
-                return 'bg-blue-500'
-        }
+        return getConvertTypeColor(typeCode).bg
     }
 
     // Инвестиции

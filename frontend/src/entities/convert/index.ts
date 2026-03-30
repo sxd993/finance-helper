@@ -11,3 +11,4 @@ export type {
 } from './model/types';
 
 export { formatTypeCode } from './lib/formatTypeCode';
+export { getConvertTypeColor } from './lib/getConvertTypeColor';

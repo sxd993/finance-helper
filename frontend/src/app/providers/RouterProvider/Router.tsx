@@ -69,6 +69,19 @@ export const Router = createBrowserRouter([
     ],
   },
   {
+    path: '/remainders',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { RemaindersPage } = await import('@pages/remainders');
+          return { Component: RemaindersPage };
+        },
+      },
+    ],
+  },
+  {
     path: '/settings',
     element: <ProtectedRoute />,
     children: [
