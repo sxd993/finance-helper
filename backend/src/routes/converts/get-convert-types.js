@@ -1,14 +1,14 @@
 import express from 'express';
 import { requireAuth } from '../../utils/auth.js';
-import { ConvertType } from '../../db/index.js';
+import { getConvertTypes } from './utils/get-convert-types.js';
 
 
 const router = express.Router();
 
 router.get('/get-convert-types', requireAuth, async (req, res) => {
   try {
-    const types = await ConvertType.findAll()
-    res.json(types)
+    const types = await getConvertTypes();
+    res.json(types);
   }
 
   catch (error) {

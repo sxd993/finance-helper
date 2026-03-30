@@ -1,8 +1,6 @@
 import cron from 'node-cron';
-import { Op } from 'sequelize';
 import {
   getTodayDateOnly,
-  RESETTABLE_TYPES,
   RESET_BEHAVIOR_BY_TYPE,
   shouldResetCycle,
 } from './utils.js';
@@ -10,13 +8,27 @@ import {
   sequelize,
   User,
   Cycle,
+  ConvertType,
   Convert,
-  ConvertSpend,
   ConvertSaving,
   ConvertInvestment,
   Remainder,
 } from '../../db/index.js';
 import { recalcUserTypeLimitsAndResetDistributed } from '../../routes/converts/utils/type-limits.js';
+import { getTransactionsSummary } from '../../routes/converts/utils/get-user-converts.js';
+
+function createInitialStats(dateOnly, force) {
+  return {
+    dateOnly,
+    force,
+    totalUsers: 0,
+    resetCycles: 0,
+    createdCycles: 0,
+    skippedNoActiveCycle: 0,
+    skippedNotDue: 0,
+    errors: 0,
+  };
+}
 
 /* 
 Функция закрытия предыдущего цикла
@@ -116,10 +128,16 @@ async function resetConverts(userId, transaction) {
   const converts = await Convert.findAll({
     where: {
       userId,
-      typeCode: {
-        [Op.in]: RESETTABLE_TYPES,
-      },
     },
+    include: [
+      {
+        model: ConvertType,
+        as: 'type',
+        attributes: ['code', 'isReset'],
+        required: true,
+        where: { isReset: true },
+      },
+    ],
     transaction,
   });
 
@@ -128,6 +146,10 @@ async function resetConverts(userId, transaction) {
   }
 
   const snapshots = [];
+  const spendConvertIds = converts
+    .filter((convert) => convert.typeCode === 'important' || convert.typeCode === 'wishes')
+    .map((convert) => Number(convert.id));
+  const spendSummaryMap = await getTransactionsSummary(userId, spendConvertIds, { transaction });
 
   for (const convert of converts) {
     const behavior = RESET_BEHAVIOR_BY_TYPE[convert.typeCode];
@@ -139,8 +161,8 @@ async function resetConverts(userId, transaction) {
 
     let amount = 0;
     if (convert.typeCode === 'important' || convert.typeCode === 'wishes') {
-      const spend = await ConvertSpend.findByPk(convert.id, { transaction });
-      amount = Number(spend?.fundedAmount || 0);
+      const summary = spendSummaryMap.get(Number(convert.id));
+      amount = Number(Math.max(summary?.balance ?? 0, 0).toFixed(2));
     } else if (convert.typeCode === 'saving') {
       const saving = await ConvertSaving.findByPk(convert.id, { transaction });
       amount = Number(saving?.savedAmount || 0);
@@ -165,9 +187,9 @@ async function resetConverts(userId, transaction) {
 /* 
 Основная функция, которая проверяет срок текущего цикла и при необходимости закрывает его, переносит остатки и открывает новый
 */
-async function processUser(user, { dateOnly }) {
+async function processUser(user, { dateOnly, force = false }) {
   return sequelize.transaction(async (transaction) => {
-    let activeCycle = await Cycle.findOne({
+    const activeCycle = await Cycle.findOne({
       where: {
         userId: user.id,
         isClosed: false,
@@ -177,12 +199,16 @@ async function processUser(user, { dateOnly }) {
     });
 
     if (!activeCycle) {
+      if (force) {
+        return { status: 'skipped_no_active_cycle' };
+      }
+
       await createNewCycle(user.id, dateOnly, transaction);
-      return false;
+      return { status: 'created_cycle' };
     }
 
-    if (!shouldResetCycle(user, activeCycle.startDate, dateOnly)) {
-      return false;
+    if (!force && !shouldResetCycle(user, activeCycle.startDate, dateOnly)) {
+      return { status: 'skipped_not_due' };
     }
 
     const closedCycle = await closePreviousCycle(
@@ -204,33 +230,70 @@ async function processUser(user, { dateOnly }) {
     // Recompute type limits and reset distributed to 0 for new cycle
     await recalcUserTypeLimitsAndResetDistributed(user, { transaction });
 
-    return true;
+    return {
+      status: 'reset',
+      closedCycleId: closedCycle?.id ?? null,
+      newCycleId: newCycle?.id ?? null,
+      remaindersCreated: convertSnapshots.length,
+    };
   });
 }
 
 /* 
 Основная функция запуска сброса цикла
 */
-async function runCycleReset() {
-  const dateOnly = getTodayDateOnly();
+async function runCycleReset(options = {}) {
+  const {
+    force = false,
+    dateOnly = getTodayDateOnly(),
+  } = options;
 
   const users = await User.findAll();
+  const stats = createInitialStats(dateOnly, force);
 
   for (const user of users) {
+    stats.totalUsers += 1;
+
     try {
-      const processed = await processUser(user, { dateOnly });
-      if (processed) {
+      const result = await processUser(user, { dateOnly, force });
+
+      if (result.status === 'reset') {
+        stats.resetCycles += 1;
         console.log(
-          `Цикл сброшен для пользователя  ${user.id} (${user.login}) в ${dateOnly}`
+          `Цикл сброшен для пользователя ${user.id} (${user.login}) в ${dateOnly}${force ? ' [force]' : ''}`
         );
+        continue;
+      }
+
+      if (result.status === 'created_cycle') {
+        stats.createdCycles += 1;
+        console.log(
+          `Создан новый цикл для пользователя ${user.id} (${user.login}) в ${dateOnly}`
+        );
+        continue;
+      }
+
+      if (result.status === 'skipped_no_active_cycle') {
+        stats.skippedNoActiveCycle += 1;
+        console.log(
+          `Пропуск пользователя ${user.id} (${user.login}): нет активного цикла для force-reset`
+        );
+        continue;
+      }
+
+      if (result.status === 'skipped_not_due') {
+        stats.skippedNotDue += 1;
       }
     } catch (error) {
+      stats.errors += 1;
       console.error(
-        `Ошибка сброса цикла для пользователя  ${user.id} (${user.login}):`,
+        `Ошибка сброса цикла для пользователя ${user.id} (${user.login}):`,
         error
       );
     }
   }
+
+  return stats;
 }
 
 /* 

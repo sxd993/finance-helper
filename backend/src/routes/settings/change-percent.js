@@ -42,7 +42,7 @@ router.patch('/', requireAuth, async (req, res) => {
     });
 
     res.json({
-      message: 'Новые настройки применятся в слеудующем финансовом цикле',
+      message: 'Новые настройки применятся в следующем финансовом цикле',
       distribution: {
         percentImportant: newPercents.important,
         percentWishes: newPercents.wishes,
