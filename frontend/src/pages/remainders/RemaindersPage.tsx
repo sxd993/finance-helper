@@ -20,7 +20,7 @@ export const RemaindersPage = () => {
     <>
     <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pt-5 pb-20">
       <SectionTitle
-        title="Остатки"
+        title="Баланс остатков"
         subtitle="Просматривайте суммы, которые остались после завершённых циклов"
         icon={<Coins className="w-6 h-6 text-primary" />}
       />

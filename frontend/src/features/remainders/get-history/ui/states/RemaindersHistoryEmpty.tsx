@@ -2,7 +2,7 @@ import image from "@/assets/empty-fallback-images/empty-expense-image.png";
 
 export const RemaindersHistoryEmpty = () => {
   return (
-    <div className="mx-auto my-8 flex max-w-md flex-col items-center text-center">
+    <div className="mx-auto flex max-w-md flex-col items-center text-center">
       <img
         src={image}
         alt="empty-remainders-history"
