@@ -110,7 +110,7 @@ export const ChangeProfileInfo = () => {
           disabled={isDisabled || !isDirty}
         />
         <Button
-          bg="primary"
+          bg="secondary"
           title="Сохранить"
           className="flex-1"
           type="submit"

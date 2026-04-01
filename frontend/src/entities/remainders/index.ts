@@ -1,1 +1,7 @@
-export type { Remainder } from './model/type';
+export type {
+  Remainder,
+  RemaindersSummary,
+  RemaindersResponse,
+  RemainderRedistributionSource,
+  RemainderRedistributionHistoryItem,
+} from './model/types';

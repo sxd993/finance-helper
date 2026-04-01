@@ -130,7 +130,7 @@ export const ChangePercent = () => {
           disabled={isDisabled || !isDirty}
         />
         <Button
-          bg="primary"
+          bg="secondary"
           title="Сохранить"
           size="sm"
           className="flex-1"

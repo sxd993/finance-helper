@@ -10,6 +10,8 @@ import initConvertInvestment from '../models/ConvertInvestment.js';
 import initExpense from '../models/Expense.js';
 import initRemainder from '../models/Remainder.js';
 import initConvertTypeLimit from '../models/ConvertTypeLimit.js';
+import initRemainderRedistribution from '../models/RemainderRedistribution.js';
+import initRemainderRedistributionItem from '../models/RemainderRedistributionItem.js';
 
 const {
   MYSQL_HOST,
@@ -54,6 +56,8 @@ const ConvertInvestment = initConvertInvestment(sequelize, DataTypes);
 const Expense = initExpense(sequelize, DataTypes);
 const Remainder = initRemainder(sequelize, DataTypes);
 const ConvertTypeLimit = initConvertTypeLimit(sequelize, DataTypes);
+const RemainderRedistribution = initRemainderRedistribution(sequelize, DataTypes);
+const RemainderRedistributionItem = initRemainderRedistributionItem(sequelize, DataTypes);
 
 const models = {
   User,
@@ -66,6 +70,8 @@ const models = {
   Expense,
   Remainder,
   ConvertTypeLimit,
+  RemainderRedistribution,
+  RemainderRedistributionItem,
 };
 
 Object.values(models).forEach((model) => {
@@ -88,6 +94,8 @@ export {
   Expense,
   Remainder,
   ConvertTypeLimit,
+  RemainderRedistribution,
+  RemainderRedistributionItem,
 };
 
 export default {
@@ -104,4 +112,6 @@ export default {
   Expense,
   Remainder,
   ConvertTypeLimit,
+  RemainderRedistribution,
+  RemainderRedistributionItem,
 };

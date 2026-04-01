@@ -1,7 +1,7 @@
-import type { Remainder } from "@/entities/remainders";
+import type { RemaindersResponse } from "@/entities/remainders";
 import { client } from "@/shared/api/client";
 
-export const GetUserRemainders = async (): Promise<Remainder[]> => {
-  const response = await client.get<Remainder[]>("/remainders/get-user-remainders");
+export const GetUserRemainders = async (): Promise<RemaindersResponse> => {
+  const response = await client.get<RemaindersResponse>("/remainders/get-user-remainders");
   return response.data;
 };

@@ -3,6 +3,7 @@ import express from 'express';
 import { Remainder, Cycle } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { formatDateShort } from '../../utils/dates.js';
+import { buildRemaindersSummary } from './utils/summary.js';
 
 const router = express.Router();
 
@@ -34,7 +35,10 @@ router.get('/get-user-remainders', requireAuth, async (req, res) => {
       };
     });
 
-    return res.json(result);
+    return res.json({
+      summary: buildRemaindersSummary(remainders),
+      items: result,
+    });
   } catch (error) {
     console.error('[get-user-remainders] failed to fetch remainders', error);
     return res

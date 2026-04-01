@@ -141,6 +141,35 @@ CREATE TABLE IF NOT EXISTS remainders (
   INDEX idx_remainders_user (user_id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS remainder_redistributions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  target_convert_id INT NOT NULL,
+  target_type_code VARCHAR(50) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_remainder_redistributions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_remainder_redistributions_convert FOREIGN KEY (target_convert_id) REFERENCES converts(id) ON DELETE CASCADE,
+  CONSTRAINT fk_remainder_redistributions_type FOREIGN KEY (target_type_code) REFERENCES convert_types(code) ON DELETE RESTRICT,
+
+  INDEX idx_remainder_redistributions_user (user_id),
+  INDEX idx_remainder_redistributions_created (created_at)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS remainder_redistribution_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  redistribution_id INT NOT NULL,
+  remainder_id INT NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+
+  CONSTRAINT fk_remainder_redistribution_items_redistribution FOREIGN KEY (redistribution_id) REFERENCES remainder_redistributions(id) ON DELETE CASCADE,
+  CONSTRAINT fk_remainder_redistribution_items_remainder FOREIGN KEY (remainder_id) REFERENCES remainders(id) ON DELETE CASCADE,
+
+  INDEX idx_remainder_redistribution_items_redistribution (redistribution_id),
+  INDEX idx_remainder_redistribution_items_remainder (remainder_id)
+) ENGINE=InnoDB;
+
 -- ============================================================================
 -- НАЧАЛЬНЫЕ ДАННЫЕ
 -- ============================================================================

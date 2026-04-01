@@ -63,6 +63,30 @@ export const useAddExpenseForm = () => {
   const convertTypeOptions = getConvertTypeOptions(userConvertsLimits);
   const convertTitleOptions = getConvertTitleOptions(converts, convertType);
 
+  useEffect(() => {
+    const currentConvertId = getValues("convert_id");
+    const hasCurrentOption = convertTitleOptions.some(
+      (option) => Number(option.value) === currentConvertId
+    );
+
+    if (hasCurrentOption) {
+      return;
+    }
+
+    if (convertTitleOptions.length > 0) {
+      setValue("convert_id", Number(convertTitleOptions[0].value), {
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+      return;
+    }
+
+    setValue("convert_id", 0, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }, [convertTitleOptions, getValues, setValue]);
+
   const onSubmit = handleSubmit(onAddExpense);
 
   return {

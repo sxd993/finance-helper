@@ -46,12 +46,16 @@ export const AddExpenseForm = () => {
         <label className="text-sm font-medium text-slate-700">Название конверта</label>
         <div className="relative">
           <select
-            {...register("convert_id", { required: true, setValueAs: (v) => Number(v) })}
+            {...register("convert_id", {
+              required: true,
+              setValueAs: (value) => Number(value),
+              validate: (value) => value > 0,
+            })}
             defaultValue=""
             className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 px-4 py-2.5 pr-10 outline-none transition focus:border-secondary focus:ring-2 focus:ring-secondary"
           >
             <option value="" disabled>
-              Выберите конверт
+              {convertTitleOptions.length > 0 ? "Выберите конверт" : "Нет доступных конвертов"}
             </option>
             {convertTitleOptions.map((convert) => (
               <option key={convert.value} value={convert.value}>

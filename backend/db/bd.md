@@ -86,6 +86,14 @@ SQL-схема: `backend/db/schema_v2.sql`.
 - `user_id`, `cycle_id`, `type_code`, `amount`
 - `UNIQUE (cycle_id, type_code)`
 
+### `remainder_redistributions`
+История операций перераспределения остатков:
+- `user_id`, `target_convert_id`, `target_type_code`, `amount`, `created_at`
+
+### `remainder_redistribution_items`
+Детализация списания по конкретным остаткам:
+- `redistribution_id`, `remainder_id`, `amount`
+
 ## 3. Ключевые бизнес-правила по данным
 
 ### Spend (`important`/`wishes`)
@@ -134,6 +142,11 @@ SQL-схема: `backend/db/schema_v2.sql`.
 2. Открывает новый цикл.
 3. Сохраняет остатки в `remainders`.
 4. Сбрасывает/пересчитывает лимиты типов.
+
+### Перераспределение остатков (`/api/remainders/*`)
+- Общий доступный баланс считается суммой `remainders.amount` пользователя.
+- Перераспределение разрешено только в конверты типов `saving` и `investment`.
+- При переводе сумма списывается из нескольких `remainders` по FIFO и журналируется в `remainder_redistributions` + `remainder_redistribution_items`.
 
 ## 5. Технические примечания
 - Денежные значения: `DECIMAL(12,2)`.

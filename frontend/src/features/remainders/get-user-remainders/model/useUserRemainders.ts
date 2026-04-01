@@ -1,17 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 
-import type { Remainder } from "@/entities/remainders";
+import type { RemaindersResponse } from "@/entities/remainders";
 
 import { GetUserRemainders } from "../api/GetUserRemainders";
 
 export const useUserRemainders = () => {
-  const { data, isLoading, error } = useQuery<Remainder[]>({
+  const { data, isLoading, error } = useQuery<RemaindersResponse>({
     queryKey: ["remainders"],
     queryFn: GetUserRemainders,
   });
 
   return {
-    remainders: data ?? [],
+    remainders: data?.items ?? [],
+    summary: data?.summary ?? { total_amount: 0, items_count: 0 },
     isLoading,
     error,
   };
