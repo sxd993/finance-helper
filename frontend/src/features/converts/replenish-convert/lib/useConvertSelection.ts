@@ -8,10 +8,12 @@ import { filterConvertsBySource } from "./targetConverts";
 export const useConvertSelection = ({
   form,
   converts,
+  preferredConvertId,
   sourceTypeValue,
 }: {
   form: UseFormReturn<ReplenishFormValues>;
   converts: Convert[] | null;
+  preferredConvertId: string | null;
   sourceTypeValue: string;
 }) => {
   const convertIdValue = form.watch("convertId");
@@ -32,9 +34,13 @@ export const useConvertSelection = ({
       (convert) => String(convert.id) === convertIdValue,
     );
     if (!hasSelected) {
-      form.setValue("convertId", String(fallback.id));
+      const preferred =
+        preferredConvertId != null
+          ? eligibleConverts.find((convert) => String(convert.id) === preferredConvertId)
+          : null;
+      form.setValue("convertId", String(preferred?.id ?? fallback.id));
     }
-  }, [eligibleConverts, convertIdValue, form]);
+  }, [eligibleConverts, convertIdValue, form, preferredConvertId]);
 
 
   const selectedConvert =

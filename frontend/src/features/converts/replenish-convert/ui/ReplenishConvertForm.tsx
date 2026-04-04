@@ -2,18 +2,38 @@
 import { Button } from "@/shared/ui/Button";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { useReplinishConvertForm } from "../model/useReplinishConvertForm";
+import type { ReplenishSourceType } from "../model/types";
+import { formatTypeCode } from "@/entities/convert";
 
-export const ReplenishConvertForm = () => {
+interface ReplenishConvertFormProps {
+  initialSourceType?: ReplenishSourceType;
+  initialConvertId?: number;
+  initialConvertName?: string;
+  onSuccess?: () => void;
+}
+
+export const ReplenishConvertForm = ({
+  initialSourceType,
+  initialConvertId,
+  initialConvertName,
+  onSuccess,
+}: ReplenishConvertFormProps = {}) => {
   const {
     register,
     onSubmit,
     eligibleConverts,
+    selectedConvert,
     availableRemainder,
     isPending,
     isLoading,
+    isSourceTypeLocked,
     sourceTypeOptions,
     formState,
-  } = useReplinishConvertForm();
+  } = useReplinishConvertForm({
+    initialSourceType,
+    initialConvertId,
+    onSuccess,
+  });
 
   if (isLoading) {
     return (
@@ -43,33 +63,47 @@ export const ReplenishConvertForm = () => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-slate-600">Тип источника</label>
-        <select
-          {...register("sourceType", { required: true })}
-          className="rounded-xl border border-slate-200 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-        >
-          {sourceTypeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}  {`(${formatPrice(option.remainder)})`}
-            </option>
-          ))}
-        </select>
-      </div>
+      {isSourceTypeLocked && initialSourceType ? (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          Источник: <span className="font-medium text-slate-900">{formatTypeCode(initialSourceType)}</span>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-slate-600">Тип источника</label>
+          <select
+            {...register("sourceType", { required: true })}
+            className="rounded-xl border border-slate-200 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            {sourceTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}  {`(${formatPrice(option.remainder)})`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-slate-600">Конверт</label>
-        <select
-          {...register("convertId", { required: true })}
-          className="rounded-xl border border-slate-200 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-        >
-          {eligibleConverts.map((convert) => (
-            <option key={convert.id} value={convert.id}>
-              {convert.name}  {`(${formatPrice(convert.current_balance)})`}
-            </option>
-          ))}
-        </select>
-      </div>
+      {initialConvertId && initialConvertName && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          Конверт: <span className="font-medium text-slate-900">{initialConvertName}</span>
+        </div>
+      )}
+
+      {!initialConvertId && (
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-slate-600">Конверт</label>
+          <select
+            {...register("convertId", { required: true })}
+            className="rounded-xl border border-slate-200 px-3 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            {eligibleConverts.map((convert) => (
+              <option key={convert.id} value={convert.id}>
+                {convert.name}  {`(${formatPrice(convert.current_balance)})`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-slate-600">Сумма</label>
@@ -91,7 +125,7 @@ export const ReplenishConvertForm = () => {
       <Button
         title="Перевести"
         type="submit"
-        disabled={isPending || formState.isSubmitting}
+        disabled={isPending || formState.isSubmitting || !selectedConvert}
       />
     </form>
   );

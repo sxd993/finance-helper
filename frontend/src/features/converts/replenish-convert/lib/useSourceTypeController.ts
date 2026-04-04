@@ -16,18 +16,20 @@ import {
 export const useSourceTypeController = ({
   form,
   storedSourceType,
+  lockedSourceType,
   limits,
 }: {
   form: UseFormReturn<ReplenishFormValues>;
   storedSourceType: ReplenishSourceType | null;
+  lockedSourceType: ReplenishSourceType | null;
   limits: UserConvertLimit[] | null;
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const sourceTypeOptions = useMemo(() => buildSourceTypeOptions(limits), [limits]);
   const sourceTypeValue = form.watch("sourceType");
   const normalized = useMemo(
-    () => normalizeSourceType(sourceTypeOptions, storedSourceType),
-    [sourceTypeOptions, storedSourceType],
+    () => lockedSourceType ?? normalizeSourceType(sourceTypeOptions, storedSourceType),
+    [lockedSourceType, sourceTypeOptions, storedSourceType],
   );
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export const useSourceTypeController = ({
   const availableRemainder = getAvailableRemainder(sourceTypeOptions, sourceTypeValue);
 
   return {
+    isSourceTypeLocked: lockedSourceType != null,
     sourceTypeOptions,
     sourceTypeValue,
     handleSourceTypeChange,

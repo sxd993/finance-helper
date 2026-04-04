@@ -53,7 +53,11 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
 
     const limitAmount = Number(limitRow.limitAmount ?? 0);
     const allocatedAmount = await getAllocatedAmount(userId, typeCode, { transaction });
-    const remainder = Number((limitAmount - allocatedAmount).toFixed(2));
+
+    // Для накоплений и инвестиций пополнение идёт из доступного баланса типа,
+    // который в текущей модели соответствует полному лимиту категории, а не
+    // остатку после уже распределённых сумм по конвертам.
+    const remainder = limitAmount;
     if (remainder <= 0 || amount > remainder + 1e-6) {
       await transaction.rollback();
       return res.status(400).json({ message: 'Недостаточно средств для пополнения конверта' });
@@ -90,7 +94,7 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
       limit: {
         type_code: typeCode,
         allocated_amount: normalizeLimit(allocatedAmount + amount),
-        remainder_amount: Number((limitAmount - (allocatedAmount + amount)).toFixed(2)),
+        remainder_amount: Number(Math.max(limitAmount - amount, 0).toFixed(2)),
       },
     });
   } catch (error) {

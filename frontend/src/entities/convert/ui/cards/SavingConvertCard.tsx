@@ -4,7 +4,9 @@ import { ProgressBar } from "@/shared/ui/ProgressBar"
 import { Modal } from "@/shared/ui/Modal"
 import { useModal } from "@/shared/ui/Modal/model/useModal"
 import { DeleteConvertModal } from "@/features/converts/delete-convert"
-import { Trash } from "lucide-react"
+import { ReplenishConvertForm } from "@/features/converts/replenish-convert"
+import { Button } from "@/shared/ui/Button"
+import { Plus, Trash } from "lucide-react"
 
 interface Props {
     convert: Convert
@@ -12,6 +14,7 @@ interface Props {
 
 export const SavingConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
+    const { isOpen: isReplenishOpen, open: openReplenish, close: closeReplenish } = useModal(`replenish-convert-${convert.id}`)
     const targetValue = convert.goal_amount ?? 0
     const remainderValue = convert.saved_amount ?? 0
     const remainder = formatPrice(remainderValue)
@@ -28,14 +31,23 @@ export const SavingConvertCard = ({ convert }: Props) => {
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-900">{convert.name}</h3>
 
-                    <button
-                        type="button"
-                        aria-label={`Удалить конверт ${convert.name}`}
-                        onClick={open}
-                        className="w-10 h-10 rounded-xl border border-slate-200 text-slate-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors"
-                    >
-                        <Trash className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            title="Пополнить"
+                            size="sm"
+                            onClick={openReplenish}
+                            leftIcon={<Plus className="w-4 h-4" />}
+                            className="gap-2"
+                        />
+                        <button
+                            type="button"
+                            aria-label={`Удалить конверт ${convert.name}`}
+                            onClick={open}
+                            className="w-10 h-10 rounded-xl border border-slate-200 text-slate-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors"
+                        >
+                            <Trash className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="space-y-2 mb-4">
@@ -51,6 +63,20 @@ export const SavingConvertCard = ({ convert }: Props) => {
 
             <Modal isOpen={isOpen} onClose={close}>
                 <DeleteConvertModal id={convert.id} name={convert.name} onClose={close} />
+            </Modal>
+
+            <Modal
+                isOpen={isReplenishOpen}
+                onClose={closeReplenish}
+                title="Пополнение конверта"
+                widthClassName="max-w-xl"
+            >
+                <ReplenishConvertForm
+                    initialSourceType="saving"
+                    initialConvertId={convert.id}
+                    initialConvertName={convert.name}
+                    onSuccess={closeReplenish}
+                />
             </Modal>
         </>
     )

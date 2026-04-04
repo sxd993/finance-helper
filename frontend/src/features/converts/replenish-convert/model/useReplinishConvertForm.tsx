@@ -10,7 +10,17 @@ import type { ReplenishFormValues, ReplenishSourceType } from "./types";
 import { useSourceTypeController } from "../lib/useSourceTypeController";
 import { useConvertSelection } from "../lib/useConvertSelection";
 
-export const useReplinishConvertForm = () => {
+interface UseReplinishConvertFormOptions {
+  initialSourceType?: ReplenishSourceType;
+  initialConvertId?: number;
+  onSuccess?: () => void;
+}
+
+export const useReplinishConvertForm = ({
+  initialSourceType,
+  initialConvertId,
+  onSuccess,
+}: UseReplinishConvertFormOptions = {}) => {
   const storedSourceType = useSelector(
     (state: RootState) => state.replenish_form.sourceType,
   );
@@ -19,8 +29,8 @@ export const useReplinishConvertForm = () => {
 
   const form = useForm<ReplenishFormValues>({
     defaultValues: {
-      sourceType: storedSourceType ?? "",
-      convertId: "",
+      sourceType: initialSourceType ?? storedSourceType ?? "",
+      convertId: initialConvertId ? String(initialConvertId) : "",
       amount: 0,
     },
   });
@@ -29,12 +39,14 @@ export const useReplinishConvertForm = () => {
   const sourceControl = useSourceTypeController({
     form,
     storedSourceType: storedSourceType as ReplenishSourceType | null,
+    lockedSourceType: initialSourceType ?? null,
     limits: userConvertsLimits,
   });
 
   const convertControl = useConvertSelection({
     form,
     converts,
+    preferredConvertId: initialConvertId ? String(initialConvertId) : null,
     sourceTypeValue: sourceControl.sourceTypeValue,
   });
 
@@ -55,6 +67,8 @@ export const useReplinishConvertForm = () => {
       convertId: String(convertControl.selectedConvert.id),
       amount: 0,
     });
+
+    onSuccess?.();
   });
 
   return {
@@ -62,7 +76,9 @@ export const useReplinishConvertForm = () => {
     onSubmit,
     handleSourceTypeChange: sourceControl.handleSourceTypeChange,
     eligibleConverts: convertControl.eligibleConverts,
+    selectedConvert: convertControl.selectedConvert,
     availableRemainder: sourceControl.availableRemainder,
+    isSourceTypeLocked: sourceControl.isSourceTypeLocked,
     isPending,
     isLoading,
     sourceTypeOptions: sourceControl.sourceTypeOptions,

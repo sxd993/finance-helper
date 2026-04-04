@@ -1,4 +1,4 @@
-import type { ConvertTab } from "@/features/ui/switch-convert-tabs/store/ConvertTabs.slice";
+import type { ConvertTab } from "@/entities/convert";
 import { client } from "@/shared/api/client";
 
 export interface ReplenishConvertRequest {

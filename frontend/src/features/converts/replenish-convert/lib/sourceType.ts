@@ -16,7 +16,7 @@ export const buildSourceTypeOptions = (
     .map((limit) => ({
       value: limit.typeCode as ReplenishSourceType,
       label: formatTypeCode(limit.typeCode),
-      remainder: Number(limit.availableToAllocate ?? 0),
+      remainder: Number(limit.availableToSpend ?? 0),
     }));
 };
 
