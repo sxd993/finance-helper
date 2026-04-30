@@ -36,7 +36,7 @@
   - `secondary` — `#14b8a6`
   - `secondary-dark` — `#0e8376`
 - Канонические цвета конвертов:
-  - `important` — `#334155`
+  - `important` — `#e7000b `
   - `wishes` — `#d97706`
   - `saving` — `#059669`
   - `investment` — `#2563eb`

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { isAxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import {
   REGISTER_DISTRIBUTION_FIELDS,
   sumRegisterDistribution,
 } from '../const/registerDistribution';
+import { clearRegisterDraft, readRegisterDraft, writeRegisterDraft } from '../lib/registerDraft';
 
 
 
@@ -28,6 +29,8 @@ export const useRegister = () => {
 
 
 export const useRegisterForm = () => {
+  const draft = readRegisterDraft();
+
   const form = useForm<RegisterFormData>({
     mode: 'onChange',
     defaultValues: {
@@ -40,6 +43,7 @@ export const useRegisterForm = () => {
       ...REGISTER_DISTRIBUTION_DEFAULTS,
       personalDataConsent: false,
       privacyPolicyAccepted: false,
+      ...draft?.values,
     },
   });
 
@@ -48,6 +52,10 @@ export const useRegisterForm = () => {
   const values = form.watch();
   const distributionTotal = sumRegisterDistribution(values);
   const isDistributionValid = isValidRegisterDistribution(distributionTotal);
+
+  useEffect(() => {
+    writeRegisterDraft({ values });
+  }, [values]);
 
   const validateUserInfoStep = useCallback(() => {
     return form.trigger([
@@ -67,16 +75,19 @@ export const useRegisterForm = () => {
         type: 'validate',
         message: 'Сумма процентов должна равняться 100%',
       });
-      return;
+      return false;
     }
 
     form.clearErrors('root');
 
     try {
       await registerMutation.mutateAsync(data);
+      clearRegisterDraft();
       navigate('/home');
+      return true;
     } catch (err) {
       console.error('Ошибка регистрации:', err);
+      return false;
     }
   }, [form, navigate, registerMutation]);
 

@@ -11,28 +11,28 @@ export interface DistributionFieldConfig {
 
 export const DISTRIBUTION_FIELDS: DistributionFieldConfig[] = [
   {
+    key: "percentImportant",
+    label: "Необходимое",
+    typeCode: "important",
+    description: "Обязательные счета, продукты и транспорт",
+  },
+  {
+    key: "percentWishes",
+    label: "Желания",
+    typeCode: "wishes",
+    description: "Кафе, развлечения, подарки и покупки для удовольствия",
+  },
+  {
     key: "percentSaving",
     label: "Накопления",
     typeCode: "saving",
-    description: "Откладывайте на крупные цели и подушку безопасности",
-  },
-  {
-    key: "percentImportant",
-    label: "Повседневные расходы",
-    typeCode: "important",
-    description: "Обязательные счета, продукты и транспорт",
+    description: "Подушка безопасности и крупные цели",
   },
   {
     key: "percentInvestment",
     label: "Инвестиции",
     typeCode: "investment",
-    description: "Долгосрочный рост капитала",
-  },
-  {
-    key: "percentWishes",
-    label: "Траты для удовольствия",
-    typeCode: "wishes",
-    description: "Хобби, путешествия и подарки",
+    description: "Долгосрочный рост капитала и активы",
   },
 ];
 

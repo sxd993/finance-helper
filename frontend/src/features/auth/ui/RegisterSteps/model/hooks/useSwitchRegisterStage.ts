@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { useRegisterStepsStore } from "../store/RegisterStepsStore";
 import type { RegisterStep } from "@/features/auth/model/types/auth.types";
 
@@ -21,8 +21,6 @@ export const useSwitchRegisterStage = () => {
             return prev;
         });
     }, [setStep]);
-
-    useEffect(() => reset, [reset]);
 
     return {
         step,

@@ -7,7 +7,7 @@ import type {
 import { getConvertTypePalette } from '@/entities/convert';
 import type { RegisterFormData } from '@/features/auth/model/types/auth.types';
 import type { RegisterDistributionField } from '@/features/auth/model/const/registerDistribution';
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { formatPrice } from '@/shared/utils/formatPrice';
 
 interface RegisterUserSettingsProps {
   register: UseFormRegister<RegisterFormData>;
@@ -36,8 +36,10 @@ export const RegisterUserSettings = ({
   errors,
   error,
 }: RegisterUserSettingsProps) => {
-  const formattedTotal = Number(distributionTotal || 0).toFixed(1);
+  const total = Number(distributionTotal || 0);
+  const formattedTotal = Number.isInteger(total) ? total.toFixed(0) : total.toFixed(1);
   const values = watch();
+  const monthlyIncome = Number(values.monthly_income || 0);
 
   return (
     <form
@@ -81,26 +83,27 @@ export const RegisterUserSettings = ({
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-4">
           {distributionFields.map((field) => {
             const palette = getConvertTypePalette(field.typeCode);
             const fieldError = errors[field.name];
-            const value = Math.max(0, Math.min(100, Number(values[field.name] || 0)));
+            const percent = Number(values[field.name] || 0);
+            const amount = (monthlyIncome * percent) / 100;
 
             return (
-              <div
-                key={field.name}
-                className={`rounded-3xl border ${palette.border} ${palette.softBg} p-4 shadow-sm`}
-              >
+              <div key={field.name} className="space-y-2">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={`h-3 w-3 rounded-full ${palette.bg}`} />
+                      <span className={`h-2.5 w-2.5 rounded-full ${palette.bg}`} />
                       <p className="text-sm font-semibold text-slate-900">{field.label}</p>
                     </div>
-                    <p className="mt-1 text-xs text-slate-500">{field.description}</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">{field.description}</p>
+                    <p className="text-base font-medium text-green-600 mt-1">
+                      {formatPrice(amount) ?? '0 ₽'}
+                    </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex w-24 shrink-0 items-center gap-1 rounded-2xl border border-slate-200 px-3 py-2 ring-inset focus-within:border-primary">
                     <input
                       type="number"
                       step="1"
@@ -117,31 +120,22 @@ export const RegisterUserSettings = ({
                           message: 'Максимум 100%',
                         },
                       })}
-                      className="w-20 rounded-2xl border border-white/70 bg-white px-3 py-2 text-right text-sm font-semibold text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-slate-100"
+                      className="w-full border-none bg-transparent text-right text-sm font-semibold text-slate-900 outline-none disabled:bg-transparent"
                     />
                     <span className="text-sm text-slate-500">%</span>
                   </div>
                 </div>
-                <div className="mt-4 rounded-2xl bg-white/70 p-3">
-                  <div className="mb-2 flex items-center justify-between text-xs">
-                    <span className={palette.text}>Доля</span>
-                    <span className="font-semibold text-slate-700">
-                      {value}%
-                    </span>
-                  </div>
-                  <ProgressBar color={palette.bg} percentage={value} />
-                </div>
                 {fieldError?.message && (
-                  <p className="mt-2 text-xs text-red-500">{fieldError.message}</p>
+                  <p className="text-xs text-red-500">{fieldError.message}</p>
                 )}
               </div>
             );
           })}
         </div>
 
-        <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+        <div className="flex items-center justify-between px-1 py-2 text-sm">
           <span className="text-slate-600">Суммарное распределение</span>
-          <span className={`font-semibold ${isDistributionValid ? 'text-emerald-600' : 'text-red-500'}`}>
+          <span className={`text-base font-semibold ${isDistributionValid ? 'text-emerald-600' : 'text-red-500'}`}>
             {formattedTotal}%
           </span>
         </div>
@@ -161,7 +155,7 @@ export const RegisterUserSettings = ({
       )}
 
       {/* Кнопки */}
-      <div className="flex gap-3 mt-2">
+      <div className="flex gap-3">
         <button
           type="button"
           onClick={onBack}

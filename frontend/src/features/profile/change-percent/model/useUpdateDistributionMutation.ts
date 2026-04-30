@@ -18,7 +18,7 @@ export const useUpdateDistributionMutation = () => {
     mutationKey: ["profile", "distribution"],
     mutationFn: updateDistributionApi,
     onSuccess: () => {
-      queryClient.invalidateQueries(['user'])
+      queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Схема распределения обновлена");
     },
     onError: () => {

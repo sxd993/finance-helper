@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useUser } from "@/shared/hooks/useUser";
 import {
@@ -14,60 +14,80 @@ export const useChangePercent = () => {
   const { mutateAsync, isPending } = useUpdateDistributionMutation();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Синхронизируем форму с актуальными данными пользователя
-  const defaultValues: ChangePercentFormValues = {
-    percentImportant: normalizePercent(user?.percentImportant),
-    percentWishes: normalizePercent(user?.percentWishes),
-    percentSaving: normalizePercent(user?.percentSaving),
-    percentInvestment: normalizePercent(user?.percentInvestment),
-  };
+  const defaultValues = useMemo<ChangePercentFormValues>(
+    () => ({
+      percentImportant: normalizePercent(user?.percentImportant),
+      percentWishes: normalizePercent(user?.percentWishes),
+      percentSaving: normalizePercent(user?.percentSaving),
+      percentInvestment: normalizePercent(user?.percentInvestment),
+    }),
+    [
+      user?.percentImportant,
+      user?.percentWishes,
+      user?.percentSaving,
+      user?.percentInvestment,
+    ],
+  );
 
-  // Инициализируем react-hook-form в режиме "onChange"
-  const form = useForm<ChangePercentFormValues>({
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    watch,
+    reset,
+    setError,
+    clearErrors,
+    formState,
+  } = useForm<ChangePercentFormValues>({
     mode: "onChange",
     defaultValues,
   });
 
-  // Следим за текущими значениями для прогрессбаров/валидации
-  const values = form.watch();
-  const totalPercentage = sumDistribution(values);
+  useEffect(() => {
+    if (user) {
+      reset(defaultValues);
+      setSuccessMessage(null);
+    }
+  }, [defaultValues, reset, user]);
 
-  // Сбрасываем форму к исходным данным
+  const values = watch();
+  const totalPercentage = sumDistribution(values);
+  const monthlyIncome = Number(user?.monthlyIncome || 0);
+
   const handleReset = () => {
-    form.reset(defaultValues);
+    reset(defaultValues);
     setSuccessMessage(null);
   };
 
-  // Сабмит с проверкой тотала перед вызовом API
-  const handleSubmit = form.handleSubmit(async (values) => {
+  const handleSubmit = handleFormSubmit(async (values) => {
     const total = sumDistribution(values);
 
     if (!isValidTotal(total)) {
-      form.setError("root", {
+      setError("root", {
         type: "validate",
         message: "Сумма процентов должна равняться 100%",
       });
       return;
     }
 
-    form.clearErrors("root");
+    clearErrors("root");
 
-    const response = await mutateAsync(values)
+    const response = await mutateAsync(values);
     setSuccessMessage(response.message);
   });
 
   return {
     form: {
-      register: form.register,
+      register,
       handleSubmit,
-      errors: form.formState.errors,
-      isDirty: form.formState.isDirty,
-      isValid: form.formState.isValid,
+      errors: formState.errors,
+      isDirty: formState.isDirty,
+      isValid: formState.isValid,
     },
     uiState: {
       currentPercents: values,
+      monthlyIncome,
       totalPercentage,
-      totalError: form.formState.errors.root?.message ?? null,
+      totalError: formState.errors.root?.message ?? null,
       successMessage,
       isPending,
       isLoadingUser,
