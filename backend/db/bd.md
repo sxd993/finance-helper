@@ -19,7 +19,7 @@
 FK-зависимые таблицы:
 - `cycles.user_id`
 - `converts.user_id`
-- `expenses.user_id`
+- `operations.user_id`
 - `convert_type_limits.user_id`
 - `remainders.user_id`
 - `remainder_redistributions.user_id`
@@ -27,7 +27,7 @@ FK-зависимые таблицы:
 Sequelize-ассоциации, описанные в коде:
 - 1:N `cycles`
 - 1:N `converts`
-- 1:N `expenses`
+- 1:N `operations`
 - 1:N `remainders`
 
 ### `convert_types`
@@ -44,7 +44,7 @@ Sequelize-ассоциации, описанные в коде:
 
 FK-зависимые таблицы:
 - `converts.type_code`
-- `expenses.convert_type`
+- `operations.convert_type`
 - `convert_type_limits.type_code`
 - `remainders.type_code`
 - `remainder_redistributions.target_type_code`
@@ -78,7 +78,7 @@ FK:
 Sequelize-ассоциации, описанные в коде:
 - N:1 `user`
 - N:1 `type`
-- 1:N `expenses`
+- 1:N `operations`
 - 1:1 `spend`
 - 1:1 `saving`
 - 1:1 `investment`
@@ -110,21 +110,19 @@ FK:
 FK:
 - `convert_id -> converts.id`
 
-### `expenses`
-Расходы пользователя:
+### `operations`
+Единый журнал операций:
 - `id`, `user_id`
-- `convert_id`
-- `name`
-- `convert_name`, `convert_type`
-- `sum`, `date`, `icon_name`
-
-FK:
-- `user_id -> users.id`
-- `convert_id -> converts.id ON DELETE SET NULL`
-- `convert_type -> convert_types.code`
+- `type`: `expense` или `replenishment`
+- `source`: `spend`, `type_limit` или `remainder`
+- `amount`, `occurred_at`
+- snapshot конверта: `convert_id`, `convert_name`, `convert_type`
+- `title`, `icon_name`
+- ссылка на перераспределение остатков: `remainder_redistribution_id`
 
 Примечание:
-- `convert_name` и `convert_type` используются как snapshot-поля для истории.
+- расходы хранятся прямо как `operations.type = expense`
+- пополнения через лимит типа и распределения остатков создают записи `replenishment`
 
 ### `convert_type_limits`
 Лимиты по типам:
@@ -192,7 +190,7 @@ Sequelize-ассоциации, описанные в коде:
 ## 3. Ключевые бизнес-правила по данным
 
 ### Spend (`important`/`wishes`)
-- Баланс конверта: `funded_amount - SUM(expenses)` за активный цикл.
+- Баланс конверта: `funded_amount - SUM(operations.amount WHERE type = 'expense')` за активный цикл.
 - Проверка траты выполняется по этому балансу.
 
 ### Saving
@@ -235,10 +233,11 @@ Payload принимает базовые данные пользователя,
 - `add-convert`: создаёт запись в `converts` и в нужной subtype-таблице.
 - `edit-convert`: обновляет базу и subtype по `type_code`.
 - `get-converts`: отдаёт унифицированный DTO с тип-специфичными полями.
-- `replenish-convert`: пополняет `saved_amount` или `invested_amount`.
-- `delete-convert`: удаляет конверт; связанные расходы не удаляются, а теряют ссылку через `expenses.convert_id -> NULL`.
+- `replenish-convert`: пополняет `saved_amount` или `invested_amount` из лимита типа и пишет операцию в журнал.
+- `delete-convert`: удаляет конверт; связанные операции не удаляются, а теряют ссылку через `operations.convert_id -> NULL`.
 
 ### Расходы (`/api/expenses/*`)
+- Совместимый API для списаний; физически работает с таблицей `operations`.
 - Привязка по `convert_id`.
 - При создании и редактировании проверяется:
   - валидность payload
@@ -258,9 +257,13 @@ Payload принимает базовые данные пользователя,
 - `redistribute`: переводит сумму из общего пула остатков в целевой конверт.
 - `history`: возвращает историю перераспределений с источниками списания.
 
+### История (`/api/history`)
+- `GET /api/history`: возвращает общий журнал операций.
+- Query `operation_type`: `all`, `expense`, `replenishment`.
+
 ## 5. Технические примечания
 - Денежные значения: `DECIMAL(12,2)`.
-- Дата расхода: `BIGINT UNSIGNED` (unix ms).
+- Дата операции: `BIGINT UNSIGNED` (unix ms).
 - Даты цикла: `DATE`.
 - Большинство сущностей используют `snake_case` в БД и camelCase в Sequelize-моделях через `field`.
 - Критичные операции выполняются в `sequelize.transaction`.

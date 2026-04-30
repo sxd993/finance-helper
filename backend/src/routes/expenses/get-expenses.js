@@ -1,7 +1,7 @@
 import express from 'express';
 import { Op } from 'sequelize';
 
-import { Expense, ConvertType, Cycle } from '../../db/index.js';
+import { Operation, ConvertType, Cycle } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 
 const router = express.Router();
@@ -17,20 +17,21 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
     const shouldFilterByType =
       convertTypeFilter && convertTypeFilter.toLowerCase() !== 'all';
 
-    const expenses = await Expense.findAll({
+    const expenses = await Operation.findAll({
       where: {
         userId,
+        type: 'expense',
         ...(shouldFilterByType ? { convertType: convertTypeFilter } : {}),
       },
       include: [
         {
           model: ConvertType,
-          as: 'type',
+          as: 'convertTypeInfo',
           attributes: ['code', 'title'],
           required: false,
         },
       ],
-      order: [['date', 'DESC']],
+      order: [['occurred_at', 'DESC'], ['id', 'DESC']],
     });
 
     const result = expenses.map((expense) => {
@@ -38,12 +39,12 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
       return {
         id: data.id,
         convert_id: data.convertId,
-        name: data.name,
+        name: data.title,
         convert_name: data.convertName,
         convert_type: data.convertType,
-        convert_title: data.convertTitle,
-        sum: Number(data.sum),
-        date: Number(data.date),
+        convert_title: data.convertTypeInfo?.title ?? null,
+        sum: Number(data.amount),
+        date: Number(data.occurredAt),
         icon_name: data.iconName,
       };
     });
@@ -63,10 +64,11 @@ router.get('/get-expenses', requireAuth, async (req, res) => {
         ? new Date(activeCycle.endDate).getTime()
         : Date.now();
 
-      const spent = await Expense.sum('sum', {
+      const spent = await Operation.sum('amount', {
         where: {
           userId,
-          date: {
+          type: 'expense',
+          occurredAt: {
             [Op.between]: [cycleStart, cycleEnd],
           },
         },

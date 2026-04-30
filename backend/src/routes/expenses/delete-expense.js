@@ -1,6 +1,7 @@
 import express from 'express';
-import { sequelize, Expense, Convert } from '../../db/index.js';
+import { sequelize, Operation } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
+import { deleteExpenseOperation } from '../../features/operations/write-operation.js';
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.delete('/delete-expense/:id', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Некорректный id траты' });
     }
 
-    const expense = await Expense.findOne({
-      where: { id: expenseId, userId },
+    const expense = await Operation.findOne({
+      where: { id: expenseId, userId, type: 'expense' },
       transaction,
       lock: transaction.LOCK.UPDATE,
     });
@@ -27,7 +28,11 @@ router.delete('/delete-expense/:id', requireAuth, async (req, res) => {
       return res.status(404).json({ message: 'Трата не найдена' });
     }
 
-    await expense.destroy({ transaction });
+    const deleted = await deleteExpenseOperation({ userId, expenseId, transaction });
+    if (!deleted) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Трата не найдена' });
+    }
     await transaction.commit();
 
     return res.json({ message: 'Трата удалена', id: expenseId });

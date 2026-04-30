@@ -11,8 +11,12 @@ import type { AppDispatch } from "@/app/providers/StoreProvider/config/store";
 import { useUserConverts } from "@/features/converts/get-user-converts/models/useUserConverts";
 import { useUserConvertsLimits } from "@/features/converts/get-user-converts-limits/model/useUserConvertsLimits";
 
-export const useAddExpenseForm = () => {
-  const { onAddExpense } = useAddExpenseMutation();
+interface UseAddExpenseFormOptions {
+  onSuccess?: () => void;
+}
+
+export const useAddExpenseForm = ({ onSuccess }: UseAddExpenseFormOptions = {}) => {
+  const { onAddExpense } = useAddExpenseMutation({ onSuccess });
   const { converts } = useUserConverts();;
 
   const dispatch = useDispatch<AppDispatch>();

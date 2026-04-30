@@ -70,21 +70,14 @@ export const Router = createBrowserRouter([
     ],
   },
   {
-    path: '/expenses',
+    path: '/history',
     element: <ProtectedRoute />,
     children: [
       {
         index: true,
         lazy: async () => {
-          const { ExpensesPage } = await import('@/pages/expenses');
-          return { Component: ExpensesPage };
-        },
-      },
-      {
-        path: 'add-expense',
-        lazy: async () => {
-          const { AddExpensesPage } = await import('@pages/expenses');
-          return { Component: AddExpensesPage };
+          const { HistoryPage } = await import('@/pages/history');
+          return { Component: HistoryPage };
         },
       },
     ],

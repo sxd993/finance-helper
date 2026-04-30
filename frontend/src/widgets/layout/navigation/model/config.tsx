@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { Home, Coins, BanknoteArrowDown, Settings } from 'lucide-react';
+import { Home, Coins, History, Settings } from 'lucide-react';
 
 interface NavigationItem {
     id: string;
@@ -17,10 +17,10 @@ export const navigationItems: NavigationItem[] = [
         icon: <Home className="w-6 h-6 mb-1" />,
     },
     {
-        id: 'expenses',
-        path: '/expenses',
-        label: 'Расходы',
-        icon: <BanknoteArrowDown className="w-6 h-6 mb-1" />,
+        id: 'history',
+        path: '/history',
+        label: 'История',
+        icon: <History className="w-6 h-6 mb-1" />,
     },
     {
         id: 'remainders',

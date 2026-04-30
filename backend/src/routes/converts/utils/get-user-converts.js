@@ -5,7 +5,7 @@ import {
   ConvertSpend,
   ConvertSaving,
   ConvertInvestment,
-  Expense,
+  Operation,
   Cycle,
 } from '../../../db/index.js';
 
@@ -36,15 +36,16 @@ async function getTransactionsSummary(userId, convertIds, { transaction } = {}) 
   const startMs = new Date(lastCycle.start_date).getTime();
   const endMs = new Date(lastCycle.end_date ?? Date.now()).getTime();
 
-  const expenseRows = await Expense.findAll({
+  const expenseRows = await Operation.findAll({
     where: {
       userId,
+      type: 'expense',
       convertId: { [Op.in]: convertIds },
-      date: { [Op.between]: [startMs, endMs] },
+      occurredAt: { [Op.between]: [startMs, endMs] },
     },
     attributes: [
       [col('convert_id'), 'convert_id'],
-      [fn('COALESCE', fn('SUM', col('sum')), literal('0')), 'total_out'],
+      [fn('COALESCE', fn('SUM', col('amount')), literal('0')), 'total_out'],
     ],
     group: ['convert_id'],
     raw: true,

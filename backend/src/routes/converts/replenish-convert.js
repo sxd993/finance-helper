@@ -8,6 +8,7 @@ import {
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { getAllocatedAmount, normalizeLimit } from './utils/type-limits.js';
+import { createTypeLimitReplenishmentOperation } from '../../features/operations/write-operation.js';
 
 const router = express.Router();
 const SUPPORTED_TYPES = new Set(['saving', 'investment']);
@@ -53,14 +54,16 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
 
     const limitAmount = Number(limitRow.limitAmount ?? 0);
     const allocatedAmount = await getAllocatedAmount(userId, typeCode, { transaction });
+    const availableAmount = normalizeLimit(Math.max(limitAmount - allocatedAmount, 0)) ?? 0;
 
-    // Для накоплений и инвестиций пополнение идёт из доступного баланса типа,
-    // который в текущей модели соответствует полному лимиту категории, а не
-    // остатку после уже распределённых сумм по конвертам.
-    const remainder = limitAmount;
-    if (remainder <= 0 || amount > remainder + 1e-6) {
+    if (availableAmount <= 0 || amount > availableAmount + 1e-6) {
       await transaction.rollback();
-      return res.status(400).json({ message: 'Недостаточно средств для пополнения конверта' });
+      return res.status(400).json({
+        message: 'Недостаточно средств для пополнения конверта',
+        code: 'REPLENISH_EXCEEDS_AVAILABLE_LIMIT',
+        available: availableAmount,
+        requested: normalizeLimit(amount),
+      });
     }
 
     let updatedAmount = 0;
@@ -82,6 +85,13 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
       await row.update({ investedAmount: updatedAmount }, { transaction });
     }
 
+    await createTypeLimitReplenishmentOperation({
+      userId,
+      convert,
+      amount,
+      transaction,
+    });
+
     await transaction.commit();
 
     return res.json({
@@ -94,7 +104,7 @@ router.post('/replenish-convert', requireAuth, async (req, res) => {
       limit: {
         type_code: typeCode,
         allocated_amount: normalizeLimit(allocatedAmount + amount),
-        remainder_amount: Number(Math.max(limitAmount - amount, 0).toFixed(2)),
+        remainder_amount: normalizeLimit(Math.max(availableAmount - amount, 0)),
       },
     });
   } catch (error) {

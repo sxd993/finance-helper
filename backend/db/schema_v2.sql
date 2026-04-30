@@ -90,28 +90,6 @@ CREATE TABLE IF NOT EXISTS convert_investment (
   CONSTRAINT fk_convert_investment_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS expenses (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  convert_id INT NULL,
-  name VARCHAR(255) NOT NULL,
-  convert_name VARCHAR(255) NOT NULL,
-  convert_type VARCHAR(50) NOT NULL,
-  sum DECIMAL(12,2) NOT NULL,
-  date BIGINT UNSIGNED NOT NULL,
-  icon_name VARCHAR(100) NOT NULL,
-  
-  CONSTRAINT fk_expenses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT fk_expenses_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE SET NULL,
-  CONSTRAINT fk_expenses_convert_type FOREIGN KEY (convert_type) REFERENCES convert_types(code) ON DELETE RESTRICT,
-  CONSTRAINT chk_expenses_sum_positive CHECK (sum > 0),
-  
-  INDEX idx_expenses_user (user_id),
-  INDEX idx_expenses_convert (convert_id),
-  INDEX idx_expenses_convert_type (convert_type),
-  INDEX idx_expenses_date (date)
-) ENGINE=InnoDB;
-
 CREATE TABLE IF NOT EXISTS convert_type_limits (
   user_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
@@ -168,6 +146,34 @@ CREATE TABLE IF NOT EXISTS remainder_redistribution_items (
 
   INDEX idx_remainder_redistribution_items_redistribution (redistribution_id),
   INDEX idx_remainder_redistribution_items_remainder (remainder_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS operations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type ENUM('expense', 'replenishment') NOT NULL,
+  source ENUM('spend', 'type_limit', 'remainder') NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  occurred_at BIGINT UNSIGNED NOT NULL,
+  convert_id INT NULL,
+  convert_name VARCHAR(255) NOT NULL,
+  convert_type VARCHAR(50) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  icon_name VARCHAR(100) NULL,
+  remainder_redistribution_id INT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_operations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_operations_convert FOREIGN KEY (convert_id) REFERENCES converts(id) ON DELETE SET NULL,
+  CONSTRAINT fk_operations_convert_type FOREIGN KEY (convert_type) REFERENCES convert_types(code) ON DELETE RESTRICT,
+  CONSTRAINT fk_operations_remainder_redistribution FOREIGN KEY (remainder_redistribution_id) REFERENCES remainder_redistributions(id) ON DELETE SET NULL,
+  CONSTRAINT chk_operations_amount_positive CHECK (amount > 0),
+
+  UNIQUE KEY uk_operations_remainder_redistribution (remainder_redistribution_id),
+  INDEX idx_operations_user_date (user_id, occurred_at),
+  INDEX idx_operations_type (type),
+  INDEX idx_operations_convert (convert_id)
 ) ENGINE=InnoDB;
 
 -- ============================================================================

@@ -4,10 +4,8 @@ import { ProgressBar } from "@/shared/ui/ProgressBar"
 import { Modal } from "@/shared/ui/Modal"
 import { useModal } from "@/shared/ui/Modal/model/useModal"
 import { DeleteConvertModal } from "@/features/converts/delete-convert"
-import { ReplenishConvertForm } from "@/features/converts/replenish-convert"
-import { Button } from "@/shared/ui/Button"
 import { getConvertTypePalette } from "@/entities/convert"
-import { Plus, Trash } from "lucide-react"
+import { Trash } from "lucide-react"
 
 interface Props {
     convert: Convert
@@ -15,7 +13,6 @@ interface Props {
 
 export const SavingConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
-    const { isOpen: isReplenishOpen, open: openReplenish, close: closeReplenish } = useModal(`replenish-convert-${convert.id}`)
     const palette = getConvertTypePalette(convert.type_code)
     const targetValue = convert.goal_amount ?? 0
     const remainderValue = convert.saved_amount ?? 0
@@ -34,13 +31,6 @@ export const SavingConvertCard = ({ convert }: Props) => {
                     <h3 className="text-lg font-semibold text-slate-900">{convert.name}</h3>
 
                     <div className="flex items-center gap-2">
-                        <Button
-                            title="Пополнить"
-                            size="sm"
-                            onClick={openReplenish}
-                            leftIcon={<Plus className="w-4 h-4" />}
-                            className="gap-2"
-                        />
                         <button
                             type="button"
                             aria-label={`Удалить конверт ${convert.name}`}
@@ -65,20 +55,6 @@ export const SavingConvertCard = ({ convert }: Props) => {
 
             <Modal isOpen={isOpen} onClose={close}>
                 <DeleteConvertModal id={convert.id} name={convert.name} onClose={close} />
-            </Modal>
-
-            <Modal
-                isOpen={isReplenishOpen}
-                onClose={closeReplenish}
-                title="Пополнение конверта"
-                widthClassName="max-w-xl"
-            >
-                <ReplenishConvertForm
-                    initialSourceType="saving"
-                    initialConvertId={convert.id}
-                    initialConvertName={convert.name}
-                    onSuccess={closeReplenish}
-                />
             </Modal>
         </>
     )

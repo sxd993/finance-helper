@@ -9,7 +9,14 @@ export const ConvertOverview = () => {
     const typeCode = useSelector((state: RootState) => state.convert_tabs.activeTab)
     const { userConvertsLimits } = useUserConvertsLimits();
     const filteredConvert = userConvertsLimits?.filter(c => c.typeCode === typeCode) ?? null;
-    const hasOverviewContent = filteredConvert?.some(c => (c.availableToSpend ?? 0) > 0) ?? false;
+    const hasOverviewContent = filteredConvert?.some((convert) => {
+        const isSpendType = convert.typeCode === "important" || convert.typeCode === "wishes";
+        const available = isSpendType
+            ? Number(convert.availableToSpend ?? 0)
+            : Number(convert.availableToAllocate ?? 0);
+
+        return available > 0;
+    }) ?? false;
 
 
     return (
@@ -25,7 +32,14 @@ export const ConvertOverview = () => {
                 <ConvertOverviewCard
                     key={c.typeCode}
                     convert={c}
-                    isHasRemainder={(c.availableToSpend ?? 0) === 0}
+                    isHasRemainder={(() => {
+                        const isSpendType = c.typeCode === "important" || c.typeCode === "wishes";
+                        const available = isSpendType
+                            ? Number(c.availableToSpend ?? 0)
+                            : Number(c.availableToAllocate ?? 0);
+
+                        return available === 0;
+                    })()}
                 />
             ))}
         </>

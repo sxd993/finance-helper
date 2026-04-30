@@ -1,6 +1,6 @@
 import express from 'express';
 import { Op, fn, col, literal } from 'sequelize';
-import { ConvertTypeLimit, Expense, Cycle } from '../../db/index.js';
+import { ConvertTypeLimit, Operation, Cycle } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { getAllocatedAmount } from './utils/type-limits.js';
 
@@ -54,14 +54,15 @@ router.get('/get-user-converts-type-limits', requireAuth, async (req, res) => {
       : null;
 
     const spentRows = startMs != null
-      ? await Expense.findAll({
+      ? await Operation.findAll({
         where: {
           userId,
-          date: { [Op.between]: [startMs, endMs] },
+          type: 'expense',
+          occurredAt: { [Op.between]: [startMs, endMs] },
         },
         attributes: [
           [col('convert_type'), 'typeCode'],
-          [fn('COALESCE', fn('SUM', col('sum')), literal('0')), 'spent'],
+          [fn('COALESCE', fn('SUM', col('amount')), literal('0')), 'spent'],
         ],
         group: ['convert_type'],
         raw: true,

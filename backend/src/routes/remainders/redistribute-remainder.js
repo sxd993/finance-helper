@@ -10,6 +10,7 @@ import {
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { buildRemaindersSummary, roundMoney } from './utils/summary.js';
+import { createRemainderReplenishmentOperation } from '../../features/operations/write-operation.js';
 
 const router = express.Router();
 
@@ -131,6 +132,14 @@ router.post('/redistribute', requireAuth, async (req, res) => {
       })),
       { transaction }
     );
+
+    await createRemainderReplenishmentOperation({
+      userId,
+      convert: targetConvert,
+      amount,
+      redistributionId: redistribution.id,
+      transaction,
+    });
 
     await transaction.commit();
 

@@ -1,10 +1,11 @@
 import express from 'express';
-import { sequelize, Expense, ConvertSpend } from '../../db/index.js';
+import { sequelize, Operation, ConvertSpend } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { parseExpensePayload, validateExpensePayload } from './utils/payload.js';
 import { resolveConvertAndType } from './utils/converts.js';
 import { buildExpenseResponse } from './utils/formatter.js';
 import { getTransactionsSummary } from '../converts/utils/get-user-converts.js';
+import { updateExpenseOperation } from '../../features/operations/write-operation.js';
 
 const router = express.Router();
 
@@ -20,8 +21,8 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Некорректный id траты' });
     }
 
-    const expense = await Expense.findOne({
-      where: { id: expenseId, userId },
+    const expense = await Operation.findOne({
+      where: { id: expenseId, userId, type: 'expense' },
       transaction,
       lock: transaction.LOCK.UPDATE,
     });
@@ -92,7 +93,7 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
           : fundedAmount;
 
       const requestedSum = Number(payload.sum);
-      const currentExpenseSum = Number(expense.sum) || 0;
+      const currentExpenseSum = Number(expense.amount) || 0;
       const isSameConvert =
         Number(expense.convertId) === Number(convertResolution.convert.id);
       const available = isSameConvert ? balance + currentExpenseSum : balance;
@@ -108,24 +109,33 @@ router.put('/edit-expense/:id', requireAuth, async (req, res) => {
       }
     }
 
-    const expenseDate = payload.date ?? Number(expense.date);
+    const expenseDate = payload.date ?? Number(expense.occurredAt);
 
-    await expense.update(
+    const updatedExpense = await updateExpenseOperation(
       {
-        name: payload.name,
-        convertId: convertResolution.convert.id,
-        convertName: convertResolution.convert.name,
-        convertType: convertResolution.convertTypeCode,
-        sum: payload.sum,
-        date: expenseDate,
-        iconName: payload.iconName,
+        userId,
+        expenseId,
+        expense: {
+          convertId: convertResolution.convert.id,
+          convertName: convertResolution.convert.name,
+          convertType: convertResolution.convertTypeCode,
+          name: payload.name,
+          sum: payload.sum,
+          date: expenseDate,
+          iconName: payload.iconName,
+        },
+        transaction,
       },
-      { transaction }
     );
+
+    if (!updatedExpense) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Трата не найдена' });
+    }
 
     await transaction.commit();
 
-    return res.json(buildExpenseResponse(expense, convertResolution.convertType));
+    return res.json(buildExpenseResponse(updatedExpense, convertResolution.convertType));
   } catch (error) {
     console.error('[edit-expense] failed to update expense', error);
     await transaction.rollback();

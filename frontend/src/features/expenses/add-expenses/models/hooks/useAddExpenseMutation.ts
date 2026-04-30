@@ -4,7 +4,11 @@ import { AddExpense } from "../../api/AddExpense"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 
-export const useAddExpenseMutation = () => {
+interface UseAddExpenseMutationOptions {
+    onSuccess?: () => void;
+}
+
+export const useAddExpenseMutation = ({ onSuccess }: UseAddExpenseMutationOptions = {}) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
@@ -14,11 +18,16 @@ export const useAddExpenseMutation = () => {
         onSuccess: async () => {
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["userExpenses"] }),
+                queryClient.invalidateQueries({ queryKey: ["history"] }),
                 queryClient.invalidateQueries({ queryKey: ["converts"] }),
                 queryClient.invalidateQueries({ queryKey: ["limits"] }),
                 queryClient.invalidateQueries({ queryKey: ["converts", "limits"] }),
             ]);
             toast.success('Транзакция создана!')
+            if (onSuccess) {
+                onSuccess();
+                return;
+            }
             navigate(-1);
         },
         onError: () => {

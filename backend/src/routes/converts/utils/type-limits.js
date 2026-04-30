@@ -6,7 +6,7 @@ import {
   ConvertSpend,
   ConvertSaving,
   ConvertInvestment,
-  Expense,
+  Operation,
   Cycle,
 } from '../../../db/index.js';
 import { RESETTABLE_TYPES } from '../../../features/cycles/utils.js';
@@ -175,13 +175,14 @@ async function getSpentAmountInActiveCycle(userId, typeCode, { transaction } = {
   const startMs = new Date(activeCycle.startDate).getTime();
   const endMs = activeCycle.endDate ? new Date(activeCycle.endDate).getTime() : Date.now();
 
-  const row = await Expense.findOne({
+  const row = await Operation.findOne({
     where: {
       userId,
+      type: 'expense',
       convertType: typeCode,
-      date: { [Op.between]: [startMs, endMs] },
+      occurredAt: { [Op.between]: [startMs, endMs] },
     },
-    attributes: [[fn('COALESCE', fn('SUM', col('sum')), literal('0')), 'spent']],
+    attributes: [[fn('COALESCE', fn('SUM', col('amount')), literal('0')), 'spent']],
     raw: true,
     transaction,
   });

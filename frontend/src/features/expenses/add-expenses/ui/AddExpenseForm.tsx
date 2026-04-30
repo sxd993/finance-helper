@@ -3,8 +3,12 @@ import { ChevronDown } from "lucide-react"
 import { useAddExpenseForm } from "../models/hooks/useAddExpenseForm"
 import { IconSelectField } from "../../../ui/pick-icons"
 
-export const AddExpenseForm = () => {
-  const { register, onSubmit, convertTypeOptions, convertTitleOptions } = useAddExpenseForm()
+interface AddExpenseFormProps {
+  onSuccess?: () => void;
+}
+
+export const AddExpenseForm = ({ onSuccess }: AddExpenseFormProps = {}) => {
+  const { register, onSubmit, convertTypeOptions, convertTitleOptions } = useAddExpenseForm({ onSuccess })
 
   return (
     <form

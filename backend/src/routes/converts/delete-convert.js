@@ -3,7 +3,7 @@ import {
   sequelize,
   Convert,
   ConvertSpend,
-  Expense,
+  Operation,
 } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { getTransactionsSummary } from './utils/get-user-converts.js';
@@ -42,7 +42,7 @@ router.delete('/delete-convert/:id', requireAuth, async (req, res) => {
       await ConvertSpend.destroy({ where: { convertId: id }, transaction });
     }
 
-    await Expense.update(
+    await Operation.update(
       { convertId: null },
       {
         where: { userId, convertId: id },

@@ -1,6 +1,10 @@
 import { formatPrice } from "@/shared/utils/formatPrice";
-import type { FilterOption } from "@/features/expenses/expenses-filters/model/types/type";
 import type { Convert } from "@/entities/convert";
+
+interface FilterOption {
+    value: string;
+    label: string;
+}
 
 export const getConvertTitleOptions = (
     converts: Convert[] | null,

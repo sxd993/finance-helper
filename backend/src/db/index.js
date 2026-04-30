@@ -7,7 +7,7 @@ import initConvert from '../models/Convert.js';
 import initConvertSpend from '../models/ConvertSpend.js';
 import initConvertSaving from '../models/ConvertSaving.js';
 import initConvertInvestment from '../models/ConvertInvestment.js';
-import initExpense from '../models/Expense.js';
+import initOperation from '../models/Operation.js';
 import initRemainder from '../models/Remainder.js';
 import initConvertTypeLimit from '../models/ConvertTypeLimit.js';
 import initRemainderRedistribution from '../models/RemainderRedistribution.js';
@@ -53,7 +53,7 @@ const Convert = initConvert(sequelize, DataTypes);
 const ConvertSpend = initConvertSpend(sequelize, DataTypes);
 const ConvertSaving = initConvertSaving(sequelize, DataTypes);
 const ConvertInvestment = initConvertInvestment(sequelize, DataTypes);
-const Expense = initExpense(sequelize, DataTypes);
+const Operation = initOperation(sequelize, DataTypes);
 const Remainder = initRemainder(sequelize, DataTypes);
 const ConvertTypeLimit = initConvertTypeLimit(sequelize, DataTypes);
 const RemainderRedistribution = initRemainderRedistribution(sequelize, DataTypes);
@@ -67,7 +67,7 @@ const models = {
   ConvertSpend,
   ConvertSaving,
   ConvertInvestment,
-  Expense,
+  Operation,
   Remainder,
   ConvertTypeLimit,
   RemainderRedistribution,
@@ -91,7 +91,7 @@ export {
   ConvertSpend,
   ConvertSaving,
   ConvertInvestment,
-  Expense,
+  Operation,
   Remainder,
   ConvertTypeLimit,
   RemainderRedistribution,
@@ -109,7 +109,7 @@ export default {
   ConvertSpend,
   ConvertSaving,
   ConvertInvestment,
-  Expense,
+  Operation,
   Remainder,
   ConvertTypeLimit,
   RemainderRedistribution,

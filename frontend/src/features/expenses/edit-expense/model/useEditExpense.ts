@@ -33,6 +33,7 @@ export const useEditExpense = () => {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["userExpenses"] }),
+        queryClient.invalidateQueries({ queryKey: ["history"] }),
         queryClient.invalidateQueries({ queryKey: ["converts"] }),
         queryClient.invalidateQueries({ queryKey: ["limits"] }),
         queryClient.invalidateQueries({ queryKey: ["converts", "limits"] }),

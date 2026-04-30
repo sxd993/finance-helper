@@ -44,8 +44,8 @@ const initConvert = (sequelize, DataTypes) => {
       targetKey: 'code',
     });
 
-    Convert.hasMany(models.Expense, {
-      as: 'expenses',
+    Convert.hasMany(models.Operation, {
+      as: 'operations',
       foreignKey: 'convertId',
     });
 

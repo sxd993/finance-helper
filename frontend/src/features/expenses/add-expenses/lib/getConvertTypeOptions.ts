@@ -1,8 +1,12 @@
 import { formatTypeCode } from "@/entities/convert"
-import type { FilterOption } from "@/features/expenses/expenses-filters/model/types/type"
 import type { UserConvertLimit } from "@/features/converts/get-user-converts-limits/model/types"
 
 const BLOCKED_TYPE_CODES = new Set(["saving", "investment"])
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
 
 export const getConvertTypeOptions = (
   limits: UserConvertLimit[] | null

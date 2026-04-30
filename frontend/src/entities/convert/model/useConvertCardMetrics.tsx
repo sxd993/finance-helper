@@ -13,11 +13,16 @@ export const useConvertCardMetrics = ({ convert }: Props) => {
     const allocatedAmount = formatPrice(convert.allocatedAmount)
     const limitAmount = formatPrice(convert.limitAmount)
     const safeLimit = Number(convert.limitAmount) || 0
-    const availableToSpend = Number(convert.availableToSpend ?? 0)
+    const isSpendType = typeCode === "important" || typeCode === "wishes"
+    const availableAmount = Number(
+        isSpendType
+            ? (convert.availableToSpend ?? 0)
+            : (convert.availableToAllocate ?? 0)
+    )
     const percentage = safeLimit > 0
-        ? Math.floor((availableToSpend / safeLimit) * 100)
+        ? Math.floor((availableAmount / safeLimit) * 100)
         : 0
-    const remainderAmount = formatPrice(availableToSpend)
+    const remainderAmount = formatPrice(availableAmount)
 
     const progressColor = (typeCode : string) => {
         return getConvertTypeColor(typeCode).bg

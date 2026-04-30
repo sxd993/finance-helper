@@ -1,10 +1,11 @@
 import express from 'express';
-import { sequelize, Expense, ConvertSpend } from '../../db/index.js';
+import { sequelize, ConvertSpend } from '../../db/index.js';
 import { requireAuth } from '../../utils/auth.js';
 import { parseExpensePayload, validateExpensePayload } from './utils/payload.js';
 import { resolveConvertAndType } from './utils/converts.js';
 import { buildExpenseResponse } from './utils/formatter.js';
 import { getTransactionsSummary } from '../converts/utils/get-user-converts.js';
+import { createExpenseOperation } from '../../features/operations/write-operation.js';
 
 const router = express.Router();
 
@@ -92,18 +93,20 @@ router.post('/add-expense', requireAuth, async (req, res) => {
     const expenseDate =
       requestedDate && requestedDate > 0 ? Math.min(requestedDate, now) : now;
 
-    const createdExpense = await Expense.create(
+    const createdExpense = await createExpenseOperation(
       {
         userId,
-        convertId: convert.id,
-        name: payload.name,
-        convertName: convert.name,
-        convertType: convertResolution.convertTypeCode,
-        sum: payload.sum,
-        date: expenseDate,
-        iconName: payload.iconName,
+        expense: {
+          convertId: convert.id,
+          name: payload.name,
+          convertName: convert.name,
+          convertType: convertResolution.convertTypeCode,
+          sum: payload.sum,
+          date: expenseDate,
+          iconName: payload.iconName,
+        },
+        transaction,
       },
-      { transaction }
     );
 
     await transaction.commit();
