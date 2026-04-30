@@ -10,9 +10,9 @@
 
   /* Конверты */
   --color-important: #ef4444;
-  --color-wishes: #facc15;
-  --color-saving: #22c55e;
-  --color-investment: #8b5cf6;
+  --color-wishes: #d97706;
+  --color-saving: #059669;
+  --color-investment: #2563eb;
   --color-remainder: #64748b;
 
   --breakpoint-xs: 426px;
@@ -22,4 +22,31 @@ body {
   font-family: "Manrope", sans-serif;
   font-weight: 500;
   background-color: var(--color-gray-50);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell-container {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+.app-page-container {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+  padding: 20px 16px 96px;
+}
+
+@media (min-width: 768px) {
+  .app-shell-container {
+    padding-inline: 24px;
+  }
+
+  .app-page-container {
+    padding-inline: 24px;
+    padding-bottom: 112px;
+  }
 }

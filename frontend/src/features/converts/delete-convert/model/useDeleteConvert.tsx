@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { DeleteConvert } from "../api/DeleteConvert";
@@ -17,7 +18,10 @@ export const useDeleteConvert = () => {
             toast.success("Конверт успешно удален");
         },
         onError: (error) => {
-            toast.error(error?.response.data.message || "Ошибка при удалении конверта");
+            const message = isAxiosError(error)
+                ? error.response?.data?.message ?? "Ошибка при удалении конверта"
+                : "Ошибка при удалении конверта";
+            toast.error(message);
             console.log(error)
         }
     });

@@ -7,13 +7,15 @@ export const AddConvertsPage = () => {
     useScrollToTop();
 
     return (
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 pt-5 pb-20">
-            <PageFormHeader
-                title="Добавить конверт"
-                icon={<Wallet className="h-6 w-6" />}
-            />
-            <div className="w-full max-w-2xl">
-                <AddConvertsForm />
+        <div className="app-page-container">
+            <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+                <PageFormHeader
+                    title="Добавить конверт"
+                    icon={<Wallet className="h-6 w-6" />}
+                />
+                <div className="w-full">
+                    <AddConvertsForm />
+                </div>
             </div>
         </div>
     )

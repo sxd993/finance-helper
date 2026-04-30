@@ -3,7 +3,7 @@ import { ProgressBar } from "@/shared/ui/ProgressBar";
 import { SectionTitle } from "@/shared/ui/SectionTItle";
 import { PieChart } from "lucide-react";
 import { useChangePercent } from "../model/useChangePercent";
-import { DISTRIBUTION_FIELDS } from "../lib/const";
+import { DISTRIBUTION_FIELDS, getDistributionFieldPalette } from "../lib/const";
 import { clampPercent, formatPercent, isValidTotal } from "../lib/helpers";
 
 export const ChangePercent = () => {
@@ -47,15 +47,16 @@ export const ChangePercent = () => {
         {DISTRIBUTION_FIELDS.map((field) => {
           const value = clampPercent(Number(currentPercents[field.key] || 0));
           const fieldError = errors[field.key];
+          const palette = getDistributionFieldPalette(field.typeCode);
 
           return (
             <div
               key={field.key}
-              className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
+              className={`rounded-3xl border ${palette.border} ${palette.softBg} p-4 shadow-sm`}
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <span className={`h-2.5 w-2.5 rounded-full ${field.accent}`} />
+                  <span className={`h-3 w-3 rounded-full ${palette.bg} shadow-sm`} />
                   <div>
                     <p className="text-sm font-medium text-slate-900">
                       {field.label}
@@ -81,13 +82,17 @@ export const ChangePercent = () => {
                         message: "Доля не может превышать 100%",
                       },
                     })}
-                    className="w-20 rounded-xl border border-slate-200 px-3 py-2 text-right text-sm font-semibold text-slate-900 focus:border-primary focus:outline-none disabled:bg-slate-100"
+                    className={`w-20 rounded-2xl border border-white/70 bg-white px-3 py-2 text-right text-sm font-semibold text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-slate-100`}
                   />
                   <span className="text-sm text-slate-500">%</span>
                 </div>
               </div>
-              <div className="mt-3">
-                <ProgressBar color={field.accent} percentage={value} />
+              <div className="mt-4 rounded-2xl bg-white/70 p-3">
+                <div className="mb-2 flex items-center justify-between text-xs">
+                  <span className={palette.text}>Текущая доля</span>
+                  <span className="font-semibold text-slate-700">{value}%</span>
+                </div>
+                <ProgressBar color={palette.bg} percentage={value} />
               </div>
               {fieldError?.message && (
                 <p className="mt-2 text-xs text-red-500">

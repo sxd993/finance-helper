@@ -27,8 +27,8 @@ export const Header = ({ user }: HeaderProps) => {
   const isEditConvertPage = location.pathname.startsWith("/converts/edit/");
 
   return (
-    <header className="sticky top-0 z-50 max-w-3xl bg-white border-b border-slate-200 w-full mx-auto">
-      <div className="mx-auto w-full p-5 flex items-center">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white">
+      <div className="app-shell-container flex w-full items-center py-5">
         {showBackButton && (
           <div className="relative flex items-center w-full justify-center p-4">
             <button

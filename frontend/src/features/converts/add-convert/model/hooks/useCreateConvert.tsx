@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { CreateConvert } from "../../api/CreateConvert"
 import type { CreateConvertPayload } from "../types"
@@ -13,7 +14,10 @@ export const useCreateConvert = () => {
             toast.success('Конверт успешно создан')
         },
         onError: (error) => {
-            toast.error(error.response.data.message)
+            const message = isAxiosError(error)
+                ? error.response?.data?.message ?? "Не удалось создать конверт"
+                : "Не удалось создать конверт";
+            toast.error(message)
         }
     })
 

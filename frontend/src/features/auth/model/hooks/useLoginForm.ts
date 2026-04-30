@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { isAxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -46,7 +47,7 @@ export const useLoginForm = () => {
     handleSubmit: form.handleSubmit,
     errors: form.formState.errors,
     isLoading: loginMutation.isPending,
-    error: loginMutation.error instanceof Error ? loginMutation.error.response.data : null,
+    error: isAxiosError(loginMutation.error) ? loginMutation.error.response?.data ?? null : null,
     onSubmit,
   };
 };

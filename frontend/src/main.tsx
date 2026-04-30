@@ -16,7 +16,7 @@ const registerServiceWorker = () => {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <main className='max-w-7xl mx-auto min-h-screen'>
+    <main className='min-h-screen'>
       <App />
     </main>
   </StrictMode>,

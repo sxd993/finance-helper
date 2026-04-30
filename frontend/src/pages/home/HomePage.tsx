@@ -7,7 +7,7 @@ export const HomePage = () => {
   useScrollToTop();
 
   return (
-    <div className="flex flex-col gap-5 max-w-3xl mx-auto pt-5 pb-20 p-4">
+    <div className="app-page-container flex flex-col gap-5">
       <SwitchConvertTabs />
       <ConvertOverview />
       <ConvertList />

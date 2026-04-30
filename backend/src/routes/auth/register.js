@@ -11,6 +11,16 @@ import { DEFAULT_DISTRIBUTION } from '../../utils/constants.js';
 
 const router = express.Router();
 
+const getPercent = (primary, fallback, defaultValue) => {
+  const value = primary ?? fallback;
+  if (value === undefined || value === null || value === '') {
+    return defaultValue;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : NaN;
+};
+
 router.post('/', async (req, res) => {
   const {
     login,
@@ -19,6 +29,14 @@ router.post('/', async (req, res) => {
     password,
     monthly_income,
     cycle_type: _cycleType,
+    percentImportant,
+    percentWishes,
+    percentSaving,
+    percentInvestment,
+    percent_important,
+    percent_wishes,
+    percent_saving,
+    percent_investment,
   } = req.body || {};
 
   if (!login || !name || !email || !password) {
@@ -43,11 +61,19 @@ router.post('/', async (req, res) => {
     const normalizedIncome = hasIncome ? Number(monthly_income) || 0 : null;
 
     const resolvedPercents = {
-      important: DEFAULT_DISTRIBUTION.important,
-      wishes: DEFAULT_DISTRIBUTION.wishes,
-      saving: DEFAULT_DISTRIBUTION.saving,
-      investment: DEFAULT_DISTRIBUTION.investment,
+      important: getPercent(percentImportant, percent_important, DEFAULT_DISTRIBUTION.important),
+      wishes: getPercent(percentWishes, percent_wishes, DEFAULT_DISTRIBUTION.wishes),
+      saving: getPercent(percentSaving, percent_saving, DEFAULT_DISTRIBUTION.saving),
+      investment: getPercent(percentInvestment, percent_investment, DEFAULT_DISTRIBUTION.investment),
     };
+
+    const percentValues = Object.values(resolvedPercents);
+    const totalPercent = percentValues.reduce((sum, value) => sum + value, 0);
+    const hasInvalidPercent = percentValues.some((value) => !Number.isFinite(value) || value < 0 || value > 100);
+    if (hasInvalidPercent || Math.abs(totalPercent - 100) > 0.01) {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'Сумма процентов должна равняться 100' });
+    }
 
     const cycleType = 'monthly';
 

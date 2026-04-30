@@ -6,6 +6,7 @@ import { useModal } from "@/shared/ui/Modal/model/useModal"
 import { DeleteConvertModal } from "@/features/converts/delete-convert"
 import { ReplenishConvertForm } from "@/features/converts/replenish-convert"
 import { Button } from "@/shared/ui/Button"
+import { getConvertTypePalette } from "@/entities/convert"
 import { Plus, Trash } from "lucide-react"
 
 interface Props {
@@ -15,18 +16,19 @@ interface Props {
 export const SavingConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
     const { isOpen: isReplenishOpen, open: openReplenish, close: closeReplenish } = useModal(`replenish-convert-${convert.id}`)
+    const palette = getConvertTypePalette(convert.type_code)
     const targetValue = convert.goal_amount ?? 0
     const remainderValue = convert.saved_amount ?? 0
-    const remainder = formatPrice(remainderValue)
-    const goal = formatPrice(targetValue)
+    const remainder = formatPrice(remainderValue) ?? '0 ₽'
+    const goal = formatPrice(targetValue) ?? '0 ₽'
     const progress = targetValue
         ? Math.min(100, Math.max(0, Math.round((remainderValue / targetValue) * 100)))
         : 0
 
     return (
         <>
-            <div className="relative rounded-2xl border border-slate-100 bg-white/80 backdrop-blur-sm p-5 shadow-[0_4px_20px_-6px_rgb(0,0,0,0.08)]">
-                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-green-500 rounded-l-2xl" />
+            <div className={`relative rounded-2xl border ${palette.border} bg-white/80 backdrop-blur-sm p-5 shadow-[0_4px_20px_-6px_rgb(0,0,0,0.08)]`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${palette.bg} rounded-l-2xl`} />
 
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-900">{convert.name}</h3>
@@ -57,7 +59,7 @@ export const SavingConvertCard = ({ convert }: Props) => {
 
                 <div>
                     <div className="text-xs text-slate-500 mb-1">{progress}%</div>
-                    <ProgressBar color="bg-green-500" percentage={progress} />
+                    <ProgressBar color={palette.bg} percentage={progress} />
                 </div>
             </div>
 

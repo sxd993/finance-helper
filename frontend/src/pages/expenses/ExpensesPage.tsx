@@ -10,7 +10,7 @@ export const ExpensesPage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col max-w-3xl mx-auto pt-5 pb-20 px-4 gap-5">
+        <div className="app-page-container flex flex-col gap-5">
             <ExpensesOverview />
             <div className="flex items-center justify-between gap-4">
                 <SectionTitle

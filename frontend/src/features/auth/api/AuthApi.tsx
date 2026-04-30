@@ -1,14 +1,9 @@
 import { client } from '@shared/api/client';
 import type { User } from '@/entities/user';
+import type { RegisterFormData } from '../model/types/auth.types';
 
 interface LoginData {
     login: string;
-    password: string;
-}
-
-interface RegisterData {
-    login: string;
-    name: string;
     password: string;
 }
 
@@ -19,7 +14,7 @@ export const AuthApi = {
         return response.data;
     },
     // Регистрация нового пользователя
-    register: async (data: RegisterData): Promise<User> => {
+    register: async (data: RegisterFormData): Promise<User> => {
         const response = await client.post("/auth/register", data);
         return response.data;
     },

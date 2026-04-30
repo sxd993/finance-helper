@@ -7,7 +7,12 @@ import { useSwitchOnboardingCards } from "../";
 import { onboardingCards } from "../";
 import { OnboardingCard } from "@/shared/ui/OnboardingCard";
 
-export const RegisterUserOnboarding = ({ onBack, onNext }) => {
+interface RegisterUserOnboardingProps {
+  onBack: () => void;
+  onNext: () => void;
+}
+
+export const RegisterUserOnboarding = ({ onBack, onNext }: RegisterUserOnboardingProps) => {
 
   const { onboardingStep, setOnboardingStep } = useSwitchOnboardingCards();
   const swiperRef = useRef<SwiperType | null>(null);

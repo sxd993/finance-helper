@@ -1,11 +1,8 @@
 import { AuthForm } from "@/widgets";
 import { useScrollToTop } from "@/shared/hooks/useScrollToTop";
 
-export const AuthPage = () => {
+export const RegisterPage = () => {
   useScrollToTop();
-  return (
-    <>
-      <AuthForm />
-    </>
-  );
+
+  return <AuthForm mode="register" />;
 };

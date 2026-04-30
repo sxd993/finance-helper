@@ -1,4 +1,5 @@
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import type { RegisterFormData } from '@/features/auth/model/types/auth.types';
 import { Logo } from '@/shared/ui/Logo';
 
@@ -6,6 +7,7 @@ interface RegisterUserInfoProps {
     register: UseFormRegister<RegisterFormData>;
     errors: FieldErrors<RegisterFormData>;
     isLoading: boolean;
+    onValidate: () => Promise<boolean>;
     onNext: () => void;
     onSwitchToLogin: () => void;
 }
@@ -14,6 +16,7 @@ export const RegisterUserInfo = ({
     register,
     errors,
     isLoading,
+    onValidate,
     onNext,
     onSwitchToLogin
 }: RegisterUserInfoProps) => {
@@ -22,9 +25,12 @@ export const RegisterUserInfo = ({
             <Logo />
             <form
                 className="bg-white px-6 py-8 flex flex-col gap-4 w-full max-w-sm rounded-lg"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                     e.preventDefault();
-                    onNext();
+                    const isValid = await onValidate();
+                    if (isValid) {
+                        onNext();
+                    }
                 }}
             >
                 <h2 className="text-2xl  text-gray-600 text-center">Регистрация</h2>
@@ -95,6 +101,60 @@ export const RegisterUserInfo = ({
                         disabled={isLoading}
                     />
                     {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
+                </div>
+
+                <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <label className="flex items-start gap-3 text-sm text-slate-700">
+                        <input
+                            type="checkbox"
+                            disabled={isLoading}
+                            {...register('personalDataConsent', {
+                                required: 'Подтвердите согласие на обработку персональных данных',
+                            })}
+                            className="mt-1 h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                        />
+                        <span>
+                            Я даю{' '}
+                            <Link
+                                to="/personal-data-consent"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-medium text-primary hover:underline"
+                            >
+                                согласие на обработку персональных данных
+                            </Link>
+                            .
+                        </span>
+                    </label>
+                    {errors.personalDataConsent && (
+                        <p className="text-xs text-red-500">{errors.personalDataConsent.message}</p>
+                    )}
+
+                    <label className="flex items-start gap-3 text-sm text-slate-700">
+                        <input
+                            type="checkbox"
+                            disabled={isLoading}
+                            {...register('privacyPolicyAccepted', {
+                                required: 'Подтвердите принятие политики конфиденциальности',
+                            })}
+                            className="mt-1 h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                        />
+                        <span>
+                            Я принимаю{' '}
+                            <Link
+                                to="/privacy-policy"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-medium text-primary hover:underline"
+                            >
+                                политику конфиденциальности
+                            </Link>
+                            .
+                        </span>
+                    </label>
+                    {errors.privacyPolicyAccepted && (
+                        <p className="text-xs text-red-500">{errors.privacyPolicyAccepted.message}</p>
+                    )}
                 </div>
 
                 {/* Кнопка */}

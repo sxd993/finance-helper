@@ -227,6 +227,10 @@ Sequelize-ассоциации, описанные в коде:
 2. Создаётся первый открытый `cycles`.
 3. Создаются строки `convert_type_limits` для всех типов по доходу и процентам.
 
+Payload принимает базовые данные пользователя, `monthly_income` и проценты распределения:
+`percentImportant`, `percentWishes`, `percentSaving`, `percentInvestment`.
+Сумма процентов должна равняться `100`; если проценты не переданы, используется распределение по умолчанию `50/30/10/10`.
+
 ### Конверты (`/api/converts/*`)
 - `add-convert`: создаёт запись в `converts` и в нужной subtype-таблице.
 - `edit-convert`: обновляет базу и subtype по `type_code`.

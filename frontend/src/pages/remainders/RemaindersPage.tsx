@@ -1,4 +1,4 @@
-import { Coins, History, WalletCards } from "lucide-react";
+import { Coins, History } from "lucide-react";
 
 import {
   RemaindersHistoryList,
@@ -18,20 +18,22 @@ export const RemaindersPage = () => {
 
   return (
     <>
-    <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pt-5 pb-20">
-      <SectionTitle
-        title="Баланс остатков"
-        subtitle="Просматривайте суммы, которые остались после завершённых циклов"
-        icon={<Coins className="w-6 h-6 text-primary" />}
-      />
-      <RemaindersSummaryCard summary={summary} onOpen={open} />
-      <SectionTitle
-        title="История перераспределений"
-        subtitle="Куда были отправлены остатки, когда и в каком объёме"
-        icon={<History className="w-6 h-6 text-primary" />}
-      />
-      <RemaindersHistoryList />
-    </div>
+      <div className="app-page-container">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
+          <SectionTitle
+            title="Баланс остатков"
+            subtitle="Просматривайте суммы, которые остались после завершённых циклов"
+            icon={<Coins className="w-6 h-6 text-primary" />}
+          />
+          <RemaindersSummaryCard summary={summary} onOpen={open} />
+          <SectionTitle
+            title="История перераспределений"
+            subtitle="Куда были отправлены остатки, когда и в каком объёме"
+            icon={<History className="w-6 h-6 text-primary" />}
+          />
+          <RemaindersHistoryList />
+        </div>
+      </div>
     <Modal
       isOpen={isOpen}
       onClose={close}

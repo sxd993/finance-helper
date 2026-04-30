@@ -5,6 +5,7 @@ import { useModal } from "@/shared/ui/Modal/model/useModal"
 import { DeleteConvertModal } from "@/features/converts/delete-convert"
 import { ReplenishConvertForm } from "@/features/converts/replenish-convert"
 import { Button } from "@/shared/ui/Button"
+import { getConvertTypePalette } from "@/entities/convert"
 import { Plus, Trash } from "lucide-react"
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 export const InvestmentConvertCard = ({ convert }: Props) => {
     const { isOpen, open, close } = useModal(`delete-convert-${convert.id}`)
     const { isOpen: isReplenishOpen, open: openReplenish, close: closeReplenish } = useModal(`replenish-convert-${convert.id}`)
+    const palette = getConvertTypePalette(convert.type_code)
     const invested = formatPrice(convert.invested_amount ?? 0)
     const current = formatPrice(convert.current_value ?? 0)
     const baseValue = convert.invested_amount ?? 0
@@ -25,8 +27,8 @@ export const InvestmentConvertCard = ({ convert }: Props) => {
 
     return (
         <>
-            <div className="relative rounded-2xl border border-slate-100 bg-white/80 backdrop-blur-sm p-5 shadow-[0_4px_20px_-6px_rgb(0,0,0,0.08)]">
-                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-blue-500 rounded-l-2xl" />
+            <div className={`relative rounded-2xl border ${palette.border} bg-white/80 backdrop-blur-sm p-5 shadow-[0_4px_20px_-6px_rgb(0,0,0,0.08)]`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${palette.bg} rounded-l-2xl`} />
 
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-900">{convert.name}</h3>

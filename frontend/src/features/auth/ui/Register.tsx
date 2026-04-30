@@ -14,8 +14,13 @@ interface RegisterProps {
 export const Register = ({ onSwitchToLogin }: RegisterProps) => {
   const {
     register,
+    watch,
     handleSubmit,
     onSubmit,
+    validateUserInfoStep,
+    distributionFields,
+    distributionTotal,
+    isDistributionValid,
     isPending,
     form_errors,
     send_error
@@ -32,6 +37,7 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
           register={register}
           errors={form_errors}
           isLoading={isPending}
+          onValidate={validateUserInfoStep}
           onNext={onNext}
           onSwitchToLogin={onSwitchToLogin}
         />
@@ -49,10 +55,15 @@ export const Register = ({ onSwitchToLogin }: RegisterProps) => {
         step === 'userSettings' &&
         <RegisterUserSettings
           register={register}
+          watch={watch}
           handleSubmit={handleSubmit}
           onSubmit={onSubmit}
+          distributionFields={distributionFields}
+          distributionTotal={distributionTotal}
+          isDistributionValid={isDistributionValid}
           onBack={onBack}
           isLoading={isPending}
+          errors={form_errors}
           error={send_error}
         />
       }

@@ -9,11 +9,39 @@ export const Router = createBrowserRouter([
       {
         index: true,
         lazy: async () => {
-          const { AuthPage } = await import('@pages/auth');
-          return { Component: AuthPage };
+          const { LoginPage } = await import('@pages/auth');
+          return { Component: LoginPage };
+        },
+      },
+      {
+        path: 'login',
+        lazy: async () => {
+          const { LoginPage } = await import('@pages/auth');
+          return { Component: LoginPage };
+        },
+      },
+      {
+        path: 'register',
+        lazy: async () => {
+          const { RegisterPage } = await import('@pages/auth');
+          return { Component: RegisterPage };
         },
       },
     ],
+  },
+  {
+    path: '/privacy-policy',
+    lazy: async () => {
+      const { PrivacyPolicyPage } = await import('@pages/legal');
+      return { Component: PrivacyPolicyPage };
+    },
+  },
+  {
+    path: '/personal-data-consent',
+    lazy: async () => {
+      const { PersonalDataConsentPage } = await import('@pages/legal');
+      return { Component: PersonalDataConsentPage };
+    },
   },
   {
     path: '/home',

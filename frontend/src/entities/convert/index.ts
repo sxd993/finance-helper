@@ -4,6 +4,7 @@ export { EmptyConverts } from './ui/EmptyConverts';
 export type {
   Convert,
   ConvertType,
+  ConvertTab,
   ConvertInfo,
   ConvertGroup,
   ConvertTypeLimitSummary,
@@ -11,4 +12,8 @@ export type {
 } from './model/types';
 
 export { formatTypeCode } from './lib/formatTypeCode';
-export { getConvertTypeColor } from './lib/getConvertTypeColor';
+export {
+  getConvertTypeColor,
+  getConvertTypePalette,
+} from './lib/getConvertTypeColor';
+export type { ConvertTypePalette } from './lib/getConvertTypeColor';
