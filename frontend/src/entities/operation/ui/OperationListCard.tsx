@@ -37,7 +37,7 @@ export const OperationListCard = ({ operation, actions }: OperationListCardProps
             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
               isExpense
                 ? "bg-slate-100 text-slate-600"
-                : "bg-slate-100 text-slate-600"
+                : "bg-emerald-50 text-emerald-600"
             }`}
           >
             {isExpense ? (

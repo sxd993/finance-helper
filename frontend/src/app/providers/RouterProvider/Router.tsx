@@ -83,6 +83,19 @@ export const Router = createBrowserRouter([
     ],
   },
   {
+    path: '/operations',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { OperationsPage } = await import('@/pages/operations');
+          return { Component: OperationsPage };
+        },
+      },
+    ],
+  },
+  {
     path: '/remainders',
     element: <ProtectedRoute />,
     children: [

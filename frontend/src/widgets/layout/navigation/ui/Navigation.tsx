@@ -1,30 +1,14 @@
-import { Link, useLocation } from 'react-router-dom';
-import { ArrowDownLeft, ArrowUpRight, Plus } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 
-import { AddExpenseForm } from '@/features/expenses/add-expenses/ui/AddExpenseForm';
-import { ReplenishConvertForm } from '@/features/converts/replenish-convert';
-import { Modal } from '@/shared/ui/Modal';
-import { useModal } from '@/shared/ui/Modal/model/useModal';
 import { navigationItems } from '../model/config';
 
 export const Navigation = () => {
     const location = useLocation();
-    const actionModal = useModal("navigation-action-select");
-    const expenseModal = useModal("navigation-add-expense");
-    const replenishModal = useModal("navigation-add-replenishment");
+    const navigate = useNavigate();
 
     // Функция для определения активного состояния
     const isActive = (path: string): boolean => location.pathname === path;
-
-    const openExpense = () => {
-        actionModal.close();
-        expenseModal.open();
-    };
-
-    const openReplenishment = () => {
-        actionModal.close();
-        replenishModal.open();
-    };
 
     return (
         <>
@@ -39,7 +23,7 @@ export const Navigation = () => {
                                     <div className="flex min-h-[64px] items-center justify-center">
                                         <button
                                             type="button"
-                                            onClick={actionModal.open}
+                                            onClick={() => navigate('/operations')}
                                             aria-label="Добавить операцию"
                                             className="flex h-14 w-14 -translate-y-4 items-center justify-center rounded-full bg-secondary text-white shadow-lg ring-4 ring-white transition hover:bg-secondary-dark"
                                         >
@@ -64,64 +48,6 @@ export const Navigation = () => {
                     })}
                 </div>
             </footer>
-
-            <Modal
-                isOpen={actionModal.isOpen}
-                onClose={actionModal.close}
-                title="Добавить операцию"
-                widthClassName="max-w-md"
-            >
-                <div className="grid gap-3 pt-4">
-                    <button
-                        type="button"
-                        onClick={openExpense}
-                        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:bg-slate-50"
-                    >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-500">
-                            <ArrowDownLeft className="h-5 w-5" />
-                        </span>
-                        <span>
-                            <span className="block text-sm font-semibold text-slate-900">Расход</span>
-                            <span className="block text-sm text-slate-500">Списать из необходимого или желаний</span>
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={openReplenishment}
-                        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:bg-slate-50"
-                    >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                            <ArrowUpRight className="h-5 w-5" />
-                        </span>
-                        <span>
-                            <span className="block text-sm font-semibold text-slate-900">Приход</span>
-                            <span className="block text-sm text-slate-500">Пополнить накопления или инвестиции</span>
-                        </span>
-                    </button>
-                </div>
-            </Modal>
-
-            <Modal
-                isOpen={expenseModal.isOpen}
-                onClose={expenseModal.close}
-                title="Добавить расход"
-                widthClassName="max-w-2xl"
-            >
-                <div className="pt-4">
-                    <AddExpenseForm onSuccess={expenseModal.close} />
-                </div>
-            </Modal>
-
-            <Modal
-                isOpen={replenishModal.isOpen}
-                onClose={replenishModal.close}
-                title="Добавить приход"
-                widthClassName="max-w-2xl"
-            >
-                <div className="pt-4">
-                    <ReplenishConvertForm onSuccess={replenishModal.close} />
-                </div>
-            </Modal>
         </>
     );
 };
