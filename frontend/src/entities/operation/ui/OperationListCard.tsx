@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { format } from "date-fns";
+import { ArrowUpRight } from "lucide-react";
+import { ru } from "date-fns/locale";
 
 import { getConvertTypeColor } from "@/entities/convert";
 import type { Operation } from "@/entities/operation";
@@ -16,19 +18,28 @@ const getSourceLabel = (operation: Operation) => {
   return operation.source === "remainder" ? "Пополнение из остатков" : "Пополнение из лимита";
 };
 
+const getOperationTime = (occurredAt: number) => {
+  const date = new Date(occurredAt);
+  if (Number.isNaN(date.getTime())) return "Время не указано";
+
+  return format(date, "HH:mm", { locale: ru });
+};
+
 export const OperationListCard = ({ operation, actions }: OperationListCardProps) => {
   const isExpense = operation.type === "expense";
-  const {
-    text: convertTypeColor,
-    bg: convertTypeBackground,
-    softBg: convertTypeSoftBackground,
-  } = getConvertTypeColor(operation.convert_type);
+  const { text: convertTypeColor } = getConvertTypeColor(operation.convert_type);
 
   return (
-    <div className="flex w-full items-start justify-between gap-4 p-4">
-      <div className="flex flex-1 flex-col justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50">
+    <div className="relative flex w-full items-stretch justify-between gap-4 px-4 py-4 transition-colors hover:bg-slate-50/60 sm:px-5">
+      {actions ? <div className="absolute right-3 top-3">{actions}</div> : null}
+      <div className={`flex min-w-0 flex-1 items-center gap-3 ${actions ? "pr-10" : ""}`}>
+          <div
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+              isExpense
+                ? "bg-slate-100 text-slate-600"
+                : "bg-slate-100 text-slate-600"
+            }`}
+          >
             {isExpense ? (
               <ExpenseIcon
                 name={operation.icon_name ?? "shopping-cart"}
@@ -36,34 +47,37 @@ export const OperationListCard = ({ operation, actions }: OperationListCardProps
                 color={DEFAULT_EXPENSE_ICON_COLOR}
               />
             ) : (
-              <ArrowUpRight className="h-5 w-5 text-emerald-600" />
+              <ArrowUpRight className="h-5 w-5" />
             )}
           </div>
-          <div className="min-w-0">
+          <div className="flex flex-col justify-center-safe h-full gap-1">
             <div className="truncate text-[15px] font-medium leading-5 text-slate-900">
               {operation.title}
             </div>
-            <div className="mt-0.5 truncate text-xs text-slate-500">
+            <div className="truncate text-xs text-slate-500">
               {getSourceLabel(operation)}
             </div>
+            <div className="text-sm font-medium text-slate-700">
+              {getOperationTime(operation.occurred_at)}
+            </div>
           </div>
-        </div>
-        <div className={`inline-flex w-fit items-center gap-2 rounded-full px-2.5 py-1 ${convertTypeSoftBackground}`}>
-          <span className={`h-2 w-2 rounded-full ${convertTypeBackground}`} />
-          <span className={`text-xs font-medium ${convertTypeColor}`}>
+      </div>
+      <div className="flex w-[96px] shrink-0 flex-col items-end justify-between py-0.5 pl-2 sm:w-[132px]">
+        <div className="h-8" />
+        <span
+          className={`inline-flex min-h-8 w-full items-center justify-end gap-1 text-right text-lg font-semibold leading-none ${
+            isExpense ? "text-red-500" : "text-emerald-600"
+          }`}
+        >
+          {isExpense ? "-" : "+"}
+          {formatPrice(operation.amount)}
+        </span>
+        <div className="flex w-full items-end justify-end">
+          <span className={`truncate text-right text-xs font-medium ${convertTypeColor}`}>
             {operation.convert_title ?? operation.convert_name}
           </span>
         </div>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-1.5">
-        {actions}
-        <span className={`inline-flex items-center gap-1 text-end text-lg font-semibold leading-none ${isExpense ? "text-red-500" : "text-emerald-600"}`}>
-          {isExpense ? <ArrowDownLeft className="h-4 w-4" /> : null}
-          {isExpense ? "-" : "+"}
-          {formatPrice(operation.amount)}
-        </span>
-      </div>
     </div>
   );
 };
-

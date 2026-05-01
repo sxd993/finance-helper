@@ -29,11 +29,14 @@ export const HistoryOperationsList = ({ operationType }: HistoryOperationsListPr
 
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-5">
         {operationGroups.map(({ label, items }) => (
-          <div key={label} className="flex flex-col gap-2 overflow-hidden rounded-2xl">
-            <div className="text-lg text-start text-black">{label}</div>
-            <div className="flex flex-col rounded-2xl border border-slate-200 bg-white">
+          <section key={label} className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3 px-1">
+              <div className="text-sm font-medium text-slate-500">{label}</div>
+            </div>
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
+              <div className="flex flex-col divide-y divide-slate-100 bg-white">
               {items.map((operation) => (
                 <OperationListCard
                   key={operation.id}
@@ -42,7 +45,7 @@ export const HistoryOperationsList = ({ operationType }: HistoryOperationsListPr
                     operation.type === "expense" ? (
                       <Menu as="div" className="relative">
                         <MenuButton
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                           aria-label={`Открыть меню операции ${operation.title}`}
                         >
                           <Ellipsis className="h-4 w-4" />
@@ -77,8 +80,9 @@ export const HistoryOperationsList = ({ operationType }: HistoryOperationsListPr
                   }
                 />
               ))}
+              </div>
             </div>
-          </div>
+          </section>
         ))}
       </div>
 
@@ -100,4 +104,3 @@ export const HistoryOperationsList = ({ operationType }: HistoryOperationsListPr
     </>
   );
 };
-

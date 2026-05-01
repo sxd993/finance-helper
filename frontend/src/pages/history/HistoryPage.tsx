@@ -11,13 +11,15 @@ export const HistoryPage = () => {
   const [filter, setFilter] = useState<OperationFilter>("all");
 
   return (
-    <div className="app-page-container flex flex-col gap-5">
+    <div className="app-page-container flex flex-col gap-6 pb-6">
       <SectionTitle
         title="История"
         subtitle="Расходы и пополнения конвертов"
         icon={<History className="w-6 h-6 text-primary" />}
       />
-      <HistoryFilters value={filter} onChange={setFilter} />
+      <div>
+        <HistoryFilters value={filter} onChange={setFilter} />
+      </div>
       <HistoryOperationsList operationType={filter} />
     </div>
   );
