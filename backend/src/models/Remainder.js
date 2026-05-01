@@ -20,6 +20,16 @@ const initRemainder = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'type_code',
     },
+    sourceConvertId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      field: 'source_convert_id',
+    },
+    sourceConvertName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      field: 'source_convert_name',
+    },
     amount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,

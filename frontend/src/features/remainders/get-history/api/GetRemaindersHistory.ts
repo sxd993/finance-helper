@@ -1,7 +1,7 @@
-import type { RemainderRedistributionHistoryItem } from "@/entities/remainders";
+import type { RemainderHistoryItem } from "@/entities/remainders";
 import { client } from "@/shared/api/client";
 
-export const GetRemaindersHistory = async (): Promise<RemainderRedistributionHistoryItem[]> => {
-  const response = await client.get<RemainderRedistributionHistoryItem[]>("/remainders/history");
+export const GetRemaindersHistory = async (): Promise<RemainderHistoryItem[]> => {
+  const response = await client.get<RemainderHistoryItem[]>("/remainders/history");
   return response.data;
 };

@@ -15,21 +15,13 @@ export interface RemaindersResponse {
   items: Remainder[];
 }
 
-export interface RemainderRedistributionSource {
-  id: number;
-  amount: number;
-  start_date: string;
-  end_date: string;
-}
-
-export interface RemainderRedistributionHistoryItem {
+export interface RemainderHistoryItem {
   id: number;
   amount: number;
   created_at: string;
-  target_convert: {
-    id: number;
-    name: string;
+  remainder_type: {
     type_code: string;
+    start_date: string;
+    end_date: string;
   };
-  sources: RemainderRedistributionSource[];
 }

@@ -108,14 +108,15 @@ CREATE TABLE IF NOT EXISTS remainders (
   user_id INT NOT NULL,
   cycle_id INT NOT NULL,
   type_code VARCHAR(50) NOT NULL,
+  source_convert_id INT NULL,
+  source_convert_name VARCHAR(255) NULL,
   amount DECIMAL(12,2) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   
   CONSTRAINT fk_remainders_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_remainders_cycles FOREIGN KEY (cycle_id) REFERENCES cycles(id) ON DELETE CASCADE,
   CONSTRAINT fk_remainders_type FOREIGN KEY (type_code) REFERENCES convert_types(code) ON DELETE RESTRICT,
-  
-  UNIQUE KEY uk_remainder_cycle_type (cycle_id, type_code),
+
   INDEX idx_remainders_user (user_id)
 ) ENGINE=InnoDB;
 

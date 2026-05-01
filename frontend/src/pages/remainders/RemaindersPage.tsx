@@ -27,21 +27,21 @@ export const RemaindersPage = () => {
           />
           <RemaindersSummaryCard summary={summary} onOpen={open} />
           <SectionTitle
-            title="История перераспределений"
-            subtitle="Куда были отправлены остатки, когда и в каком объёме"
+            title="История остатков"
+            subtitle="Когда остаток сформировался, по какой категории и на какую сумму"
             icon={<History className="w-6 h-6 text-primary" />}
           />
           <RemaindersHistoryList />
         </div>
       </div>
-    <Modal
-      isOpen={isOpen}
-      onClose={close}
-      title="Перераспределить остаток"
-      widthClassName="max-w-xl"
-    >
-      <RedistributeRemainderModal onClose={close} />
-    </Modal>
+      <Modal
+        isOpen={isOpen}
+        onClose={close}
+        widthClassName="max-w-xl"
+        title="Распределить остаток"
+      >
+        <RedistributeRemainderModal onClose={close} />
+      </Modal>
     </>
   );
 };

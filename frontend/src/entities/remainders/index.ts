@@ -2,6 +2,7 @@ export type {
   Remainder,
   RemaindersSummary,
   RemaindersResponse,
-  RemainderRedistributionSource,
-  RemainderRedistributionHistoryItem,
+  RemainderHistoryItem,
 } from './model/types';
+
+export { RemainderCard } from "./ui/RemainderCard";

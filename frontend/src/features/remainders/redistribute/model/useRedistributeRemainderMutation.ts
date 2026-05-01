@@ -25,7 +25,7 @@ export const useRedistributeRemainderMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["limits"] });
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message ?? "Не удалось перераспределить остаток");
+      toast.error(error.response?.data?.message ?? "Не удалось распределить остаток");
     },
   });
 

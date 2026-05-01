@@ -1,7 +1,7 @@
 import cron from 'node-cron';
+import { Op, fn, col, literal } from 'sequelize';
 import {
   getTodayDateOnly,
-  RESET_BEHAVIOR_BY_TYPE,
   shouldResetCycle,
 } from './utils.js';
 import {
@@ -12,10 +12,12 @@ import {
   Convert,
   ConvertSaving,
   ConvertInvestment,
+  Operation,
   Remainder,
 } from '../../db/index.js';
 import { recalcUserTypeLimitsAndResetDistributed } from '../../routes/converts/utils/type-limits.js';
-import { getTransactionsSummary } from '../../routes/converts/utils/get-user-converts.js';
+import { getTypeLimitsMap } from '../../routes/converts/utils/type-limits.js';
+import { isSameDateOnly } from './utils.js';
 
 function createInitialStats(dateOnly, force) {
   return {
@@ -25,6 +27,7 @@ function createInitialStats(dateOnly, force) {
     resetCycles: 0,
     createdCycles: 0,
     skippedNoActiveCycle: 0,
+    skippedAlreadyResetToday: 0,
     skippedNotDue: 0,
     errors: 0,
   };
@@ -70,6 +73,7 @@ async function createNewCycle(userId, startDate, transaction) {
     where: {
       userId,
       startDate,
+      isClosed: false,
     },
     transaction,
   });
@@ -96,22 +100,19 @@ async function saveRemainders(userId, cycleId, convertSnapshots, transaction) {
     return;
   }
 
-  // Group snapshots by typeCode to respect unique (cycle_id, type_code)
   const grouped = new Map();
   for (const { typeCode, amount } of convertSnapshots) {
     const numericAmount = Number(amount || 0);
     if (numericAmount <= 0) continue;
-    grouped.set(typeCode, (grouped.get(typeCode) || 0) + numericAmount);
+    grouped.set(typeCode, Number(((grouped.get(typeCode) || 0) + numericAmount).toFixed(2)));
   }
 
-  const remainderPayloads = Array.from(grouped.entries()).map(
-    ([typeCode, amount]) => ({
-      userId,
-      cycleId,
-      typeCode,
-      amount,
-    })
-  );
+  const remainderPayloads = Array.from(grouped.entries()).map(([typeCode, amount]) => ({
+    userId,
+    cycleId,
+    typeCode,
+    amount,
+  }));
 
   if (!remainderPayloads.length) {
     return;
@@ -124,7 +125,8 @@ async function saveRemainders(userId, cycleId, convertSnapshots, transaction) {
 /* 
 Функция сброса цикла
 */
-async function resetConverts(userId, transaction) {
+async function resetConverts(user, transaction, cycleRange = null) {
+  const userId = user.id;
   const converts = await Convert.findAll({
     where: {
       userId,
@@ -141,46 +143,81 @@ async function resetConverts(userId, transaction) {
     transaction,
   });
 
-  if (!converts.length) {
-    return [];
+  const snapshots = [];
+  const typeLimitsMap = await getTypeLimitsMap({
+    userId,
+    user,
+    transaction,
+  });
+  const spendRows = await Operation.findAll({
+    where: {
+      userId,
+      type: 'expense',
+      convertType: {
+        [Op.in]: ['important', 'wishes'],
+      },
+      occurredAt: {
+        [Op.between]: [
+          new Date(cycleRange?.startDate ?? Date.now()).getTime(),
+          new Date(cycleRange?.endDate ?? Date.now()).getTime(),
+        ],
+      },
+    },
+    attributes: [
+      'convertType',
+      [fn('COALESCE', fn('SUM', col('amount')), literal('0')), 'total_out'],
+    ],
+    group: ['convertType'],
+    raw: true,
+    transaction,
+  });
+  const spentByType = new Map(
+    spendRows.map((row) => [String(row.convertType), Number(row.total_out) || 0])
+  );
+
+  for (const typeCode of ['important', 'wishes']) {
+    const limit = Number(typeLimitsMap[typeCode] ?? 0);
+    const spent = Number(spentByType.get(typeCode) ?? 0);
+    const amount = Number(Math.max(limit - spent, 0).toFixed(2));
+
+    if (amount > 0) {
+      snapshots.push({ typeCode, amount });
+    }
   }
 
-  const snapshots = [];
   const spendConvertIds = converts
     .filter((convert) => convert.typeCode === 'important' || convert.typeCode === 'wishes')
     .map((convert) => Number(convert.id));
-  const spendSummaryMap = await getTransactionsSummary(userId, spendConvertIds, { transaction });
+
+  if (spendConvertIds.length) {
+    await Convert.destroy({
+      where: {
+        id: { [Op.in]: spendConvertIds },
+        userId,
+      },
+      transaction,
+    });
+  }
 
   for (const convert of converts) {
-    const behavior = RESET_BEHAVIOR_BY_TYPE[convert.typeCode];
-    if (!behavior) {
-      throw new Error(
-        `Reset behavior is not defined for type "${convert.typeCode}". Update RESET_BEHAVIOR_BY_TYPE to reflect all convert types.`
-      );
-    }
-
-    let amount = 0;
-    if (convert.typeCode === 'important' || convert.typeCode === 'wishes') {
-      const summary = spendSummaryMap.get(Number(convert.id));
-      amount = Number(Math.max(summary?.balance ?? 0, 0).toFixed(2));
-    } else if (convert.typeCode === 'saving') {
+    if (convert.typeCode === 'saving') {
       const saving = await ConvertSaving.findByPk(convert.id, { transaction });
-      amount = Number(saving?.savedAmount || 0);
-    } else if (convert.typeCode === 'investment') {
-      const investment = await ConvertInvestment.findByPk(convert.id, { transaction });
-      amount = Number(investment?.investedAmount || 0);
-    }
-    if (amount > 0) {
-      snapshots.push({ typeCode: convert.typeCode, amount });
-    }
-
-    if (behavior.deleteConvert) {
-      await convert.destroy({ transaction });
+      const amount = Number(saving?.savedAmount || 0);
+      if (amount > 0) {
+        snapshots.push({ typeCode: convert.typeCode, amount });
+      }
       continue;
     }
 
-    // For other types we keep convert as is; limits are reset via convert_type_limits table
+    if (convert.typeCode === 'investment') {
+      const investment = await ConvertInvestment.findByPk(convert.id, { transaction });
+      const amount = Number(investment?.investedAmount || 0);
+      if (amount > 0) {
+        snapshots.push({ typeCode: convert.typeCode, amount });
+      }
+    }
   }
+
   return snapshots;
 }
 
@@ -207,9 +244,18 @@ async function processUser(user, { dateOnly, force = false }) {
       return { status: 'created_cycle' };
     }
 
+    if (force && isSameDateOnly(activeCycle.startDate, dateOnly)) {
+      return { status: 'skipped_already_reset_today' };
+    }
+
     if (!force && !shouldResetCycle(user, activeCycle.startDate, dateOnly)) {
       return { status: 'skipped_not_due' };
     }
+
+    const resetCycleRange = {
+      startDate: activeCycle.startDate,
+      endDate: dateOnly,
+    };
 
     const closedCycle = await closePreviousCycle(
       user.id,
@@ -219,7 +265,7 @@ async function processUser(user, { dateOnly, force = false }) {
     );
     const newCycle = await createNewCycle(user.id, dateOnly, transaction);
 
-    const convertSnapshots = await resetConverts(user.id, transaction);
+    const convertSnapshots = await resetConverts(user, transaction, resetCycleRange);
     await saveRemainders(
       user.id,
       closedCycle ? closedCycle.id : newCycle.id,
@@ -277,6 +323,14 @@ async function runCycleReset(options = {}) {
         stats.skippedNoActiveCycle += 1;
         console.log(
           `Пропуск пользователя ${user.id} (${user.login}): нет активного цикла для force-reset`
+        );
+        continue;
+      }
+
+      if (result.status === 'skipped_already_reset_today') {
+        stats.skippedAlreadyResetToday += 1;
+        console.log(
+          `Пропуск пользователя ${user.id} (${user.login}): цикл уже был сброшен ${dateOnly}`
         );
         continue;
       }

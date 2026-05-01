@@ -20,6 +20,7 @@ function printSummary(stats) {
     reset_cycles: stats.resetCycles,
     created_cycles: stats.createdCycles,
     skipped_no_active_cycle: stats.skippedNoActiveCycle,
+    skipped_already_reset_today: stats.skippedAlreadyResetToday,
     skipped_not_due: stats.skippedNotDue,
     errors: stats.errors,
   });
@@ -31,7 +32,8 @@ async function main() {
   await sequelize.authenticate();
   console.log('Подключение к БД установлено');
 
-  const stats = await runCycleReset({ force: true });
+  const dateOnly = process.env.CYCLE_RESET_DATE || undefined;
+  const stats = await runCycleReset({ force: true, dateOnly });
   printSummary(stats);
 }
 

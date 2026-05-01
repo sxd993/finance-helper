@@ -7,8 +7,8 @@ interface HistoryFiltersProps {
 
 const options: { value: OperationFilter; label: string }[] = [
   { value: "all", label: "Все" },
-  { value: "expense", label: "Расходы" },
-  { value: "replenishment", label: "Пополнения" },
+  { value: "expense", label: "Списания" },
+  { value: "replenishment", label: "Зачисления" },
 ];
 
 export const HistoryFilters = ({ value, onChange }: HistoryFiltersProps) => (

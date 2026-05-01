@@ -59,4 +59,15 @@ function shouldResetCycle(user, cycleStartDate, currentDate) {
   return daysPassed >= cycleLength;
 }
 
-export { getTodayDateOnly, shouldResetCycle };
+function isSameDateOnly(left, right) {
+  const leftDate = parseDateOnly(left);
+  const rightDate = parseDateOnly(right);
+
+  if (!leftDate || !rightDate) {
+    return false;
+  }
+
+  return leftDate.getTime() === rightDate.getTime();
+}
+
+export { getTodayDateOnly, shouldResetCycle, isSameDateOnly };

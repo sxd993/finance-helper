@@ -31,16 +31,42 @@ const operationModes: Array<{
 export const OperationsPage = () => {
   useScrollToTop();
   const [mode, setMode] = useState<OperationMode>("expense");
+  const activeMode = operationModes.find((item) => item.value === mode) ?? operationModes[0];
 
   return (
     <div className="app-page-container flex flex-col gap-6 pb-6">
-      <SectionTitle
-        title="Финансовые операции"
-        subtitle="Выберите действие и заполните форму"
-        icon={<Wallet className="h-6 w-6 text-primary" />}
-      />
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="flex flex-col gap-3 sm:hidden">
+        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-white p-1">
+          {operationModes.map((item) => {
+            const isActive = item.value === mode;
+
+            return (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setMode(item.value)}
+                className={`flex min-h-[52px] items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-transparent text-slate-600"
+                }`}
+              >
+                <span
+                  className={isActive ? "text-white" : item.value === "expense" ? "text-red-500" : "text-emerald-600"}
+                >
+                  {item.icon}
+                </span>
+                <span>{item.value === "expense" ? "Списание" : "Зачисление"}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="px-1 text-sm leading-5 text-slate-500">{activeMode.description}</p>
+      </div>
+
+      <div className="hidden gap-3 sm:grid sm:grid-cols-2">
         {operationModes.map((item) => {
           const isActive = item.value === mode;
 

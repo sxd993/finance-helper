@@ -12,29 +12,34 @@ import {
 async function getUserLastCycle(userId, { transaction } = {}) {
   const activeCycle = await Cycle.findOne({
     where: { userId, isClosed: false },
-    order: [['start_date', 'DESC']],
-    attributes: ['start_date', 'end_date'],
+    order: [['startDate', 'DESC']],
+    attributes: ['startDate', 'endDate'],
     transaction,
   });
   if (activeCycle) return activeCycle.toJSON();
 
   const lastClosedCycle = await Cycle.findOne({
     where: { userId, isClosed: true },
-    order: [['end_date', 'DESC'], ['start_date', 'DESC']],
-    attributes: ['start_date', 'end_date'],
+    order: [['endDate', 'DESC'], ['startDate', 'DESC']],
+    attributes: ['startDate', 'endDate'],
     transaction,
   });
   return lastClosedCycle ? lastClosedCycle.toJSON() : null;
 }
 
-async function getTransactionsSummary(userId, convertIds, { transaction } = {}) {
+async function getTransactionsSummary(userId, convertIds, options = {}) {
+  const { transaction, cycleStartDate = null, cycleEndDate = null } = options;
   if (!convertIds.length) return new Map();
 
-  const lastCycle = await getUserLastCycle(userId, { transaction });
-  if (!lastCycle) return new Map();
+  const cycleRange = cycleStartDate
+    ? { startDate: cycleStartDate, endDate: cycleEndDate }
+    : await getUserLastCycle(userId, { transaction });
+  if (!cycleRange) return new Map();
 
-  const startMs = new Date(lastCycle.start_date).getTime();
-  const endMs = new Date(lastCycle.end_date ?? Date.now()).getTime();
+  const startValue = cycleRange.startDate ?? cycleRange.start_date;
+  const endValue = cycleRange.endDate ?? cycleRange.end_date ?? Date.now();
+  const startMs = new Date(startValue).getTime();
+  const endMs = new Date(endValue).getTime();
 
   const expenseRows = await Operation.findAll({
     where: {

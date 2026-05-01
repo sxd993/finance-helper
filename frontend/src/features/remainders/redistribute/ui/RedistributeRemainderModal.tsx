@@ -1,6 +1,4 @@
 import { Landmark, TrendingUp } from "lucide-react";
-
-import { Button } from "@/shared/ui/Button";
 import { formatPrice } from "@/shared/utils/formatPrice";
 import { formatTypeCode } from "@/entities/convert";
 import { useRedistributeRemainderForm } from "../model/useRedistributeRemainderForm";
@@ -21,10 +19,13 @@ export const RedistributeRemainderModal = ({ onClose }: RedistributeRemainderMod
   } = useRedistributeRemainderForm(onClose);
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5 pt-5">
-      <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-        Доступно для перераспределения:{" "}
-        <span className="font-semibold text-slate-900">{formatPrice(totalAmount)}</span>
+    <form onSubmit={onSubmit} className="space-y-5 pt-1">
+      <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+        <p className="text-sm text-slate-500">Доступно для перевода</p>
+        <p className="text-2xl font-semibold text-slate-950">{formatPrice(totalAmount)}</p>
+        <p className="text-sm leading-6 text-slate-500">
+          Остаток можно направить только в накопления или инвестиции.
+        </p>
       </div>
 
       {isLoading ? (
@@ -36,12 +37,12 @@ export const RedistributeRemainderModal = ({ onClose }: RedistributeRemainderMod
           Нет доступных конвертов для накоплений или инвестиций.
         </div>
       ) : (
-        <>
+        <div className="space-y-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-600">Куда перевести</label>
+            <label className="text-sm text-slate-600">Куда перевести</label>
             <select
               {...register("convertId", { required: true, valueAsNumber: true })}
-              className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {targetConverts.map((convert) => (
                 <option key={convert.id} value={convert.id}>
@@ -52,7 +53,7 @@ export const RedistributeRemainderModal = ({ onClose }: RedistributeRemainderMod
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-600">Сумма</label>
+            <label className="text-sm text-slate-600">Сумма</label>
             <input
               {...register("amount", {
                 required: true,
@@ -64,7 +65,8 @@ export const RedistributeRemainderModal = ({ onClose }: RedistributeRemainderMod
               step="0.01"
               min="0.01"
               max={totalAmount}
-              className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder="Введите сумму"
+              className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             {formState.errors.amount && (
               <p className="text-xs text-red-500">
@@ -72,25 +74,26 @@ export const RedistributeRemainderModal = ({ onClose }: RedistributeRemainderMod
               </p>
             )}
           </div>
-        </>
+        </div>
       )}
 
-      <div className="flex gap-3">
-        <Button
-          title={isPending ? "Переводим..." : "Перераспределить"}
+      <div className="flex flex-col-reverse gap-3 sm:flex-row">
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+        >
+          <Landmark className="h-4 w-4" />
+          <span>Закрыть</span>
+        </button>
+        <button
           type="submit"
           disabled={isPending || isLoading || targetConverts.length === 0 || totalAmount <= 0}
-          className="flex-1"
-          leftIcon={<TrendingUp className="h-4 w-4" />}
-        />
-        <Button
-          title="Закрыть"
-          bg="white"
-          text="slate-700"
-          onClick={onClose}
-          className="flex-1"
-          leftIcon={<Landmark className="h-4 w-4" />}
-        />
+          className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-secondary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-secondary-dark disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <TrendingUp className="h-4 w-4" />
+          <span>{isPending ? "Переводим..." : "Распределить"}</span>
+        </button>
       </div>
     </form>
   );
